@@ -1,0 +1,401 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{5C9B91E1-465E-4FE7-81B7-0F9A973757B1}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>TP_MasterTool</RootNamespace>
+    <AssemblyName>TP_MasterTool</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>true</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <UpdateUrl>\\10.78.65.195\F%24\TP.Mastertool\</UpdateUrl>
+    <AutorunEnabled>true</AutorunEnabled>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.0</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <PublishWizardCompleted>true</PublishWizardCompleted>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestCertificateThumbprint>A9DC826ABAB3F4E5B18DA0C93BD0E8D2B40F8338</ManifestCertificateThumbprint>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestKeyFile>TP_MasterTool_TemporaryKey.pfx</ManifestKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifests>true</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetZone>LocalIntranet</TargetZone>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignManifests>false</SignManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Resources\MainIcon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Messaging" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Forms\BackupCheck.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\BackupCheck.Designer.cs">
+      <DependentUpon>BackupCheck.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\DropDownSelect.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\DropDownSelect.Designer.cs">
+      <DependentUpon>DropDownSelect.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\EodCheck.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\EodCheck.Designer.cs">
+      <DependentUpon>EodCheck.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\InvTansactionTransfer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\InvTansactionTransfer.Designer.cs">
+      <DependentUpon>InvTansactionTransfer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\KBinstalation.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\KBinstalation.Designer.cs">
+      <DependentUpon>KBinstalation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\MassEmergancy.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MassEmergancy.Designer.cs">
+      <DependentUpon>MassEmergancy.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\MassJPOSLogs.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MassJPOSLogs.Designer.cs">
+      <DependentUpon>MassJPOSLogs.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\MonitoringAnalizer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MonitoringAnalizer.Designer.cs">
+      <DependentUpon>MonitoringAnalizer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Stocktaking.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Stocktaking.Designer.cs">
+      <DependentUpon>Stocktaking.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\TPReportsRegenZip.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\TPReportsRegenZip.Designer.cs">
+      <DependentUpon>TPReportsRegenZip.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\UpdatePackageInvalid.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\UpdatePackageInvalid.Designer.cs">
+      <DependentUpon>UpdatePackageInvalid.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Klasy\ConnectionPara.cs" />
+    <Compile Include="Klasy\CtrlFunctions.cs" />
+    <Compile Include="Klasy\FileController.cs" />
+    <Compile Include="Forms\CustomPopup\CustomMsgBox.cs" />
+    <Compile Include="Forms\ChangeLog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ChangeLog.Designer.cs">
+      <DependentUpon>ChangeLog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\CustomPopup\CustomMessageBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\CustomPopup\CustomMessageBox.Designer.cs">
+      <DependentUpon>CustomMessageBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Form1.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form1.Designer.cs">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\DiskInfo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\DiskInfo.Designer.cs">
+      <DependentUpon>DiskInfo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\EndpointsScan.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\EndpointsScan.Designer.cs">
+      <DependentUpon>EndpointsScan.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\PingConst.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\PingConst.Designer.cs">
+      <DependentUpon>PingConst.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Report.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Report.Designer.cs">
+      <DependentUpon>Report.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\serviceMgr.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\serviceMgr.Designer.cs">
+      <DependentUpon>serviceMgr.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Klasy\Globals.cs" />
+    <Compile Include="Klasy\Logger.cs" />
+    <Compile Include="Klasy\Shutdown.cs" />
+    <Compile Include="Klasy\StartUp.cs" />
+    <Compile Include="Klasy\Telemetry.cs" />
+    <Compile Include="Klasy\UserSettings.cs" />
+    <Compile Include="Klasy\VersionControl.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Forms\BackupCheck.resx">
+      <DependentUpon>BackupCheck.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ChangeLog.resx">
+      <DependentUpon>ChangeLog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\CustomPopup\CustomMessageBox.resx">
+      <DependentUpon>CustomMessageBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\DropDownSelect.resx">
+      <DependentUpon>DropDownSelect.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\EndpointsScan.resx">
+      <DependentUpon>EndpointsScan.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form1.resx">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\DiskInfo.resx">
+      <DependentUpon>DiskInfo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\EodCheck.resx">
+      <DependentUpon>EodCheck.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\InvTansactionTransfer.resx">
+      <DependentUpon>InvTansactionTransfer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\KBinstalation.resx">
+      <DependentUpon>KBinstalation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MassEmergancy.resx">
+      <DependentUpon>MassEmergancy.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MassJPOSLogs.resx">
+      <DependentUpon>MassJPOSLogs.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MonitoringAnalizer.resx">
+      <DependentUpon>MonitoringAnalizer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\PingConst.resx">
+      <DependentUpon>PingConst.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Report.resx">
+      <DependentUpon>Report.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\serviceMgr.resx">
+      <DependentUpon>serviceMgr.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Stocktaking.resx">
+      <DependentUpon>Stocktaking.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\TPReportsRegenZip.resx">
+      <DependentUpon>TPReportsRegenZip.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\UpdatePackageInvalid.resx">
+      <DependentUpon>UpdatePackageInvalid.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="Properties\app.manifest" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <None Include="TP_MasterTool_TemporaryKey.pfx" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="IWshRuntimeLibrary">
+      <Guid>{F935DC20-1CF0-11D0-ADB9-00C04FD58A0B}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="SHDocVw">
+      <Guid>{EAB22AC0-30C1-11CF-A7EB-0000C05BAE0B}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>1</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\decision %281%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\decision %282%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\done %281%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\done %282%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\done %283%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\done %284%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\done %285%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\done %286%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\error %287%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\error %281%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\error %282%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\error %283%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\error %284%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\error %285%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\error %286%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\info %283%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\info %284%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\info %285%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\info %286%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\info %281%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\info %282%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\MainIcon.ico" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
