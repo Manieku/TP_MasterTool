@@ -1227,6 +1227,7 @@ namespace TP_MasterTool
         private void Notepad_TextChanged(object sender, EventArgs e)
         {
             userSettings.notePadLines = notepad.Text;
+            //test
         }
 
     }
