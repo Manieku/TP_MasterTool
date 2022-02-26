@@ -116,6 +116,11 @@
             this.EoDCheckerMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator23 = new System.Windows.Forms.ToolStripSeparator();
             this.dumpFileAnaliseMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator25 = new System.Windows.Forms.ToolStripSeparator();
+            this.sQlQueriesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.lastTxRollOverMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.missingTxMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showLastSignOffFromYesterdayMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fixesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ColonFixMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator12 = new System.Windows.Forms.ToolStripSeparator();
@@ -173,11 +178,6 @@
             this.importNote = new System.Windows.Forms.Button();
             this.FiveMinTimer = new System.Windows.Forms.Timer(this.components);
             this.HourTimer = new System.Windows.Forms.Timer(this.components);
-            this.toolStripSeparator25 = new System.Windows.Forms.ToolStripSeparator();
-            this.sQlQueriesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.lastTxRollOverMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.missingTxMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.showLastSignOffFromYesterdayMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.Basic_Info.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.StatusBar.SuspendLayout();
@@ -361,7 +361,7 @@
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(5, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(941, 30);
+            this.menuStrip1.Size = new System.Drawing.Size(941, 28);
             this.menuStrip1.TabIndex = 4;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -373,7 +373,7 @@
             this.rebootDeviceMenuItem,
             this.DNSRestoreMenuItem});
             this.RemoteCMDMenuItem.Name = "RemoteCMDMenuItem";
-            this.RemoteCMDMenuItem.Size = new System.Drawing.Size(114, 26);
+            this.RemoteCMDMenuItem.Size = new System.Drawing.Size(114, 24);
             this.RemoteCMDMenuItem.Text = "RemoteCMDs";
             // 
             // rCMDMenuItem
@@ -420,7 +420,7 @@
             this.tpReportsMenuItem,
             this.localStorageTillMenuItem});
             this.QuickAccess.Name = "QuickAccess";
-            this.QuickAccess.Size = new System.Drawing.Size(108, 26);
+            this.QuickAccess.Size = new System.Drawing.Size(108, 24);
             this.QuickAccess.Text = "Quick Access";
             // 
             // lastConnectedToolStripMenuItem
@@ -639,7 +639,7 @@
             this.JPOSRFIDLogsSecureMenuItem});
             this.LogsMenuItem.Name = "LogsMenuItem";
             this.LogsMenuItem.Overflow = System.Windows.Forms.ToolStripItemOverflow.AsNeeded;
-            this.LogsMenuItem.Size = new System.Drawing.Size(54, 26);
+            this.LogsMenuItem.Size = new System.Drawing.Size(54, 24);
             this.LogsMenuItem.Text = "Logs";
             // 
             // WindowsLogsMenuItem
@@ -788,7 +788,7 @@
             this.sQlQueriesToolStripMenuItem});
             this.diagnosticsToolStripMenuItem.Name = "diagnosticsToolStripMenuItem";
             this.diagnosticsToolStripMenuItem.Overflow = System.Windows.Forms.ToolStripItemOverflow.AsNeeded;
-            this.diagnosticsToolStripMenuItem.Size = new System.Drawing.Size(100, 26);
+            this.diagnosticsToolStripMenuItem.Size = new System.Drawing.Size(100, 24);
             this.diagnosticsToolStripMenuItem.Text = "Diagnostics";
             // 
             // pingsToolStripMenuItem
@@ -921,6 +921,42 @@
             this.dumpFileAnaliseMenuItem.Text = "DumpFile Analyse";
             this.dumpFileAnaliseMenuItem.Click += new System.EventHandler(this.dumpFileAnaliseMenuItem_Click);
             // 
+            // toolStripSeparator25
+            // 
+            this.toolStripSeparator25.Name = "toolStripSeparator25";
+            this.toolStripSeparator25.Size = new System.Drawing.Size(229, 6);
+            // 
+            // sQlQueriesToolStripMenuItem
+            // 
+            this.sQlQueriesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.lastTxRollOverMenuItem,
+            this.missingTxMenuItem,
+            this.showLastSignOffFromYesterdayMenuItem});
+            this.sQlQueriesToolStripMenuItem.Name = "sQlQueriesToolStripMenuItem";
+            this.sQlQueriesToolStripMenuItem.Size = new System.Drawing.Size(232, 26);
+            this.sQlQueriesToolStripMenuItem.Text = "SQl Queries";
+            // 
+            // lastTxRollOverMenuItem
+            // 
+            this.lastTxRollOverMenuItem.Name = "lastTxRollOverMenuItem";
+            this.lastTxRollOverMenuItem.Size = new System.Drawing.Size(315, 26);
+            this.lastTxRollOverMenuItem.Text = "Last Tx + RollOver";
+            this.lastTxRollOverMenuItem.Click += new System.EventHandler(this.lastTxRollOverMenuItem_Click);
+            // 
+            // missingTxMenuItem
+            // 
+            this.missingTxMenuItem.Name = "missingTxMenuItem";
+            this.missingTxMenuItem.Size = new System.Drawing.Size(315, 26);
+            this.missingTxMenuItem.Text = "Missing Tx";
+            this.missingTxMenuItem.Click += new System.EventHandler(this.missingTxMenuItem_Click);
+            // 
+            // showLastSignOffFromYesterdayMenuItem
+            // 
+            this.showLastSignOffFromYesterdayMenuItem.Name = "showLastSignOffFromYesterdayMenuItem";
+            this.showLastSignOffFromYesterdayMenuItem.Size = new System.Drawing.Size(315, 26);
+            this.showLastSignOffFromYesterdayMenuItem.Text = "Show Last SignOff from Yesterday";
+            this.showLastSignOffFromYesterdayMenuItem.Click += new System.EventHandler(this.showLastSignOffFromYesterdayMenuItem_Click);
+            // 
             // fixesToolStripMenuItem
             // 
             this.fixesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -941,7 +977,7 @@
             this.backstoreCsvExportMenuItem});
             this.fixesToolStripMenuItem.Name = "fixesToolStripMenuItem";
             this.fixesToolStripMenuItem.Overflow = System.Windows.Forms.ToolStripItemOverflow.AsNeeded;
-            this.fixesToolStripMenuItem.Size = new System.Drawing.Size(55, 26);
+            this.fixesToolStripMenuItem.Size = new System.Drawing.Size(55, 24);
             this.fixesToolStripMenuItem.Text = "Fixes";
             // 
             // ColonFixMenuItem
@@ -1047,7 +1083,7 @@
             this.stocktakingMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Overflow = System.Windows.Forms.ToolStripItemOverflow.AsNeeded;
-            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(58, 26);
+            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(58, 24);
             this.toolsToolStripMenuItem.Text = "Tools";
             // 
             // serviceManagerMenuItem
@@ -1097,7 +1133,7 @@
             this.ADVMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.WSUSButBETTERMenuItem});
             this.ADVMenuItem.Name = "ADVMenuItem";
-            this.ADVMenuItem.Size = new System.Drawing.Size(53, 26);
+            this.ADVMenuItem.Size = new System.Drawing.Size(53, 24);
             this.ADVMenuItem.Text = "ADV";
             this.ADVMenuItem.Visible = false;
             // 
@@ -1116,7 +1152,7 @@
             this.showNotepadMenuItem});
             this.preferencesToolStripMenuItem.Name = "preferencesToolStripMenuItem";
             this.preferencesToolStripMenuItem.Overflow = System.Windows.Forms.ToolStripItemOverflow.AsNeeded;
-            this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(99, 26);
+            this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(99, 24);
             this.preferencesToolStripMenuItem.Text = "Preferences";
             // 
             // layoutToolStripMenuItem
@@ -1171,7 +1207,7 @@
             this.reportSuggestMenuItem});
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
             this.aboutToolStripMenuItem.Overflow = System.Windows.Forms.ToolStripItemOverflow.AsNeeded;
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(64, 26);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(64, 24);
             this.aboutToolStripMenuItem.Text = "About";
             // 
             // currentVersionMenuItem
@@ -1451,42 +1487,6 @@
             this.HourTimer.Enabled = true;
             this.HourTimer.Interval = 3600000;
             this.HourTimer.Tick += new System.EventHandler(this.HourTimer_Tick);
-            // 
-            // toolStripSeparator25
-            // 
-            this.toolStripSeparator25.Name = "toolStripSeparator25";
-            this.toolStripSeparator25.Size = new System.Drawing.Size(229, 6);
-            // 
-            // sQlQueriesToolStripMenuItem
-            // 
-            this.sQlQueriesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.lastTxRollOverMenuItem,
-            this.missingTxMenuItem,
-            this.showLastSignOffFromYesterdayMenuItem});
-            this.sQlQueriesToolStripMenuItem.Name = "sQlQueriesToolStripMenuItem";
-            this.sQlQueriesToolStripMenuItem.Size = new System.Drawing.Size(232, 26);
-            this.sQlQueriesToolStripMenuItem.Text = "SQl Queries";
-            // 
-            // lastTxRollOverMenuItem
-            // 
-            this.lastTxRollOverMenuItem.Name = "lastTxRollOverMenuItem";
-            this.lastTxRollOverMenuItem.Size = new System.Drawing.Size(315, 26);
-            this.lastTxRollOverMenuItem.Text = "Last Tx + RollOver";
-            this.lastTxRollOverMenuItem.Click += new System.EventHandler(this.lastTxRollOverMenuItem_Click);
-            // 
-            // missingTxMenuItem
-            // 
-            this.missingTxMenuItem.Name = "missingTxMenuItem";
-            this.missingTxMenuItem.Size = new System.Drawing.Size(315, 26);
-            this.missingTxMenuItem.Text = "Missing Tx";
-            this.missingTxMenuItem.Click += new System.EventHandler(this.missingTxMenuItem_Click);
-            // 
-            // showLastSignOffFromYesterdayMenuItem
-            // 
-            this.showLastSignOffFromYesterdayMenuItem.Name = "showLastSignOffFromYesterdayMenuItem";
-            this.showLastSignOffFromYesterdayMenuItem.Size = new System.Drawing.Size(315, 26);
-            this.showLastSignOffFromYesterdayMenuItem.Text = "Show Last SignOff from Yesterday";
-            this.showLastSignOffFromYesterdayMenuItem.Click += new System.EventHandler(this.showLastSignOffFromYesterdayMenuItem_Click);
             // 
             // Main
             // 

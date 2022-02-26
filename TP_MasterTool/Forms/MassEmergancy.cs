@@ -118,7 +118,7 @@ namespace TP_MasterTool.Forms
             }
 
             dataGridView1.Rows[rownr].Cells[1].Value = "Mapping drive";
-            if (!CtrlFunctions.MapEndpointDrive(ref connectionPara, out CtrlFunctions.CmdOutput cmdOutput))
+            if (!CtrlFunctions.MapEndpointDrive(ref connectionPara, out _))
             {
                 gridChange(rownr, "Error", Globals.errorColor);
                 lock (logLock)
@@ -139,7 +139,7 @@ namespace TP_MasterTool.Forms
             Check_F_Drive(rownr, connectionPara);
         }
 
-
+        
         private void EsfClientRestart(ConnectionPara connectionPara, int rownr)
         {
             CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c net stop esfclient && net start esfclient");

@@ -172,19 +172,19 @@ namespace TP_MasterTool.Forms
                 output += AddToLog("Found procedure in database -> EoD_Failed");
                 EoDFailed(rownr, connectionPara, ref output);
             }
-            else if (dataGridView1.Rows[rownr].Cells[2].Value.ToString().StartsWith(dataGridView1.Rows[rownr].Cells[1].Value + ";[Canda OmniPOS] *TPNAPP* MANUALEOD Aborted at"))
-            {
-                output += AddToLog("Found procedure in database -> EoD_Aborted_Test");
-                EoDAbortTest(rownr, connectionPara, ref output);
-                gridChange(rownr, "No procedure found for this issue", Globals.errorColor);
-                try
-                {
-                    System.IO.File.AppendAllText(@"U:\mrzemyk\EoD_Abort_Test\" + dataGridView1.Rows[rownr].Cells[0].Value + " - " + dataGridView1.Rows[rownr].Cells[1].Value + ".txt", output);
-                    System.IO.File.Delete(thisLogPath);
-                }
-                catch { }
-                return;
-            }
+            //else if (dataGridView1.Rows[rownr].Cells[2].Value.ToString().StartsWith(dataGridView1.Rows[rownr].Cells[1].Value + ";[Canda OmniPOS] *TPNAPP* MANUALEOD Aborted at"))
+            //{
+            //    output += AddToLog("Found procedure in database -> EoD_Aborted_Test");
+            //    EoDAbortTest(rownr, connectionPara, ref output);
+            //    gridChange(rownr, "No procedure found for this issue", Globals.errorColor);
+            //    try
+            //    {
+            //        System.IO.File.AppendAllText(@"U:\mrzemyk\EoD_Abort_Test\" + dataGridView1.Rows[rownr].Cells[0].Value + " - " + dataGridView1.Rows[rownr].Cells[1].Value + ".txt", output);
+            //        System.IO.File.Delete(thisLogPath);
+            //    }
+            //    catch { }
+            //    return;
+            //}
             else
             {
                 gridChange(rownr, "No procedure found for this issue", Globals.errorColor);
@@ -496,7 +496,7 @@ namespace TP_MasterTool.Forms
             log += AddToLog(Environment.NewLine + ">> Additional information:");
             log += AddToLog(@"-> c$\oeminst\ALL_LOGS\Monitoring\minilogger.csv");
             gridChange(rownr, "Reading monitoring log");
-            if (CtrlFunctions.MapEndpointDrive(ref connectionPara, out CtrlFunctions.CmdOutput cmdOutput3))
+            if (CtrlFunctions.MapEndpointDrive(ref connectionPara, out _))
             {
                 try
                 {

@@ -110,7 +110,7 @@ namespace TP_MasterTool.Forms
             }
 
             dataGridView1.Rows[rownr].Cells[1].Value = "Mapping drive";
-            if (!CtrlFunctions.MapEndpointDrive(ref connectionPara, out CtrlFunctions.CmdOutput cmdOutput))
+            if (!CtrlFunctions.MapEndpointDrive(ref connectionPara, out _))
             {
                 ErrorLog(rownr, "Unable to map drive");
                 return;
@@ -198,7 +198,7 @@ namespace TP_MasterTool.Forms
             string grabFromPath = @"\\" + connectionPara.TAG + @"\d$\WNI\4GSS\" + tixnr;
             if (!System.IO.File.Exists(grabFromPath + @"\" + outputFolderName + @".zip"))
             {
-                if (!CtrlFunctions.MapEndpointDrive(ref connectionPara, out cmdOutput))
+                if (!CtrlFunctions.MapEndpointDrive(ref connectionPara, out _))
                 {
                     Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Unable to map disc second time");
                     ErrorLog(rownr, "Unable to map drive");

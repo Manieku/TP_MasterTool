@@ -8,9 +8,6 @@ using System.Xml.Linq;
 using TP_MasterTool.Forms;
 using TP_MasterTool.Forms.CustomMessageBox;
 using TP_MasterTool.Klasy;
-using IWshRuntimeLibrary;
-using System.Management;
-using System.Data.SqlClient;
 
 namespace TP_MasterTool
 {
@@ -21,7 +18,8 @@ namespace TP_MasterTool
         public ConnectionPara connectionPara;
         public UserSettings userSettings = new UserSettings();
         public Logger myLog = new Logger(Globals.Funkcje.MainFrom, "None", "MainForm");
-        private bool versionWarning = false;
+        private int versionWarning = 0;
+        private bool updatePopup = false;
 
         /**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**/
 
@@ -41,9 +39,6 @@ namespace TP_MasterTool
         }
         private void Test_Button_Click(object sender, EventArgs e)
         {
-            System.IO.DirectoryInfo dirInfo = new System.IO.DirectoryInfo(@"\\" + connectionPara.TAG + @"\c$\Windows\WinSxS");
-            long dirSize = dirInfo.EnumerateFiles("*", System.IO.SearchOption.AllDirectories).Sum(file => file.Length);
-            MessageBox.Show((dirSize * 1024 * 1024 * 1024).ToString());
             //MassEmergancy massEmergancy = new MassEmergancy();
             //massEmergancy.Show();
             //Logger.GeneratePortalReport(@".\EoD_Abort_Test_Report.txt", @".\EoD_Abort_Test_AddInfo.txt", @".\logo.txt", @".\output.txt");
@@ -1188,7 +1183,6 @@ namespace TP_MasterTool
                     {
                         System.IO.Directory.CreateDirectory(Globals.telemetryLogPath);
                         System.IO.Directory.CreateDirectory(Globals.machineLogPath);
-                        System.IO.Directory.CreateDirectory(Globals.logErrorPath);
                     }
                     catch (Exception exp)
                     {
@@ -1203,32 +1197,33 @@ namespace TP_MasterTool
         private void HourTimer_Tick(object sender, EventArgs e)
         {
             Logger myLog = new Logger(Globals.Funkcje.VersionLog, "", "");
-            if (VersionControl.IsUpdateAvailable(ref myLog))
+            if (VersionControl.IsUpdateAvailable(ref myLog) && !updatePopup)
             {
+                updatePopup = true;
                 CustomMsgBox.Show(CustomMsgBox.MsgType.Info, "Update available", @"There is newest version of toolbox available to download." + "\n" + "Please restart ToolBox to receive update");
+                updatePopup = false;
             }
-            if (versionWarning)
+            if (versionWarning == 1)
             {
-                Logger.QuickLog(Globals.Funkcje.VersionLog, "", "", "VersionControlLog", "User was lockout because of ToolBox version below minimal acceptable");
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Minimal Version Not Satisfied", "Your ToolBox version don't meet the minimal requirements. Please restart the ToolBox and preform the update");
-                DisableUI();
+                versionWarning++;
                 StartButton.Enabled = false;
-                QuickAccess.Enabled = false;
+                menuStrip1.Enabled = false;
                 textBox_TAG.KeyDown -= TextBox_TAG_KeyDown;
+                Logger.QuickLog(Globals.Funkcje.VersionLog, "", "", "VersionControlLog", "User was lockout because of ToolBox version below minimal acceptable");
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Minimal Version Not Satisfied - SoftLocked", "Your ToolBox version don't meet the minimal requirements. Please restart ToolBox and preform the update");
             }
-            else if (VersionControl.IsBelowMinimalAcceptedVersion(ref myLog))
+            else if (VersionControl.IsBelowMinimalAcceptedVersion(ref myLog) && versionWarning == 0)
             {
+                versionWarning++;
                 Logger.QuickLog(Globals.Funkcje.VersionLog, "", "", "VersionControlLog", "User was warmed because of ToolBox version below minimal acceptable");
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Softlock ToolBox", "Your ToolBox version don't meet the minimal requirements. Please restart the ToolBox and preform the update");
-                versionWarning = true;
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Softlock Warning", "Your ToolBox version don't meet the minimal requirements. Please restart the ToolBox and preform the update");
             }
 
         } // Concurrent tasks every 1h
         private void Notepad_TextChanged(object sender, EventArgs e)
         {
             userSettings.notePadLines = notepad.Text;
-            //test
-        }
+        } // Save notepad content after change
 
     }
 }

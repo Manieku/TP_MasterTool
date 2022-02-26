@@ -521,16 +521,14 @@ namespace TP_MasterTool.Klasy
         {
             output = "";
             string connetionString = @"Data Source=" + tag + @";Initial Catalog=" + database + @";User ID=TPSQLUser;Password=VqOtCrViVFOWWnelF59w";
-            //SqlConnection sqlConnection = new SqlConnection(connetionString);
 
             try
             {
                 using (SqlConnection sqlConnection = new SqlConnection(connetionString))
                 {
                     sqlConnection.Open();
-                    SqlCommand command = new SqlCommand(sqlQuery, sqlConnection);
 
-                    using (SqlDataReader reader = command.ExecuteReader())
+                    using (SqlDataReader reader = new SqlCommand(sqlQuery, sqlConnection).ExecuteReader())
                     {
                         while (reader.Read())
                         {
