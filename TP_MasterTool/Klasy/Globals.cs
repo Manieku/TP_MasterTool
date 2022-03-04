@@ -21,7 +21,7 @@ namespace TP_MasterTool
             Tracert,
             DNSRestore,
             LocalCacheClear,
-            ParkedMove,
+            ParkedTxMove,
             OpenFolder,
             OpenWebAPC,
             OpenServerRT,

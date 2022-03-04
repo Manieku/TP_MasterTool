@@ -394,21 +394,15 @@ namespace TP_MasterTool.Klasy
                 slave.RunWorkerAsync();
             }
         }
-        public static bool KillMobilePos(ConnectionPara connectionPara)
+        public static bool KillMobilePos(ConnectionPara connectionPara, out string errorMsg)
         {
-            Main.ChangeStatusBar("Killing POS App...");
-            Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.MobilePosKill, "");
-
+            errorMsg = "";
             CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c taskkill /im TP.UI.MobilePOS.exe /f");
             if (cmdOutput.exitCode != 0 && cmdOutput.exitCode != 128)
             {
-                Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Kill MobilePos Error");
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Kill MobilePos Error", "PSEXEC encountered some problems trying to kill MobilePos App and exited with error:" + Environment.NewLine + cmdOutput.errorOutputText);
-                Logger.QuickLog(Globals.Funkcje.MobilePosKill, "", connectionPara.TAG, "ErrorLog", cmdOutput.errorOutputText);
-                Main.ChangeStatusBar("Ready");
+                errorMsg = cmdOutput.errorOutputText;
                 return false;
             }
-            Main.ChangeStatusBar("Ready");
             return true;
         }
         public static string GetDiskSpaceInfo(string drive, ConnectionPara connectionPara)

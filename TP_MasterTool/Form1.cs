@@ -498,19 +498,22 @@ namespace TP_MasterTool
         {
             ConnectionPara connectionPara = Main.interfejs.connectionPara;
             Logger colonFixLog = new Logger(Globals.Funkcje.ColonFix, "None", connectionPara.TAG);
+            Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.ColonFix, "");
 
-
-            if (!CtrlFunctions.KillMobilePos(connectionPara))
+            ChangeStatusBar("Killing MobilePOS");
+            colonFixLog.Add("Killing MobilePOS");
+            if (!CtrlFunctions.KillMobilePos(connectionPara, out string errorMsg))
             {
+                Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "MobilePOS Kill Failed");
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "MobilePOS Kill Failed", errorMsg);
+                colonFixLog.Add(errorMsg);
+                colonFixLog.SaveLog("ErrorLog");
                 return;
             }
 
-            Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.ColonFix, "");
-            Telemetry.LogFunctionUsage(Globals.Funkcje.ColonFix);
-
             ChangeStatusBar("Copying posDB...");
 
-            if (!FileController.CopyFile(@"\\" + connectionPara.TAG + @"\c$\Users\" + connectionPara.TAG.Substring(0, 6) + @"P.AL\AppData\Local\Diebold_Nixdorf\mobile_cache\Local Storage\http_localhost_8088.localstorage", @".\http_localhost_8088.localstorage", true, ref colonFixLog))
+            if (!FileController.CopyFile(@"\\" + connectionPara.TAG + @"\c$\Users\" + connectionPara.country + connectionPara.storeNr + connectionPara.storeType + @".AL\AppData\Local\Diebold_Nixdorf\mobile_cache\Local Storage\http_localhost_8088.localstorage", @".\http_localhost_8088.localstorage", true, ref colonFixLog))
             {
                 colonFixLog.SaveLog("ErrorLog");
                 Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "localstorage file copy error");
@@ -547,6 +550,8 @@ namespace TP_MasterTool
                 System.IO.File.Delete(@".\ActOperatorID.txt");
             }
             catch { }
+
+            Telemetry.LogFunctionUsage(Globals.Funkcje.ColonFix);
             ChangeStatusBar("Ready");
         } //dont support IP MODE
         private void tillLocalCacheClearMenuItem_Click(object sender, EventArgs e)
@@ -555,22 +560,106 @@ namespace TP_MasterTool
             {
                 slave.DoWork += (s, args) =>
                 {
+                    ConnectionPara connectionPara = Main.interfejs.connectionPara;
                     if (CustomMsgBox.Show(CustomMsgBox.MsgType.Decision, "Local Cashe Clear", "This function will terminate MobilePOS app on selected host. Do you want to proceed?") != DialogResult.OK)
                     {
                         return;
                     }
+
+                    Logger myLog = new Logger(Globals.Funkcje.LocalCacheClear, "", connectionPara.TAG);
                     Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.LocalCacheClear, "");
-                    if (!CtrlFunctions.KillMobilePos(connectionPara))
+
+                    ChangeStatusBar("Killing MobilePOS");
+                    myLog.Add("Killing MobilePOS");
+                    if (!CtrlFunctions.KillMobilePos(connectionPara, out string errorMsg))
                     {
-                        Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.LocalCacheClear, "MobilePOS app kill failed");
+                        Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "MobilePOS app kill failed");
+                        CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "MobilePOS Kill Failed", errorMsg);
+                        myLog.Add(errorMsg);
+                        myLog.SaveLog("ErrorLog");
+                        ChangeStatusBar("Ready");
                         return;
                     }
+
+                    ChangeStatusBar("Clearing Cache");
+                    myLog.Add("Clearing Cache");
                     FileController.ClearFolder(@"\\" + connectionPara.TAG + @"\c$\Users\" + connectionPara.country + connectionPara.storeNr + connectionPara.storeType + @".AL\AppData\Local\Diebold_Nixdorf\mobile_cache\Local Storage", false, true, ref myLog);
+                    if(myLog.wasError)
+                    {
+                        Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Unable to delete files");
+                        myLog.SaveLog("ErrorLog");
+                    }
+                    ChangeStatusBar("Ready");
                     Telemetry.LogFunctionUsage(Globals.Funkcje.LocalCacheClear);
                 };
                 slave.RunWorkerAsync();
             }
         } //dont support IP MODE
+        private void parkedTXMoveMenuItem_Click(object sender, EventArgs e)
+        {
+            using (BackgroundWorker slave = new BackgroundWorker())
+            {
+                slave.DoWork += (s, args) =>
+                {
+                    if (CustomMsgBox.Show(CustomMsgBox.MsgType.Decision, "Parked Tx Move", "This function will terminate MobilePOS app on selected host. Do you want to proceed?") != DialogResult.OK)
+                    {
+                        return;
+                    }
+
+                    Logger myLog = new Logger(Globals.Funkcje.ParkedTxMove, "", connectionPara.TAG);
+                    Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.ParkedTxMove, "");
+
+                    myLog.Add("Killing MobilePOS");
+                    ChangeStatusBar("Killing MobilePOS");
+                    if (!CtrlFunctions.KillMobilePos(connectionPara, out string errorMsg))
+                    {
+                        Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "MobilePOS app kill failed");
+                        CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "MobilePOS Kill Failed", errorMsg);
+                        myLog.Add(errorMsg);
+                        myLog.SaveLog("ErrorLog");
+                        ChangeStatusBar("Ready");
+                        return;
+                    }
+                    string tixnr = Microsoft.VisualBasic.Interaction.InputBox("Provide ticket number:" + Environment.NewLine + "Window will disappear while scritp it's doing his magic in background. You are free to enjoy other Toolbox functions while waiting for result.");
+                    myLog.Add("Ticket nr: " + tixnr);
+                    if (tixnr == "")
+                    {
+                        Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Wrong ticket number");
+                        CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Wrong ticket number", "Please provide valid ticket number");
+                        return;
+                    }
+                    string outputFolderName = @"\\" + connectionPara.TAG + @"\d$\WNI\4GSS\Parked - " + tixnr + "(" + connectionPara.TAG + ") " + Logger.Datownik();
+                    if (!FileController.MakeFolder(outputFolderName, ref myLog))
+                    {
+                        myLog.SaveLog("ErrorLog");
+                        ChangeStatusBar("Ready");
+                        return;
+                    }
+                    myLog.Add("Moving Files");
+                    foreach (string file in System.IO.Directory.GetFiles(@"\\" + connectionPara.TAG + @"\d$\TPDotnet\Pos\Transactions\Parked"))
+                    {
+                        try
+                        {
+                            System.IO.File.Move(file, outputFolderName + @"\" + System.IO.Path.GetFileName(file));
+                        }
+                        catch (Exception exp)
+                        {
+                            myLog.Add(exp.Message);
+                            myLog.wasError = true;
+                            Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, exp.Message);
+                            CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Move File Error", "ToolBox was unable to move " + file + Environment.NewLine + exp.Message);
+                        }
+                    }
+                    if (myLog.wasError)
+                    {
+                        myLog.SaveLog("ErrorLog");
+                    }
+                    ChangeStatusBar("Ready");
+                    Telemetry.LogFunctionUsage(Globals.Funkcje.ParkedTxMove);
+                };
+                slave.RunWorkerAsync();
+            }
+        }
         private void TSEWebserviceRestartMenuItem_Click(object sender, EventArgs e)
         {
             Telemetry.LogFunctionUsage(Globals.Funkcje.TSEWebserviceRestart);
@@ -595,17 +684,19 @@ namespace TP_MasterTool
             {
                 slave.DoWork += (s, args) =>
                 {
-                    ChangeStatusBar("Killing MobilePos App");
-                    myLog.Add("Killing MobilePos");
+                    ChangeStatusBar("Killing MobilePOS");
+                    myLog.Add("Killing MobilePOS");
+                    Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.SignatorReset, "");
 
-                    if (!CtrlFunctions.KillMobilePos(connectionPara))
+                    if (!CtrlFunctions.KillMobilePos(connectionPara, out string errorMsg))
                     {
-                        myLog.Add("Killing MobilePos App - check its ErrorLog");
+                        myLog.Add(errorMsg);
                         myLog.SaveLog("ErrorLog");
+                        Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "MobilePOS app kill failed");
+                        CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "MobilePOS Kill Failed", errorMsg);
                         return;
                     }
 
-                    Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.SignatorReset, "");
                     ChangeStatusBar("Resetting Signator");
                     myLog.Add("Resetting Signator");
                     string cashBoxID = "0000" + "43" + connectionPara.storeNr + "00000000" + connectionPara.deviceNr;
@@ -829,8 +920,17 @@ namespace TP_MasterTool
             {
                 slave.DoWork += (s, args) =>
                 {
-                    if (!CtrlFunctions.KillMobilePos(connectionPara))
+                    Logger myLog = new Logger(Globals.Funkcje.MobilePosKill, "", connectionPara.TAG);
+                    ChangeStatusBar("Killing MobilePOS");
+                    myLog.Add("Killing MobilePOS");
+                    Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.MobilePosKill, "");
+
+                    if (!CtrlFunctions.KillMobilePos(connectionPara, out string errorMsg))
                     {
+                        myLog.Add(errorMsg);
+                        myLog.SaveLog("ErrorLog");
+                        Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "MobilePOS app kill failed");
+                        CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "MobilePOS Kill Failed", errorMsg);
                         return;
                     }
                     CustomMsgBox.Show(CustomMsgBox.MsgType.Done, "MobilePos is ded", "MobilePos App was successfully assassinated");
@@ -1264,55 +1364,5 @@ namespace TP_MasterTool
             userSettings.notePadLines = notepad.Text;
         } // Save notepad content after change
 
-        private void parkedTXMoveMenuItem_Click(object sender, EventArgs e)
-        {
-            using (BackgroundWorker slave = new BackgroundWorker())
-            {
-                slave.DoWork += (s, args) =>
-                {
-                    if (CustomMsgBox.Show(CustomMsgBox.MsgType.Decision, "Parked Tx Move", "This function will terminate MobilePOS app on selected host. Do you want to proceed?") != DialogResult.OK)
-                    {
-                        return;
-                    }
-                    Logger myLog = new Logger(Globals.Funkcje.ParkedMove, "", connectionPara.TAG);
-                    Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.ParkedMove, "");
-                    myLog.Add("Killing POS App");
-                    if (!CtrlFunctions.KillMobilePos(connectionPara))
-                    {
-                        myLog.Add("-> Failed");
-                        myLog.SaveLog("ErrorLog");
-                        Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.ParkedMove, "MobilePOS app kill failed");
-                        return;
-                    }
-                    string tixnr = Microsoft.VisualBasic.Interaction.InputBox("Provide ticket number:" + Environment.NewLine + "Window will disappear while scritp it's doing his magic in background. You are free to enjoy other Toolbox functions while waiting for result.");
-                    if (tixnr == "")
-                    {
-                        Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Wrong ticket number");
-                        CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Wrong ticket number", "Please provide valid ticket number");
-                        return;
-                    }
-                    string outputFolderName = @"\\" + connectionPara.TAG + @"\d$\WNI\4GSS\Parked - " + tixnr + "(" + connectionPara.TAG + ") " + Logger.Datownik();
-                    if (!FileController.MakeFolder(outputFolderName, ref myLog))
-                    {
-                        return;
-                    }
-                    foreach (string file in System.IO.Directory.GetFiles(@"\\" + connectionPara.TAG + @"\d$\TPDotnet\Pos\Transactions\Parked"))
-                    {
-                        try
-                        {
-                            System.IO.File.Move(file, outputFolderName + @"\" + System.IO.Path.GetFileName(file));
-                        }
-                        catch (Exception exp)
-                        {
-                            Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.ParkedMove, exp.Message);
-                            CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Move File Error", "ToolBox was unable to move " + file + Environment.NewLine + exp.Message);
-                        }
-                    }
-                };
-                slave.RunWorkerAsync();
-            }
-
-
-        }
     }
 }

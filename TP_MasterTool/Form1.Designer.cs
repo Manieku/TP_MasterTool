@@ -125,6 +125,7 @@
             this.fixesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ColonFixMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tillLocalCasheClearMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.parkedTXMoveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator12 = new System.Windows.Forms.ToolStripSeparator();
             this.TSEWebserviceRestartMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator13 = new System.Windows.Forms.ToolStripSeparator();
@@ -180,7 +181,6 @@
             this.importNote = new System.Windows.Forms.Button();
             this.FiveMinTimer = new System.Windows.Forms.Timer(this.components);
             this.HourTimer = new System.Windows.Forms.Timer(this.components);
-            this.parkedTXMoveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.Basic_Info.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.StatusBar.SuspendLayout();
@@ -358,8 +358,8 @@
             this.diagnosticsToolStripMenuItem,
             this.fixesToolStripMenuItem,
             this.toolsToolStripMenuItem,
-            this.ADVMenuItem,
             this.preferencesToolStripMenuItem,
+            this.ADVMenuItem,
             this.aboutToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
@@ -1008,6 +1008,13 @@
             this.tillLocalCasheClearMenuItem.Text = "Till Local Cashe Clear";
             this.tillLocalCasheClearMenuItem.Click += new System.EventHandler(this.tillLocalCacheClearMenuItem_Click);
             // 
+            // parkedTXMoveMenuItem
+            // 
+            this.parkedTXMoveMenuItem.Name = "parkedTXMoveMenuItem";
+            this.parkedTXMoveMenuItem.Size = new System.Drawing.Size(255, 26);
+            this.parkedTXMoveMenuItem.Text = "Parked TX Move";
+            this.parkedTXMoveMenuItem.Click += new System.EventHandler(this.parkedTXMoveMenuItem_Click);
+            // 
             // toolStripSeparator12
             // 
             this.toolStripSeparator12.Name = "toolStripSeparator12";
@@ -1181,7 +1188,7 @@
             this.modernLayoutMenuItem,
             this.oldLayoutMenuItem});
             this.layoutToolStripMenuItem.Name = "layoutToolStripMenuItem";
-            this.layoutToolStripMenuItem.Size = new System.Drawing.Size(151, 26);
+            this.layoutToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.layoutToolStripMenuItem.Text = "Layout";
             // 
             // modernLayoutMenuItem
@@ -1205,14 +1212,14 @@
             // toolStripSeparator9
             // 
             this.toolStripSeparator9.Name = "toolStripSeparator9";
-            this.toolStripSeparator9.Size = new System.Drawing.Size(148, 6);
+            this.toolStripSeparator9.Size = new System.Drawing.Size(221, 6);
             // 
             // showNotepadMenuItem
             // 
             this.showNotepadMenuItem.Checked = true;
             this.showNotepadMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.showNotepadMenuItem.Name = "showNotepadMenuItem";
-            this.showNotepadMenuItem.Size = new System.Drawing.Size(151, 26);
+            this.showNotepadMenuItem.Size = new System.Drawing.Size(224, 26);
             this.showNotepadMenuItem.Text = "Notepad";
             this.showNotepadMenuItem.Click += new System.EventHandler(this.ShowNotepadMenuItem_Click);
             // 
@@ -1507,13 +1514,6 @@
             this.HourTimer.Enabled = true;
             this.HourTimer.Interval = 3600000;
             this.HourTimer.Tick += new System.EventHandler(this.HourTimer_Tick);
-            // 
-            // parkedTXMoveMenuItem
-            // 
-            this.parkedTXMoveMenuItem.Name = "parkedTXMoveMenuItem";
-            this.parkedTXMoveMenuItem.Size = new System.Drawing.Size(255, 26);
-            this.parkedTXMoveMenuItem.Text = "Parked TX Move";
-            this.parkedTXMoveMenuItem.Click += new System.EventHandler(this.parkedTXMoveMenuItem_Click);
             // 
             // Main
             // 
