@@ -95,6 +95,7 @@
             this.s4FiscalSecureMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tSELogsSecureMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.JPOSRFIDLogsSecureMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.pDCUDataErrorSecureMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.diagnosticsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.quickPingMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -123,6 +124,7 @@
             this.showLastSignOffFromYesterdayMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fixesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ColonFixMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tillLocalCasheClearMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator12 = new System.Windows.Forms.ToolStripSeparator();
             this.TSEWebserviceRestartMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator13 = new System.Windows.Forms.ToolStripSeparator();
@@ -178,6 +180,7 @@
             this.importNote = new System.Windows.Forms.Button();
             this.FiveMinTimer = new System.Windows.Forms.Timer(this.components);
             this.HourTimer = new System.Windows.Forms.Timer(this.components);
+            this.parkedTXMoveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.Basic_Info.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.StatusBar.SuspendLayout();
@@ -636,7 +639,8 @@
             this.toolStripSeparator19,
             this.s4FiscalSecureMenuItem,
             this.tSELogsSecureMenuItem,
-            this.JPOSRFIDLogsSecureMenuItem});
+            this.JPOSRFIDLogsSecureMenuItem,
+            this.pDCUDataErrorSecureMenuItem});
             this.LogsMenuItem.Name = "LogsMenuItem";
             this.LogsMenuItem.Overflow = System.Windows.Forms.ToolStripItemOverflow.AsNeeded;
             this.LogsMenuItem.Size = new System.Drawing.Size(54, 24);
@@ -648,7 +652,7 @@
             this.WinSysLogsMenuItem,
             this.WinAppLogsMenuItem});
             this.WindowsLogsMenuItem.Name = "WindowsLogsMenuItem";
-            this.WindowsLogsMenuItem.Size = new System.Drawing.Size(243, 26);
+            this.WindowsLogsMenuItem.Size = new System.Drawing.Size(250, 26);
             this.WindowsLogsMenuItem.Text = "Windows";
             // 
             // WinSysLogsMenuItem
@@ -668,7 +672,7 @@
             // minidumpFolderMenuItem
             // 
             this.minidumpFolderMenuItem.Name = "minidumpFolderMenuItem";
-            this.minidumpFolderMenuItem.Size = new System.Drawing.Size(243, 26);
+            this.minidumpFolderMenuItem.Size = new System.Drawing.Size(250, 26);
             this.minidumpFolderMenuItem.Tag = "c$\\Windows\\Minidump";
             this.minidumpFolderMenuItem.Text = "Minidump Folder";
             this.minidumpFolderMenuItem.Click += new System.EventHandler(this.DriveMenuItem_Click);
@@ -676,12 +680,12 @@
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(240, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(247, 6);
             // 
             // symanteckBackupLogsMenuItem
             // 
             this.symanteckBackupLogsMenuItem.Name = "symanteckBackupLogsMenuItem";
-            this.symanteckBackupLogsMenuItem.Size = new System.Drawing.Size(243, 26);
+            this.symanteckBackupLogsMenuItem.Size = new System.Drawing.Size(250, 26);
             this.symanteckBackupLogsMenuItem.Tag = "c$\\ProgramData\\Veritas\\VERITAS SYSTEM RECOVERY\\LOGS";
             this.symanteckBackupLogsMenuItem.Text = "Symantec Backup Logs";
             this.symanteckBackupLogsMenuItem.Click += new System.EventHandler(this.DriveMenuItem_Click);
@@ -689,12 +693,12 @@
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(240, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(247, 6);
             // 
             // InstallationLogsMenuItem
             // 
             this.InstallationLogsMenuItem.Name = "InstallationLogsMenuItem";
-            this.InstallationLogsMenuItem.Size = new System.Drawing.Size(243, 26);
+            this.InstallationLogsMenuItem.Size = new System.Drawing.Size(250, 26);
             this.InstallationLogsMenuItem.Tag = "d$\\OSMASTER\\$BmNewPC.dir\\log";
             this.InstallationLogsMenuItem.Text = "Installation Logs";
             this.InstallationLogsMenuItem.Click += new System.EventHandler(this.DriveMenuItem_Click);
@@ -702,7 +706,7 @@
             // TFTPDLogsMenuItem
             // 
             this.TFTPDLogsMenuItem.Name = "TFTPDLogsMenuItem";
-            this.TFTPDLogsMenuItem.Size = new System.Drawing.Size(243, 26);
+            this.TFTPDLogsMenuItem.Size = new System.Drawing.Size(250, 26);
             this.TFTPDLogsMenuItem.Tag = "c$\\TFTPBOOT";
             this.TFTPDLogsMenuItem.Text = "TFTPD Logs";
             this.TFTPDLogsMenuItem.Click += new System.EventHandler(this.DriveMenuItem_Click);
@@ -710,7 +714,7 @@
             // oEMInstalLogsMenuItem
             // 
             this.oEMInstalLogsMenuItem.Name = "oEMInstalLogsMenuItem";
-            this.oEMInstalLogsMenuItem.Size = new System.Drawing.Size(243, 26);
+            this.oEMInstalLogsMenuItem.Size = new System.Drawing.Size(250, 26);
             this.oEMInstalLogsMenuItem.Tag = "c$\\oeminst\\ALL_LOGS";
             this.oEMInstalLogsMenuItem.Text = "OEMInst Logs";
             this.oEMInstalLogsMenuItem.Click += new System.EventHandler(this.DriveMenuItem_Click);
@@ -721,7 +725,7 @@
             this.TPLogOpenFolderMenuItem,
             this.secureLogsMenuItem});
             this.TPNetLogsMenuItem.Name = "TPNetLogsMenuItem";
-            this.TPNetLogsMenuItem.Size = new System.Drawing.Size(243, 26);
+            this.TPNetLogsMenuItem.Size = new System.Drawing.Size(250, 26);
             this.TPNetLogsMenuItem.Text = "TP.Net Logs";
             // 
             // TPLogOpenFolderMenuItem
@@ -742,28 +746,35 @@
             // toolStripSeparator19
             // 
             this.toolStripSeparator19.Name = "toolStripSeparator19";
-            this.toolStripSeparator19.Size = new System.Drawing.Size(240, 6);
+            this.toolStripSeparator19.Size = new System.Drawing.Size(247, 6);
             // 
             // s4FiscalSecureMenuItem
             // 
             this.s4FiscalSecureMenuItem.Name = "s4FiscalSecureMenuItem";
-            this.s4FiscalSecureMenuItem.Size = new System.Drawing.Size(243, 26);
+            this.s4FiscalSecureMenuItem.Size = new System.Drawing.Size(250, 26);
             this.s4FiscalSecureMenuItem.Text = "S4Fiscal Secure";
             this.s4FiscalSecureMenuItem.Click += new System.EventHandler(this.S4FiscalSecureMenuItem_Click);
             // 
             // tSELogsSecureMenuItem
             // 
             this.tSELogsSecureMenuItem.Name = "tSELogsSecureMenuItem";
-            this.tSELogsSecureMenuItem.Size = new System.Drawing.Size(243, 26);
+            this.tSELogsSecureMenuItem.Size = new System.Drawing.Size(250, 26);
             this.tSELogsSecureMenuItem.Text = "TSE Logs Secure";
             this.tSELogsSecureMenuItem.Click += new System.EventHandler(this.TSELogsSecureMenuItem_Click);
             // 
             // JPOSRFIDLogsSecureMenuItem
             // 
             this.JPOSRFIDLogsSecureMenuItem.Name = "JPOSRFIDLogsSecureMenuItem";
-            this.JPOSRFIDLogsSecureMenuItem.Size = new System.Drawing.Size(243, 26);
+            this.JPOSRFIDLogsSecureMenuItem.Size = new System.Drawing.Size(250, 26);
             this.JPOSRFIDLogsSecureMenuItem.Text = "JPOSRFID Logs Secure";
             this.JPOSRFIDLogsSecureMenuItem.Click += new System.EventHandler(this.JPOSRFIDLogsSecureMenuItem_Click);
+            // 
+            // pDCUDataErrorSecureMenuItem
+            // 
+            this.pDCUDataErrorSecureMenuItem.Name = "pDCUDataErrorSecureMenuItem";
+            this.pDCUDataErrorSecureMenuItem.Size = new System.Drawing.Size(250, 26);
+            this.pDCUDataErrorSecureMenuItem.Text = "PDCU Data Error Secure";
+            this.pDCUDataErrorSecureMenuItem.Click += new System.EventHandler(this.pDCUDataErrorSecureMenuItem_Click);
             // 
             // diagnosticsToolStripMenuItem
             // 
@@ -961,6 +972,8 @@
             // 
             this.fixesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ColonFixMenuItem,
+            this.tillLocalCasheClearMenuItem,
+            this.parkedTXMoveMenuItem,
             this.toolStripSeparator12,
             this.TSEWebserviceRestartMenuItem,
             this.toolStripSeparator13,
@@ -987,6 +1000,13 @@
             this.ColonFixMenuItem.Text = "POS Colon : Fix";
             this.ColonFixMenuItem.ToolTipText = resources.GetString("ColonFixMenuItem.ToolTipText");
             this.ColonFixMenuItem.Click += new System.EventHandler(this.ColonFixMenuItem_Click);
+            // 
+            // tillLocalCasheClearMenuItem
+            // 
+            this.tillLocalCasheClearMenuItem.Name = "tillLocalCasheClearMenuItem";
+            this.tillLocalCasheClearMenuItem.Size = new System.Drawing.Size(255, 26);
+            this.tillLocalCasheClearMenuItem.Text = "Till Local Cashe Clear";
+            this.tillLocalCasheClearMenuItem.Click += new System.EventHandler(this.tillLocalCacheClearMenuItem_Click);
             // 
             // toolStripSeparator12
             // 
@@ -1488,6 +1508,13 @@
             this.HourTimer.Interval = 3600000;
             this.HourTimer.Tick += new System.EventHandler(this.HourTimer_Tick);
             // 
+            // parkedTXMoveMenuItem
+            // 
+            this.parkedTXMoveMenuItem.Name = "parkedTXMoveMenuItem";
+            this.parkedTXMoveMenuItem.Size = new System.Drawing.Size(255, 26);
+            this.parkedTXMoveMenuItem.Text = "Parked TX Move";
+            this.parkedTXMoveMenuItem.Click += new System.EventHandler(this.parkedTXMoveMenuItem_Click);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -1675,6 +1702,9 @@
         private System.Windows.Forms.ToolStripMenuItem lastTxRollOverMenuItem;
         private System.Windows.Forms.ToolStripMenuItem missingTxMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showLastSignOffFromYesterdayMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem pDCUDataErrorSecureMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem tillLocalCasheClearMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem parkedTXMoveMenuItem;
     }
 }
 

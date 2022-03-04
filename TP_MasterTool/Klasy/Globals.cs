@@ -20,6 +20,8 @@ namespace TP_MasterTool
             RemoteRestart,
             Tracert,
             DNSRestore,
+            LocalCacheClear,
+            ParkedMove,
             OpenFolder,
             OpenWebAPC,
             OpenServerRT,

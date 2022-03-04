@@ -2,10 +2,7 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
-using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using TP_MasterTool.Forms;
@@ -42,16 +39,19 @@ namespace TP_MasterTool
         }
         private void Test_Button_Click(object sender, EventArgs e)
         {
-            CtrlFunctions.EncryptFile(@".\mojepasy.txt", "cycuszki", Globals.configPath + "credentials.crypt");
-            MessageBox.Show("krypto krypto superman lezy");
+            string output = "";
+            foreach(string file in System.IO.Directory.GetFiles(@"\\" + connectionPara.TAG + @"\d$\TPDotnet\Server\HostData\Download\Data", "*", System.IO.SearchOption.AllDirectories))
+            {
+                output += file + Environment.NewLine;
+            }
 
-            //CtrlFunctions.DecryptToString(@".\sekrety.crypt", "cycuszki", out string msg);
-            //MessageBox.Show(msg);
+            MessageBox.Show(output);
 
-            //string[] lines = plaintext.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
-            //MessageBox.Show(lines[0] + Environment.NewLine + "------------------------" + Environment.NewLine + lines[1]);
-            
-            
+
+
+            //CtrlFunctions.EncryptFile(@".\mojepasy.txt", "cycuszki", Globals.configPath + "credentials.crypt");
+            //MessageBox.Show("krypto krypto superman lezy");
+
             //MassEmergancy massEmergancy = new MassEmergancy();
             //massEmergancy.Show();
             //Logger.GeneratePortalReport(@".\EoD_Abort_Test_Report.txt", @".\EoD_Abort_Test_AddInfo.txt", @".\logo.txt", @".\output.txt");
@@ -201,7 +201,7 @@ namespace TP_MasterTool
         //------------------TP Raports--------------------
         private void LocalStorageTillMenuItem_Click(object sender, EventArgs e)
         {
-            CtrlFunctions.OpenFolder(connectionPara.TAG, @"c$\Users\" + connectionPara.country + connectionPara.storeNr + @"P.AL\AppData\Local\Diebold_Nixdorf\mobile_cache\Local Storage");
+            CtrlFunctions.OpenFolder(connectionPara.TAG, @"c$\Users\" + connectionPara.country + connectionPara.storeNr + connectionPara.storeType + @".AL\AppData\Local\Diebold_Nixdorf\mobile_cache\Local Storage");
         } //dont support IP MODE
 
         /**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**/
@@ -246,6 +246,15 @@ namespace TP_MasterTool
         {
             MassJPOSLogs massJPOSLogs = new MassJPOSLogs();
             massJPOSLogs.Show();
+        }
+        private void pDCUDataErrorSecureMenuItem_Click(object sender, EventArgs e)
+        {
+            if(System.IO.Directory.GetFiles(@"\\" + connectionPara.TAG + @"\d$\StoreApps\CarsData\Cars\pdcudata\error").Length == 0)
+            {
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "PDCU Data Secure Error", "No error files found in folder");
+                return;
+            }
+            FileController.ZipAndStealFolder("PdcuError", @"\\" + connectionPara.TAG + @"\d$\StoreApps\CarsData\Cars\pdcudata\error", @"D:\StoreApps\CarsData\Cars\pdcudata\error", connectionPara);
         }
 
         /**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**/
@@ -539,6 +548,28 @@ namespace TP_MasterTool
             }
             catch { }
             ChangeStatusBar("Ready");
+        } //dont support IP MODE
+        private void tillLocalCacheClearMenuItem_Click(object sender, EventArgs e)
+        {
+            using (BackgroundWorker slave = new BackgroundWorker())
+            {
+                slave.DoWork += (s, args) =>
+                {
+                    if (CustomMsgBox.Show(CustomMsgBox.MsgType.Decision, "Local Cashe Clear", "This function will terminate MobilePOS app on selected host. Do you want to proceed?") != DialogResult.OK)
+                    {
+                        return;
+                    }
+                    Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.LocalCacheClear, "");
+                    if (!CtrlFunctions.KillMobilePos(connectionPara))
+                    {
+                        Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.LocalCacheClear, "MobilePOS app kill failed");
+                        return;
+                    }
+                    FileController.ClearFolder(@"\\" + connectionPara.TAG + @"\c$\Users\" + connectionPara.country + connectionPara.storeNr + connectionPara.storeType + @".AL\AppData\Local\Diebold_Nixdorf\mobile_cache\Local Storage", false, true, ref myLog);
+                    Telemetry.LogFunctionUsage(Globals.Funkcje.LocalCacheClear);
+                };
+                slave.RunWorkerAsync();
+            }
         } //dont support IP MODE
         private void TSEWebserviceRestartMenuItem_Click(object sender, EventArgs e)
         {
@@ -835,7 +866,6 @@ namespace TP_MasterTool
         /**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**/
 
         //--------------------Preferences-----------------------------
-
         private void LayoutChangeMenuItem_Click(object sender, EventArgs e)
         {
             ToolStripMenuItem optionButton = sender as ToolStripMenuItem;
@@ -1083,10 +1113,6 @@ namespace TP_MasterTool
             if (connectionPara.IPMode)
             {
                 localStorageTillMenuItem.Enabled = false;
-                //secureLogsMenuItem.Enabled = false;
-                //s4FiscalSecureMenuItem.Enabled = false;
-                //tSELogsSecureMenuItem.Enabled = false;
-                //JPOSRFIDLogsSecureMenuItem.Enabled = false;
                 backstoreCsvExportMenuItem.Enabled = false;
                 scanEndpointsMenuItem.Enabled = false;
                 backupCheckerMenuItem.Enabled = false;
@@ -1238,5 +1264,55 @@ namespace TP_MasterTool
             userSettings.notePadLines = notepad.Text;
         } // Save notepad content after change
 
+        private void parkedTXMoveMenuItem_Click(object sender, EventArgs e)
+        {
+            using (BackgroundWorker slave = new BackgroundWorker())
+            {
+                slave.DoWork += (s, args) =>
+                {
+                    if (CustomMsgBox.Show(CustomMsgBox.MsgType.Decision, "Parked Tx Move", "This function will terminate MobilePOS app on selected host. Do you want to proceed?") != DialogResult.OK)
+                    {
+                        return;
+                    }
+                    Logger myLog = new Logger(Globals.Funkcje.ParkedMove, "", connectionPara.TAG);
+                    Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.ParkedMove, "");
+                    myLog.Add("Killing POS App");
+                    if (!CtrlFunctions.KillMobilePos(connectionPara))
+                    {
+                        myLog.Add("-> Failed");
+                        myLog.SaveLog("ErrorLog");
+                        Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.ParkedMove, "MobilePOS app kill failed");
+                        return;
+                    }
+                    string tixnr = Microsoft.VisualBasic.Interaction.InputBox("Provide ticket number:" + Environment.NewLine + "Window will disappear while scritp it's doing his magic in background. You are free to enjoy other Toolbox functions while waiting for result.");
+                    if (tixnr == "")
+                    {
+                        Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Wrong ticket number");
+                        CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Wrong ticket number", "Please provide valid ticket number");
+                        return;
+                    }
+                    string outputFolderName = @"\\" + connectionPara.TAG + @"\d$\WNI\4GSS\Parked - " + tixnr + "(" + connectionPara.TAG + ") " + Logger.Datownik();
+                    if (!FileController.MakeFolder(outputFolderName, ref myLog))
+                    {
+                        return;
+                    }
+                    foreach (string file in System.IO.Directory.GetFiles(@"\\" + connectionPara.TAG + @"\d$\TPDotnet\Pos\Transactions\Parked"))
+                    {
+                        try
+                        {
+                            System.IO.File.Move(file, outputFolderName + @"\" + System.IO.Path.GetFileName(file));
+                        }
+                        catch (Exception exp)
+                        {
+                            Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.ParkedMove, exp.Message);
+                            CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Move File Error", "ToolBox was unable to move " + file + Environment.NewLine + exp.Message);
+                        }
+                    }
+                };
+                slave.RunWorkerAsync();
+            }
+
+
+        }
     }
 }
