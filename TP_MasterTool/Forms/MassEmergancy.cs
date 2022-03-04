@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using System.Xml.Linq;
 using TP_MasterTool.Forms.CustomMessageBox;
 using TP_MasterTool.Klasy;
 
@@ -136,7 +137,8 @@ namespace TP_MasterTool.Forms
             //BackupJobsReset(rownr, connectionPara);
             //DeleteOldBackupFiles(rownr, connectionPara);
             //GetMac(rownr, connectionPara);
-            Check_F_Drive(rownr, connectionPara);
+            //Check_F_Drive(rownr, connectionPara);
+            DNFiskalRename(rownr, connectionPara);
         }
 
         
@@ -298,7 +300,16 @@ namespace TP_MasterTool.Forms
             }
 
         }
-
+        private void DNFiskalRename(int rownr, ConnectionPara connectionPara)
+        {
+            string[] xmlFiles = Directory.GetFiles(@"\\" + connectionPara.TAG + @"\c$\DNFiscalAdapter\work", "*AB120001*.xml");
+            foreach(string xmlFile in xmlFiles)
+            {
+                string zawartosc = System.IO.File.ReadAllText(xmlFile);
+                System.IO.File.WriteAllText(xmlFile, zawartosc.Replace("AB120001", "08070003"));
+                System.IO.File.Move(xmlFile, xmlFile.Replace("AB120001", "08070003"));
+            }
+        }
 
 
 

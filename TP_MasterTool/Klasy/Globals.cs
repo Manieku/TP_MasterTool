@@ -68,6 +68,7 @@ namespace TP_MasterTool
             Stocktaking,
             DeleteLock,
             GetSqlInfo,
+            DecryptToString,
             Blank,
             Error
         }
@@ -75,12 +76,15 @@ namespace TP_MasterTool
         public static Color errorColor = Color.FromArgb(255, 150, 150);
         public static Color successColor = Color.LightGreen;
 
-        public static string PRODuserName = @"candadnpos.biz\dn.adm";
-        public static string PRODpassword = "O2trava2018+";
-        public static string TESTuserName = @"candadnpos.biz\Store.ADM";
-        public static string TESTpassword = "St0re2018!";
+        public static string PRODuserName = ""; 
+        public static string PRODpassword = ""; 
+        public static string TESTuserName = ""; 
+        public static string TESTpassword = ""; 
+        public static string SQLuserName = "";
+        public static string SQLpassword = "";
 
-        public static List<string> advUsers = new List<string> { "mariusz.rzemyk", "mariusz.rzemyk.adm", "a.parzy.ext.adm", "petre.gogarowski.adm" };
+
+        public static List<string> advUsers = new List<string> { "mariusz.rzemyk", "mariusz.rzemyk.adm", "a.parzy.ext.adm", "petre.gogarowski.adm", "s.krochmal.adm" };
         public static List<string> mineAccounts = new List<string> { "mariusz.rzemyk", "u103583", "mariusz.rzemyk.adm" };
 
         //--------- PATHS ------------

@@ -2,7 +2,10 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using TP_MasterTool.Forms;
@@ -39,6 +42,16 @@ namespace TP_MasterTool
         }
         private void Test_Button_Click(object sender, EventArgs e)
         {
+            CtrlFunctions.EncryptFile(@".\mojepasy.txt", "cycuszki", Globals.configPath + "credentials.crypt");
+            MessageBox.Show("krypto krypto superman lezy");
+
+            //CtrlFunctions.DecryptToString(@".\sekrety.crypt", "cycuszki", out string msg);
+            //MessageBox.Show(msg);
+
+            //string[] lines = plaintext.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+            //MessageBox.Show(lines[0] + Environment.NewLine + "------------------------" + Environment.NewLine + lines[1]);
+            
+            
             //MassEmergancy massEmergancy = new MassEmergancy();
             //massEmergancy.Show();
             //Logger.GeneratePortalReport(@".\EoD_Abort_Test_Report.txt", @".\EoD_Abort_Test_AddInfo.txt", @".\logo.txt", @".\output.txt");

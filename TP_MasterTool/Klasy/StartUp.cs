@@ -6,7 +6,7 @@ namespace TP_MasterTool.Klasy
 {
     public static class StartUp
     {
-        public static void StartLocationCheck(ref Logger myLog)
+        private static void StartLocationCheck(ref Logger myLog)
         {
             myLog.Add("StartLocationCheck");
             if (Environment.CurrentDirectory.Equals(@"D:\TP_MasterTool"))
@@ -28,23 +28,26 @@ namespace TP_MasterTool.Klasy
                 return;
             }
         }
-        public static void PsexecCheck(ref Logger myLog)
-        {
-            myLog.Add("PsexecCheck");
-            if (!System.IO.File.Exists(@".\psexec.exe"))
-            {
-                myLog.Add("Psexec not found");
-                if (!FileController.CopyFile(Globals.toolsPath + "PsExec.exe", @".\PsExec.exe", true, ref myLog))
-                {
-                    myLog.wasError = true;
-                    myLog.Add("psexec.exe is missing and couldn't be copy into tool folder");
-                    CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "PsExec.exe not found", "PsExec.exe could not be found in main folder with aplication. Please chceck if files are present otherwise most of funcionality will be unavaible");
-                }
-            }
-        }
-        public static void FolderTreeCheck(ref Logger myLog)
+        private static void FolderTreeCheck(ref Logger myLog)
         {
             myLog.Add("FolderTreeCheck");
+
+            if (!System.IO.Directory.Exists(Globals.configPath))
+            {
+                myLog.Add("ToolBox cannot access Configuration folder on the server");
+                myLog.SaveLog("CriticalError");
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "File access error", @"ToolBox cannot access Configuration folder on the server. Please chceck if D:\ drive is available and notify Dev Team, because ToolBox can't function without access to those files");
+                Environment.Exit(0);
+            }
+
+            if (!System.IO.Directory.Exists(Globals.toolsPath))
+            {
+                myLog.Add("ToolBox cannot access Tools folder on the server");
+                myLog.SaveLog("CriticalError");
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "File access error", @"ToolBox cannot access Tools folder on the server. Please chceck if D:\ drive is available and notify Dev Team, because ToolBox can't function without access to those files");
+                Environment.Exit(0);
+            }
+
             List<bool> checkList = new List<bool>
             {
                 FileController.MakeFolder(@".\Logs\SMART", ref myLog),
@@ -60,13 +63,32 @@ namespace TP_MasterTool.Klasy
             {
                 myLog.wasError = true;
             }
+        }
+        private static void FilesCheck(ref Logger myLog)
+        {
+            myLog.Add("FilesChceck");
+            if (!System.IO.File.Exists(@".\psexec.exe"))
+            {
+                myLog.Add("Psexec not found");
+                if (!FileController.CopyFile(Globals.toolsPath + "PsExec.exe", @".\PsExec.exe", true, ref myLog))
+                {
+                    myLog.wasError = true;
+                    myLog.Add("psexec.exe is missing and couldn't be copy into tool folder");
+                    CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "PsExec.exe not found", "PsExec.exe could not be found in main folder with aplication. Please chceck if files are present otherwise most of funcionality will be unavaible");
+                }
+            }
+
+            if (!System.IO.File.Exists(Globals.telemetryLogPath + @"FunctionStats.xml"))
+            {
+                Telemetry.CreateFunctionUsageXml(ref myLog);
+            }
 
             if (!System.IO.File.Exists(Globals.versionLogPath + "VersionLog.xml"))
             {
                 VersionControl.CreateVersionLogXML();
             }
         }
-        public static void UpdateProcedure(ref Logger myLog)
+        private static void UpdateProcedure(ref Logger myLog)
         {
             if (VersionControl.IsUpdateAvailable(ref myLog))
             {
@@ -83,7 +105,7 @@ namespace TP_MasterTool.Klasy
             }
             VersionControl.LogVersion();
         }
-        public static void UIsetup(ref Logger myLog)
+        private static void UIsetup(ref Logger myLog)
         {
             myLog.Add("UIsetup");
             if (!Globals.mineAccounts.Contains(Logger.EnvironmentVariables.activeUser))
@@ -97,15 +119,7 @@ namespace TP_MasterTool.Klasy
             Main.interfejs.menuStrip1.CanOverflow = true;
             Main.interfejs.currentVersionMenuItem.Text = "Current Version: v" + Logger.EnvironmentVariables.programVersion;
         }
-        public static void TelemetryFilesChceck(ref Logger myLog)
-        {
-            myLog.Add("TelemetryFilesChceck");
-            if (!System.IO.File.Exists(Globals.telemetryLogPath + @"FunctionStats.xml"))
-            {
-                Telemetry.CreateFunctionUsageXml(ref myLog);
-            }
-        }
-        public static void UserSettingsInit(ref Logger myLog)
+        private static void UserSettingsInit(ref Logger myLog)
         {
             myLog.Add("UserSettingsInit");
             if (!System.IO.File.Exists(Globals.userSettingsXmlPath))
@@ -121,7 +135,7 @@ namespace TP_MasterTool.Klasy
             myLog.Add("Applying settings");
             Main.interfejs.userSettings.ApplySettings();
         }
-        public static void Cleaner(ref Logger myLog)
+        private static void Cleaner(ref Logger myLog)
         {
             myLog.Add("Cleaner");
             try
@@ -135,6 +149,24 @@ namespace TP_MasterTool.Klasy
                 myLog.Add(exp.ToString());
             }
         }
+        private static void ToolBoxSetup(ref Logger myLog)
+        {
+            myLog.Add("Credentials initialization");
+            if(!CtrlFunctions.DecryptToString(Globals.configPath + "credentials.crypt", "cycuszki", out string tempCredentials))
+            {
+                myLog.Add("Unable to decrypt credentials from encrypted file" + Environment.NewLine + tempCredentials);
+                myLog.SaveLog("CriticalError");
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "ToolBox setup failed", tempCredentials + Environment.NewLine + "Please contact Dev Team, because ToolBox can't function without access to that file");
+                Environment.Exit(0);
+            }
+            string[] credentials = tempCredentials.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+            Globals.PRODuserName = credentials[0];
+            Globals.PRODpassword = credentials[1];
+            Globals.TESTuserName = credentials[2];
+            Globals.TESTpassword = credentials[3];
+            Globals.SQLuserName = credentials[4];
+            Globals.SQLpassword = credentials[5];
+        }
 
         //-------------------------------------------//
         public static void StartUpProcedure()
@@ -143,12 +175,12 @@ namespace TP_MasterTool.Klasy
             StartLocationCheck(ref myLog);
             MaintenanceModeCheck(ref myLog);
             UpdateProcedure(ref myLog);
-            PsexecCheck(ref myLog);
             FolderTreeCheck(ref myLog);
-            TelemetryFilesChceck(ref myLog);
+            FilesCheck(ref myLog);
             Cleaner(ref myLog); //deletes old useless files after previous version 
             UIsetup(ref myLog);
             UserSettingsInit(ref myLog);
+            ToolBoxSetup(ref myLog);
             Main.interfejs.DisableUI();
             if (myLog.wasError)
             {

@@ -3,9 +3,12 @@ using System.ComponentModel;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using System.Text;
 using System.Windows.Forms;
 using TP_MasterTool.Forms.CustomMessageBox;
 
@@ -261,7 +264,49 @@ namespace TP_MasterTool.Klasy
                 return false;
             }
         }
+        public static bool DecryptToString(string filePath, string decryptKey, out string decryptedString)
+        {
+            byte[] key = new UnicodeEncoding().GetBytes(decryptKey);
+            try
+            {
+                using (FileStream fileReader = new FileStream(filePath, FileMode.Open))
+                {
+                    using (CryptoStream cryptoStream = new CryptoStream(fileReader, new RijndaelManaged().CreateDecryptor(key, key), CryptoStreamMode.Read))
+                    {
+                        using (StreamReader srDecrypt = new StreamReader(cryptoStream))
+                        {
+                            decryptedString = srDecrypt.ReadToEnd();
+                            return true;
+                        }
+                    }
+                }
+            }
+            catch(Exception exp)
+            {
+                Logger.QuickLog(Globals.Funkcje.DecryptToString, "File: " + filePath + Environment.NewLine + "Key: " + decryptKey, "", "CriticalError", exp.ToString());
+                decryptedString = "Unable to decrypt " + Path.GetFileName(filePath) + Environment.NewLine + exp.Message;
+                return false;
+            }
+        }
+        public static void EncryptFile(string inputFilePath, string encryptKey, string outputFilePath)
+        {
+            byte[] key = new UnicodeEncoding().GetBytes(encryptKey);
 
+            using (FileStream fileStreamOutput = new FileStream(outputFilePath, FileMode.Create))
+            {
+                using (CryptoStream cryptoStream = new CryptoStream(fileStreamOutput, new RijndaelManaged().CreateEncryptor(key, key), CryptoStreamMode.Write))
+                {
+                    using (FileStream fileStreamInput = new FileStream(inputFilePath, FileMode.Open))
+                    {
+                        int data;
+                        while ((data = fileStreamInput.ReadByte()) != -1)
+                        {
+                            cryptoStream.WriteByte((byte)data);
+                        }
+                    }
+                }
+            }
+        }
 
         /**//**//**//**//**//**//**//**//**//* FRONT-END FUNCTIONS *//**//**//**//**//**//**//**//**//**//**/
 
@@ -520,7 +565,7 @@ namespace TP_MasterTool.Klasy
         public static bool SqlGetInfo(string tag, string database, string sqlQuery, out string output)
         {
             output = "";
-            string connetionString = @"Data Source=" + tag + @";Initial Catalog=" + database + @";User ID=TPSQLUser;Password=VqOtCrViVFOWWnelF59w";
+            string connetionString = @"Data Source=" + tag + @";Initial Catalog=" + database + @";User ID=" + Globals.SQLuserName + ";Password=" + Globals.SQLpassword;
 
             try
             {
