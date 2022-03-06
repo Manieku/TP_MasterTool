@@ -325,7 +325,7 @@ namespace TP_MasterTool
         }
         private void pDCUDataErrorSecureMenuItem_Click(object sender, EventArgs e)
         {
-            if(System.IO.Directory.GetFiles(@"\\" + connectionPara.TAG + @"\d$\StoreApps\CarsData\Cars\pdcudata\error").Length == 0)
+            if (System.IO.Directory.GetFiles(@"\\" + connectionPara.TAG + @"\d$\StoreApps\CarsData\Cars\pdcudata\error").Length == 0)
             {
                 CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "PDCU Data Secure Error", "No error files found in folder");
                 return;
@@ -660,7 +660,7 @@ namespace TP_MasterTool
                     ChangeStatusBar("Clearing Cache");
                     myLog.Add("Clearing Cache");
                     FileController.ClearFolder(@"\\" + connectionPara.TAG + @"\c$\Users\" + connectionPara.country + connectionPara.storeNr + connectionPara.storeType + @".AL\AppData\Local\Diebold_Nixdorf\mobile_cache\Local Storage", false, true, ref myLog);
-                    if(myLog.wasError)
+                    if (myLog.wasError)
                     {
                         Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Unable to delete files");
                         myLog.SaveLog("ErrorLog");
@@ -888,7 +888,7 @@ namespace TP_MasterTool
                 };
                 slave.RunWorkerAsync();
             }
-        } 
+        }
         private void veritasBackupJobResetMenuItem_Click(object sender, EventArgs e)
         {
             using (BackgroundWorker slave = new BackgroundWorker())
@@ -1214,7 +1214,7 @@ namespace TP_MasterTool
                 {
                     if (submenuItem is ToolStripMenuItem)
                     {
-                        if(wyjatki.Contains((submenuItem as ToolStripMenuItem).Text)) { continue; }
+                        if (wyjatki.Contains((submenuItem as ToolStripMenuItem).Text)) { continue; }
                         (submenuItem as ToolStripMenuItem).Enabled = false;
                     }
                 }
@@ -1223,7 +1223,7 @@ namespace TP_MasterTool
         private void EnableUI()
         {
             SetEnableMenuItems(uniwersalMenuItems, true);
-            if(connectionPara.deviceType == "TPS")
+            if (connectionPara.deviceType == "TPS")
             {
                 SetEnableMenuItems(tpsMenuItems, true);
             }
@@ -1235,17 +1235,17 @@ namespace TP_MasterTool
             {
                 SetEnableMenuItems(stpMenuItems.Concat(tpsMenuItems).ToList(), true);
             }
-            if(connectionPara.IPMode)
+            if (connectionPara.IPMode)
             {
                 SetEnableMenuItems(ipNotSupported, false);
             }
         }
         private void SetEnableMenuItems(List<string> itemList, bool state)
         {
-            foreach(ToolStripMenuItem menu in menuStrip1.Items)
+            foreach (ToolStripMenuItem menu in menuStrip1.Items)
             {
-                if(menu.Text == "Preferences") { break; }
-                foreach(var submenuItem in menu.DropDownItems)
+                if (menu.Text == "Preferences") { break; }
+                foreach (var submenuItem in menu.DropDownItems)
                 {
                     if (submenuItem is ToolStripMenuItem)
                     {
@@ -1316,10 +1316,6 @@ namespace TP_MasterTool
             Telemetry.LogFunctionUsage(Globals.Funkcje.Initialization);
             userSettings.AddNewRecent(connectionPara.TAG);
         } // INITIALIZE BUTTON
-        private void SoT_CheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            interfejs.TopMost = SoT_CheckBox.Checked;
-        } // StayOnTop control
         private void Main_FormClosed(object sender, FormClosedEventArgs e)
         {
             Shutdown.ShutdownProcedure();
@@ -1397,6 +1393,10 @@ namespace TP_MasterTool
         {
             userSettings.notePadLines = notepad.Text;
         } // Save notepad content after change
-
+        private void stayOnTopMenuItem_Click(object sender, EventArgs e)
+        {
+            Main.interfejs.TopMost = !Main.interfejs.TopMost;
+            Main.interfejs.userSettings.stayOnTop = !Main.interfejs.userSettings.stayOnTop;
+        } // StayOnTop MenuItem
     }
 }

@@ -15,6 +15,7 @@ namespace TP_MasterTool.Klasy
         public string skin;
         public bool hideNotePad;
         public string notePadLines;
+        public bool stayOnTop;
         public string[] recentPCs = { "empty", "empty", "empty", "empty", "empty" };
 
         public UserSettings() //default constructor
@@ -22,6 +23,7 @@ namespace TP_MasterTool.Klasy
             windowSize = new Size(959, 377);
             skin = "modern";
             hideNotePad = false;
+            stayOnTop = false;
             notePadLines = "";
         }
         static public UserSettings ReadUserSettingFromXml()
@@ -64,6 +66,11 @@ namespace TP_MasterTool.Klasy
             {
                 Main.interfejs.showNotepadMenuItem.Checked = false;
                 Main.interfejs.HideNotePad();
+            }
+            if(stayOnTop)
+            {
+                Main.interfejs.TopMost = stayOnTop;
+                Main.interfejs.stayOnTopMenuItem.Checked = stayOnTop;
             }
             Main.interfejs.Size = windowSize;
             Main.interfejs.notepad.Text = notePadLines;

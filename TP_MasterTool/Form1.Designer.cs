@@ -40,8 +40,6 @@
             this.textBox_IP = new System.Windows.Forms.TextBox();
             this.tag_label = new System.Windows.Forms.Label();
             this.textBox_TAG = new System.Windows.Forms.TextBox();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.SoT_CheckBox = new System.Windows.Forms.CheckBox();
             this.StatusBar = new System.Windows.Forms.StatusStrip();
             this.StatusBarText = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
@@ -181,8 +179,8 @@
             this.importNote = new System.Windows.Forms.Button();
             this.FiveMinTimer = new System.Windows.Forms.Timer(this.components);
             this.HourTimer = new System.Windows.Forms.Timer(this.components);
+            this.stayOnTopMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.Basic_Info.SuspendLayout();
-            this.groupBox1.SuspendLayout();
             this.StatusBar.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.SubnetStatusGroup.SuspendLayout();
@@ -305,29 +303,6 @@
             this.textBox_TAG.TabIndex = 0;
             this.textBox_TAG.TextChanged += new System.EventHandler(this.TextBox_TAG_TextChanged);
             this.textBox_TAG.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TextBox_TAG_KeyDown);
-            // 
-            // groupBox1
-            // 
-            this.groupBox1.Controls.Add(this.SoT_CheckBox);
-            this.groupBox1.Location = new System.Drawing.Point(409, 2);
-            this.groupBox1.Margin = new System.Windows.Forms.Padding(4);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Padding = new System.Windows.Forms.Padding(4);
-            this.groupBox1.Size = new System.Drawing.Size(71, 60);
-            this.groupBox1.TabIndex = 2;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Stay On Top";
-            // 
-            // SoT_CheckBox
-            // 
-            this.SoT_CheckBox.AutoSize = true;
-            this.SoT_CheckBox.Location = new System.Drawing.Point(43, 23);
-            this.SoT_CheckBox.Margin = new System.Windows.Forms.Padding(4);
-            this.SoT_CheckBox.Name = "SoT_CheckBox";
-            this.SoT_CheckBox.Size = new System.Drawing.Size(18, 17);
-            this.SoT_CheckBox.TabIndex = 0;
-            this.SoT_CheckBox.UseVisualStyleBackColor = true;
-            this.SoT_CheckBox.CheckedChanged += new System.EventHandler(this.SoT_CheckBox_CheckedChanged);
             // 
             // StatusBar
             // 
@@ -1177,7 +1152,8 @@
             this.preferencesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.layoutToolStripMenuItem,
             this.toolStripSeparator9,
-            this.showNotepadMenuItem});
+            this.showNotepadMenuItem,
+            this.stayOnTopMenuItem});
             this.preferencesToolStripMenuItem.Name = "preferencesToolStripMenuItem";
             this.preferencesToolStripMenuItem.Overflow = System.Windows.Forms.ToolStripItemOverflow.AsNeeded;
             this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(99, 24);
@@ -1189,7 +1165,7 @@
             this.modernLayoutMenuItem,
             this.oldLayoutMenuItem});
             this.layoutToolStripMenuItem.Name = "layoutToolStripMenuItem";
-            this.layoutToolStripMenuItem.Size = new System.Drawing.Size(151, 26);
+            this.layoutToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.layoutToolStripMenuItem.Text = "Layout";
             // 
             // modernLayoutMenuItem
@@ -1213,14 +1189,14 @@
             // toolStripSeparator9
             // 
             this.toolStripSeparator9.Name = "toolStripSeparator9";
-            this.toolStripSeparator9.Size = new System.Drawing.Size(148, 6);
+            this.toolStripSeparator9.Size = new System.Drawing.Size(221, 6);
             // 
             // showNotepadMenuItem
             // 
             this.showNotepadMenuItem.Checked = true;
             this.showNotepadMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.showNotepadMenuItem.Name = "showNotepadMenuItem";
-            this.showNotepadMenuItem.Size = new System.Drawing.Size(151, 26);
+            this.showNotepadMenuItem.Size = new System.Drawing.Size(224, 26);
             this.showNotepadMenuItem.Text = "Notepad";
             this.showNotepadMenuItem.Click += new System.EventHandler(this.ShowNotepadMenuItem_Click);
             // 
@@ -1484,7 +1460,6 @@
             // 
             this.networkPanel.Controls.Add(this.SubnetStatusGroup);
             this.networkPanel.Controls.Add(this.Test_Button);
-            this.networkPanel.Controls.Add(this.groupBox1);
             this.networkPanel.Controls.Add(this.Rescan_Button);
             this.networkPanel.Location = new System.Drawing.Point(16, 160);
             this.networkPanel.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
@@ -1516,6 +1491,14 @@
             this.HourTimer.Interval = 3600000;
             this.HourTimer.Tick += new System.EventHandler(this.HourTimer_Tick);
             // 
+            // stayOnTopMenuItem
+            // 
+            this.stayOnTopMenuItem.CheckOnClick = true;
+            this.stayOnTopMenuItem.Name = "stayOnTopMenuItem";
+            this.stayOnTopMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.stayOnTopMenuItem.Text = "Stay On Top";
+            this.stayOnTopMenuItem.Click += new System.EventHandler(this.stayOnTopMenuItem_Click);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -1540,8 +1523,6 @@
             this.ResizeEnd += new System.EventHandler(this.Main_ResizeEnd);
             this.Basic_Info.ResumeLayout(false);
             this.Basic_Info.PerformLayout();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
             this.StatusBar.ResumeLayout(false);
             this.StatusBar.PerformLayout();
             this.menuStrip1.ResumeLayout(false);
@@ -1560,8 +1541,6 @@
         private System.Windows.Forms.TextBox textBox_MAC;
         private System.Windows.Forms.Label ip_label;
         private System.Windows.Forms.Label tag_label;
-        private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.CheckBox SoT_CheckBox;
         private System.Windows.Forms.StatusStrip StatusBar;
         private System.Windows.Forms.ToolStripMenuItem RemoteCMDMenuItem;
         private System.Windows.Forms.ToolStripMenuItem QuickAccess;
@@ -1706,6 +1685,7 @@
         private System.Windows.Forms.ToolStripMenuItem pDCUDataErrorSecureMenuItem;
         private System.Windows.Forms.ToolStripMenuItem tillLocalCasheClearMenuItem;
         private System.Windows.Forms.ToolStripMenuItem parkedTXMoveMenuItem;
+        public System.Windows.Forms.ToolStripMenuItem stayOnTopMenuItem;
     }
 }
 
