@@ -358,8 +358,8 @@
             this.diagnosticsToolStripMenuItem,
             this.fixesToolStripMenuItem,
             this.toolsToolStripMenuItem,
-            this.preferencesToolStripMenuItem,
             this.ADVMenuItem,
+            this.preferencesToolStripMenuItem,
             this.aboutToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
@@ -995,6 +995,7 @@
             // 
             // ColonFixMenuItem
             // 
+            this.ColonFixMenuItem.ForeColor = System.Drawing.SystemColors.ControlText;
             this.ColonFixMenuItem.Name = "ColonFixMenuItem";
             this.ColonFixMenuItem.Size = new System.Drawing.Size(255, 26);
             this.ColonFixMenuItem.Text = "POS Colon : Fix";
@@ -1188,7 +1189,7 @@
             this.modernLayoutMenuItem,
             this.oldLayoutMenuItem});
             this.layoutToolStripMenuItem.Name = "layoutToolStripMenuItem";
-            this.layoutToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.layoutToolStripMenuItem.Size = new System.Drawing.Size(151, 26);
             this.layoutToolStripMenuItem.Text = "Layout";
             // 
             // modernLayoutMenuItem
@@ -1212,14 +1213,14 @@
             // toolStripSeparator9
             // 
             this.toolStripSeparator9.Name = "toolStripSeparator9";
-            this.toolStripSeparator9.Size = new System.Drawing.Size(221, 6);
+            this.toolStripSeparator9.Size = new System.Drawing.Size(148, 6);
             // 
             // showNotepadMenuItem
             // 
             this.showNotepadMenuItem.Checked = true;
             this.showNotepadMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.showNotepadMenuItem.Name = "showNotepadMenuItem";
-            this.showNotepadMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.showNotepadMenuItem.Size = new System.Drawing.Size(151, 26);
             this.showNotepadMenuItem.Text = "Notepad";
             this.showNotepadMenuItem.Click += new System.EventHandler(this.ShowNotepadMenuItem_Click);
             // 

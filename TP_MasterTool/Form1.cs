@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
@@ -20,6 +21,81 @@ namespace TP_MasterTool
         public Logger myLog = new Logger(Globals.Funkcje.MainFrom, "None", "MainForm");
         private int versionWarning = 0;
         private bool updatePopup = false;
+        List<string> uniwersalMenuItems = new List<string>
+        {
+            //RemoteCMD's//
+            "RCMD",
+            "Tracert to TAG",
+            "Reboot Device",
+            "DNS Restore",
+            //Quick Access//
+            "Drives",
+            "ServerRT (Italy)",
+            "Transactions",
+            //Logs//
+            "Windows",
+            "Minidump Folder",
+            "TP.Net Logs",
+            //Diagnostics//
+            "Get S.M.A.R.T",
+            "Drives Space Info",
+            "Install WinDirStat",
+            "Scan Store Endpoints",
+            "System Boot Time",
+            "SQl Queries",
+            //Fixes//
+            //Tools//
+            "Service Manager"
+        };
+        List<string> tpsMenuItems = new List<string>
+        {
+            //RemoteCMD's//
+            //Quick Access//
+            "APC",
+            "MiniLogger",
+            "TP Reports",
+            //Logs//
+            "Symantec Backup Logs",
+            "Installation Logs",
+            "TFTPD Logs",
+            "OEMInst Logs",
+            "PDCU Data Error Secure",
+            //Diagnostics//
+            "Backup Checker",
+            "EoD Checker",
+            "DumpFile Analyse",
+            //Fixes//
+            "APC Service Fix",
+            "Veritas Backup Job Reset",
+            "Backstore CSV Export"
+            //Tools//
+        };
+        List<string> stpMenuItems = new List<string>
+        {
+            //Quick Access//
+            "Local Storage (Till)",
+            //Logs//
+            "S4Fiscal Secure",
+            "TSE Logs Secure",
+            //Diagnostics//
+            //Fixes//
+            "POS Colon : Fix",
+            "Till Local Cashe Clear",
+            "Parked TX Move",
+            "TSE Webservice Restart",
+            "Signator Reset",
+            //Tools//
+            "MobilePos App Kill"
+        };
+        List<string> ipNotSupported = new List<string>
+        {
+            "Local Storage (Till)",
+            "Scan Store Endpoints",
+            "Backup Checker",
+            "EoD Checker",
+            "POS Colon : Fix",
+            "Till Local Cashe Clear"
+        };
 
         /**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**/
 
@@ -40,13 +116,12 @@ namespace TP_MasterTool
         private void Test_Button_Click(object sender, EventArgs e)
         {
             string output = "";
-            foreach(string file in System.IO.Directory.GetFiles(@"\\" + connectionPara.TAG + @"\d$\TPDotnet\Server\HostData\Download\Data", "*", System.IO.SearchOption.AllDirectories))
+            foreach (string file in System.IO.Directory.GetFiles(@"\\" + connectionPara.TAG + @"\d$\TPDotnet\Server\HostData\Download\Data", "*", System.IO.SearchOption.AllDirectories))
             {
                 output += file + Environment.NewLine;
             }
 
             MessageBox.Show(output);
-
 
 
             //CtrlFunctions.EncryptFile(@".\mojepasy.txt", "cycuszki", Globals.configPath + "credentials.crypt");
@@ -130,7 +205,8 @@ namespace TP_MasterTool
             if (cmdOutput.exitCode != 0)
             {
                 CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Command Execution Error", "RCMD encounter a error during execution:" + Environment.NewLine + cmdOutput.errorOutputText);
-                Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, cmdOutput.errorOutputText);
+                Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "CMD Failed to restart host");
+                Logger.QuickLog(Globals.Funkcje.RemoteRestart, "", connectionPara.TAG, "ErrorLog", cmdOutput.errorOutputText);
                 return;
             }
             Telemetry.LogFunctionUsage(Globals.Funkcje.RemoteRestart);
@@ -781,12 +857,6 @@ namespace TP_MasterTool
                 slave.DoWork += (s, args) =>
                 {
                     ConnectionPara connectionPara = Main.interfejs.connectionPara;
-                    if (connectionPara.deviceType != "TPS")
-                    {
-                        CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Wrong device", "This function can only be executed on servers");
-                        return;
-                    }
-
                     Logger myLog = new Logger(Globals.Funkcje.ApcServiceFix, "", connectionPara.TAG);
 
                     Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.ApcServiceFix, "");
@@ -818,7 +888,7 @@ namespace TP_MasterTool
                 };
                 slave.RunWorkerAsync();
             }
-        } //dont support IP MODE
+        } 
         private void veritasBackupJobResetMenuItem_Click(object sender, EventArgs e)
         {
             using (BackgroundWorker slave = new BackgroundWorker())
@@ -1136,93 +1206,57 @@ namespace TP_MasterTool
         }
         public void DisableUI()
         {
-            RemoteCMDMenuItem.Enabled = false;
-
-            drivesToolStripMenuItem.Enabled = false;
-            APCMenuItem.Enabled = false;
-            ServerRTMenuItem.Enabled = false;
-            miniLoggerMenuItem.Enabled = false;
-            transactionsToolStripMenuItem.Enabled = false;
-            tpReportsMenuItem.Enabled = false;
-            localStorageTillMenuItem.Enabled = false;
-
-            LogsMenuItem.Enabled = false;
-
-            sMARTToolStripMenuItem.Enabled = false;
-            drivesSpaceInfoMenuItem.Enabled = false;
-            installWinDirStatMenuItem.Enabled = false;
-            scanEndpointsMenuItem.Enabled = false;
-            SystemBootTimeMenuItem.Enabled = false;
-            backupCheckerMenuItem.Enabled = false;
-            EoDCheckerMenuItem.Enabled = false;
-            dumpFileAnaliseMenuItem.Enabled = false;
-            sQlQueriesToolStripMenuItem.Enabled = false;
-
-            ColonFixMenuItem.Enabled = false;
-            TSEWebserviceRestartMenuItem.Enabled = false;
-            signatorResetMenuItem.Enabled = false;
-            aPCServiceFixMenuItem.Enabled = false;
-            veritasBackupJobResetMenuItem.Enabled = false;
-            backstoreCsvExportMenuItem.Enabled = false;
-
-            serviceManagerMenuItem.Enabled = false;
-            MobilePosAppKillMenuItem.Enabled = false;
-
-            getMAC_button.Enabled = false;
-            SubnetStatusGroup.Enabled = false;
-            Rescan_Button.Enabled = false;
+            List<string> wyjatki = new List<string> { "Last Connected", "Ping's", "JPOSRFID Logs Secure", "TP.Reports Regen+Zip", "Invalid Transfer", "TransactionsXML to CSV", "MonitoringSlayer", "UpdatePackage Invalid Check", "Stocktaking", "WSUS but BETTER" };
+            foreach (ToolStripMenuItem menu in menuStrip1.Items)
+            {
+                if (menu.Text == "Preferences") { break; }
+                foreach (var submenuItem in menu.DropDownItems)
+                {
+                    if (submenuItem is ToolStripMenuItem)
+                    {
+                        if(wyjatki.Contains((submenuItem as ToolStripMenuItem).Text)) { continue; }
+                        (submenuItem as ToolStripMenuItem).Enabled = false;
+                    }
+                }
+            }
         }
         private void EnableUI()
         {
-            RemoteCMDMenuItem.Enabled = true;
-
-            drivesToolStripMenuItem.Enabled = true;
-            APCMenuItem.Enabled = true;
-            ServerRTMenuItem.Enabled = true;
-            miniLoggerMenuItem.Enabled = true;
-            transactionsToolStripMenuItem.Enabled = true;
-            tpReportsMenuItem.Enabled = true;
-            localStorageTillMenuItem.Enabled = true;
-
-            LogsMenuItem.Enabled = true;
-
-            sMARTToolStripMenuItem.Enabled = true;
-            drivesSpaceInfoMenuItem.Enabled = true;
-            installWinDirStatMenuItem.Enabled = true;
-            scanEndpointsMenuItem.Enabled = true;
-            SystemBootTimeMenuItem.Enabled = true;
-            backupCheckerMenuItem.Enabled = true;
-            EoDCheckerMenuItem.Enabled = true;
-            dumpFileAnaliseMenuItem.Enabled = true;
-            sQlQueriesToolStripMenuItem.Enabled = true;
-
-            ColonFixMenuItem.Enabled = true;
-            TSEWebserviceRestartMenuItem.Enabled = true;
-            signatorResetMenuItem.Enabled = true;
-            aPCServiceFixMenuItem.Enabled = true;
-            veritasBackupJobResetMenuItem.Enabled = true;
-            backstoreCsvExportMenuItem.Enabled = true;
-
-            serviceManagerMenuItem.Enabled = true;
-            MobilePosAppKillMenuItem.Enabled = true;
-
-            getMAC_button.Enabled = true;
-            SubnetStatusGroup.Enabled = true;
-            Rescan_Button.Enabled = true;
-
-            if (connectionPara.IPMode)
+            SetEnableMenuItems(uniwersalMenuItems, true);
+            if(connectionPara.deviceType == "TPS")
             {
-                localStorageTillMenuItem.Enabled = false;
-                backstoreCsvExportMenuItem.Enabled = false;
-                scanEndpointsMenuItem.Enabled = false;
-                backupCheckerMenuItem.Enabled = false;
-                EoDCheckerMenuItem.Enabled = false;
-                ColonFixMenuItem.Enabled = false;
-                aPCServiceFixMenuItem.Enabled = false;
-                sQlQueriesToolStripMenuItem.Enabled = false;
+                SetEnableMenuItems(tpsMenuItems, true);
+            }
+            else if (connectionPara.deviceType == "STP")
+            {
+                SetEnableMenuItems(stpMenuItems, true);
+            }
+            else
+            {
+                SetEnableMenuItems(stpMenuItems.Concat(tpsMenuItems).ToList(), true);
+            }
+            if(connectionPara.IPMode)
+            {
+                SetEnableMenuItems(ipNotSupported, false);
             }
         }
-
+        private void SetEnableMenuItems(List<string> itemList, bool state)
+        {
+            foreach(ToolStripMenuItem menu in menuStrip1.Items)
+            {
+                if(menu.Text == "Preferences") { break; }
+                foreach(var submenuItem in menu.DropDownItems)
+                {
+                    if (submenuItem is ToolStripMenuItem)
+                    {
+                        if (itemList.Contains((submenuItem as ToolStripMenuItem).Text))
+                        {
+                            (submenuItem as ToolStripMenuItem).Enabled = state;
+                        }
+                    }
+                }
+            }
+        }
         /**//**//**//**//**//**//* FORM CONTROLS *//**//**//**//**//**//**//**//**//**/
         private void StartButton_Click(object sender, EventArgs e)
         {

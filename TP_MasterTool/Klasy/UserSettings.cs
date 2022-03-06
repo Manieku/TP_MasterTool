@@ -37,8 +37,9 @@ namespace TP_MasterTool.Klasy
             }
             catch (Exception exp)
             {
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "User Settings Read Error", "Toolbox wasn't able to read your settings because config file corruption. Default settings will be applied"
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "User Settings Read Error", "Toolbox wasn't able to read your settings because config file corruption. Default settings will be applied and corrupted copy will be saved."
                     + Environment.NewLine + "File error: " + exp.Message);
+                Microsoft.VisualBasic.FileIO.FileSystem.MoveFile(Globals.userSettingsXmlPath, @".\Config\UserSettings_corrupted.xml", true);
                 return new UserSettings();
             }
         }

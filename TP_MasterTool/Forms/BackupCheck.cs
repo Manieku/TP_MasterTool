@@ -30,12 +30,6 @@ namespace TP_MasterTool.Forms
 
         private void BackupCheck_Shown(object sender, EventArgs e)
         {
-            if (connectionPara.deviceType != "TPS")
-            {
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Device Type Error", "It isn't possible to check backups on other device than TPS");
-                this.Close();
-                return;
-            }
             CheckBackups();
         }
         private void CheckBackups()
