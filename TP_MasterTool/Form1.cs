@@ -486,7 +486,10 @@ namespace TP_MasterTool
                 CustomMsgBox.Show(CustomMsgBox.MsgType.Info, "No Minidump found", "ToolBox couldn't find minidump folder on host");
                 return;
             }
+
             System.IO.FileInfo[] files;
+            Logger myLog = new Logger(Globals.Funkcje.MiniDumpAnalyser, "", connectionPara.TAG);
+
             try
             {
                 files = new System.IO.DirectoryInfo(@"\\" + connectionPara.TAG + @"\c$\Windows\Minidump").GetFiles("*.dmp").OrderBy(p => p.CreationTime).ToArray();
@@ -494,6 +497,8 @@ namespace TP_MasterTool
             catch (Exception exp)
             {
                 CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Error reading minidump files", "ToolBox couldn't find/access minidump files on host with error:" + Environment.NewLine + exp.Message);
+                myLog.Add("Error reading minidump files" + Environment.NewLine + exp.ToString());
+                myLog.SaveLog("ErrorLog");
                 return;
             }
             if (files.Length == 0)
