@@ -180,12 +180,6 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\DiskInfo.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\DiskInfo.Designer.cs">
-      <DependentUpon>DiskInfo.cs</DependentUpon>
-    </Compile>
     <Compile Include="Forms\EndpointsScan.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -236,9 +230,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\DiskInfo.resx">
-      <DependentUpon>DiskInfo.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\EodCheck.resx">
       <DependentUpon>EodCheck.cs</DependentUpon>

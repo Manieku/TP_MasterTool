@@ -406,8 +406,34 @@ namespace TP_MasterTool
         //------------Disc managment--------------------------
         private void DrivesSpaceInfoMenuItem_Click(object sender, EventArgs e)
         {
-            DiskInfo diskInfo = new DiskInfo();
-            diskInfo.Show(this);
+            Telemetry.LogFunctionUsage(Globals.Funkcje.DiscSpaceInfo);
+            Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.DiscSpaceInfo, "");
+            using (BackgroundWorker slave = new BackgroundWorker())
+            {
+                slave.DoWork += (s, args) =>
+                {
+                    string[] drives = { "c", "d", "e", "f" };
+                    string output = "";
+                    bool error = true;
+                    foreach (string letter in drives)
+                    {
+                        if (System.IO.Directory.Exists(@"\\" + connectionPara.TAG + @"\" + letter + @"$"))
+                        {
+                            output += "Drive " + letter.ToUpper() + ":\\ Informations:" + "\n" + CtrlFunctions.GetDiskSpaceInfo(letter, connectionPara) + "\n\n";
+                            error = false;
+                        }
+                    }
+                    if (error)
+                    {
+                        Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Disc Connection Error");
+                        CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Disc Connection Error", @"Couldn't establish connection to any disc. Please check if target machine is online or initialize it anew and try again.");
+                        return;
+                    }
+                    CustomMsgBox.Show(CustomMsgBox.MsgType.Done, "Disk Space Info", output);
+                };
+                slave.RunWorkerAsync();
+            }
+
         }
         private void InstallWinDirStatMenuItem_Click(object sender, EventArgs e)
         {
