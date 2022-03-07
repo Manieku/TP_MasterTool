@@ -21,7 +21,7 @@ namespace TP_MasterTool
         public Logger myLog = new Logger(Globals.Funkcje.MainFrom, "None", "MainForm");
         private int versionWarning = 0;
         private bool updatePopup = false;
-        List<string> uniwersalMenuItems = new List<string>
+        readonly List<string> uniwersalMenuItems = new List<string>
         {
             //RemoteCMD's//
             "RCMD",
@@ -47,7 +47,7 @@ namespace TP_MasterTool
             //Tools//
             "Service Manager"
         };
-        List<string> tpsMenuItems = new List<string>
+        readonly List<string> tpsMenuItems = new List<string>
         {
             //RemoteCMD's//
             //Quick Access//
@@ -70,7 +70,7 @@ namespace TP_MasterTool
             "Backstore CSV Export"
             //Tools//
         };
-        List<string> stpMenuItems = new List<string>
+        readonly List<string> stpMenuItems = new List<string>
         {
             //Quick Access//
             "Local Storage (Till)",
@@ -87,7 +87,7 @@ namespace TP_MasterTool
             //Tools//
             "MobilePos App Kill"
         };
-        List<string> ipNotSupported = new List<string>
+        readonly List<string> ipNotSupported = new List<string>
         {
             "Local Storage (Till)",
             "Scan Store Endpoints",
@@ -104,7 +104,6 @@ namespace TP_MasterTool
             InitializeComponent();
             Application.ThreadException += new System.Threading.ThreadExceptionEventHandler(Logger.UnhandledError);
         }
-
         private void Form1_Load(object sender, EventArgs e)
         {
             interfejs = this;
@@ -1065,6 +1064,21 @@ namespace TP_MasterTool
 
             }
         }
+        private void stayOnTopMenuItem_Click(object sender, EventArgs e)
+        {
+            Main.interfejs.TopMost = !Main.interfejs.TopMost;
+            Main.interfejs.userSettings.stayOnTop = !Main.interfejs.userSettings.stayOnTop;
+        } // StayOnTop MenuItem
+        private void resetSettingsMenuItem_Click(object sender, EventArgs e)
+        {
+            if (CustomMsgBox.Show(CustomMsgBox.MsgType.Decision, "Reset Settings", "Are you sure you want to wipe your user settings?") != DialogResult.OK)
+            {
+                return;
+            }
+            userSettings = new UserSettings();
+            userSettings.ApplySettings();
+        }
+
         /**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**/
 
         //--------------------About-----------------------------
@@ -1393,10 +1407,5 @@ namespace TP_MasterTool
         {
             userSettings.notePadLines = notepad.Text;
         } // Save notepad content after change
-        private void stayOnTopMenuItem_Click(object sender, EventArgs e)
-        {
-            Main.interfejs.TopMost = !Main.interfejs.TopMost;
-            Main.interfejs.userSettings.stayOnTop = !Main.interfejs.userSettings.stayOnTop;
-        } // StayOnTop MenuItem
     }
 }

@@ -153,6 +153,7 @@
             this.oldLayoutMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
             this.showNotepadMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.stayOnTopMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.currentVersionMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator16 = new System.Windows.Forms.ToolStripSeparator();
@@ -179,7 +180,8 @@
             this.importNote = new System.Windows.Forms.Button();
             this.FiveMinTimer = new System.Windows.Forms.Timer(this.components);
             this.HourTimer = new System.Windows.Forms.Timer(this.components);
-            this.stayOnTopMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator26 = new System.Windows.Forms.ToolStripSeparator();
+            this.resetSettingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.Basic_Info.SuspendLayout();
             this.StatusBar.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -1153,7 +1155,9 @@
             this.layoutToolStripMenuItem,
             this.toolStripSeparator9,
             this.showNotepadMenuItem,
-            this.stayOnTopMenuItem});
+            this.stayOnTopMenuItem,
+            this.toolStripSeparator26,
+            this.resetSettingsMenuItem});
             this.preferencesToolStripMenuItem.Name = "preferencesToolStripMenuItem";
             this.preferencesToolStripMenuItem.Overflow = System.Windows.Forms.ToolStripItemOverflow.AsNeeded;
             this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(99, 24);
@@ -1199,6 +1203,14 @@
             this.showNotepadMenuItem.Size = new System.Drawing.Size(224, 26);
             this.showNotepadMenuItem.Text = "Notepad";
             this.showNotepadMenuItem.Click += new System.EventHandler(this.ShowNotepadMenuItem_Click);
+            // 
+            // stayOnTopMenuItem
+            // 
+            this.stayOnTopMenuItem.CheckOnClick = true;
+            this.stayOnTopMenuItem.Name = "stayOnTopMenuItem";
+            this.stayOnTopMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.stayOnTopMenuItem.Text = "Stay On Top";
+            this.stayOnTopMenuItem.Click += new System.EventHandler(this.stayOnTopMenuItem_Click);
             // 
             // aboutToolStripMenuItem
             // 
@@ -1491,13 +1503,17 @@
             this.HourTimer.Interval = 3600000;
             this.HourTimer.Tick += new System.EventHandler(this.HourTimer_Tick);
             // 
-            // stayOnTopMenuItem
+            // toolStripSeparator26
             // 
-            this.stayOnTopMenuItem.CheckOnClick = true;
-            this.stayOnTopMenuItem.Name = "stayOnTopMenuItem";
-            this.stayOnTopMenuItem.Size = new System.Drawing.Size(224, 26);
-            this.stayOnTopMenuItem.Text = "Stay On Top";
-            this.stayOnTopMenuItem.Click += new System.EventHandler(this.stayOnTopMenuItem_Click);
+            this.toolStripSeparator26.Name = "toolStripSeparator26";
+            this.toolStripSeparator26.Size = new System.Drawing.Size(221, 6);
+            // 
+            // resetSettingsMenuItem
+            // 
+            this.resetSettingsMenuItem.Name = "resetSettingsMenuItem";
+            this.resetSettingsMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.resetSettingsMenuItem.Text = "Reset Settings";
+            this.resetSettingsMenuItem.Click += new System.EventHandler(this.resetSettingsMenuItem_Click);
             // 
             // Main
             // 
@@ -1686,6 +1702,8 @@
         private System.Windows.Forms.ToolStripMenuItem tillLocalCasheClearMenuItem;
         private System.Windows.Forms.ToolStripMenuItem parkedTXMoveMenuItem;
         public System.Windows.Forms.ToolStripMenuItem stayOnTopMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator26;
+        private System.Windows.Forms.ToolStripMenuItem resetSettingsMenuItem;
     }
 }
 
