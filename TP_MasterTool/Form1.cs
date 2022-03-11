@@ -114,13 +114,24 @@ namespace TP_MasterTool
         }
         private void Test_Button_Click(object sender, EventArgs e)
         {
-            string output = "";
-            foreach (string file in System.IO.Directory.GetFiles(@"\\" + connectionPara.TAG + @"\d$\TPDotnet\Server\HostData\Download\Data", "*", System.IO.SearchOption.AllDirectories))
-            {
-                output += file + Environment.NewLine;
-            }
+            string[] test = { "placki", "placki2", "placki3" };
+            List<string> output = new List<string>();
 
-            MessageBox.Show(output);
+            foreach(string file in test)
+            {
+                output.Add(file + " - dodane");
+            }
+            using (DropDownSelect dds = new DropDownSelect("test", output.ToArray()))
+            {
+                dds.ShowDialog();
+            }
+            //string output = "";
+            //foreach (string file in System.IO.Directory.GetFiles(@"\\" + connectionPara.TAG + @"\d$\TPDotnet\Server\HostData\Download\Data", "*", System.IO.SearchOption.AllDirectories))
+            //{
+            //    output += file + Environment.NewLine;
+            //}
+
+            //MessageBox.Show(output);
 
 
             //CtrlFunctions.EncryptFile(@".\mojepasy.txt", "cycuszki", Globals.configPath + "credentials.crypt");

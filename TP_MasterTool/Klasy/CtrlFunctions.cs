@@ -140,29 +140,6 @@ namespace TP_MasterTool.Klasy
             }
             return true;
         }
-
-        //public static bool MapEndpointDrive2(ref ConnectionPara connectionPara)
-        //{
-        //    CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("cmd.exe ", @"/c net use \\" + connectionPara.TAG + " " + connectionPara.password + " /user:" + connectionPara.userName);
-        //    if (cmdOutput.exitCode != 0)
-        //    {
-        //        if (cmdOutput.errorOutputText.Contains("The user name or password is incorrect"))
-        //        {
-        //            return ReMapDriveWithCredSwitch(ref connectionPara, out cmdOutput);
-        //        }
-        //        Main.SetTAG(connectionPara.TAG, Globals.errorColor);
-        //        CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Connection Error", "Unable to map host drive through net use:" + Environment.NewLine + cmdOutput.errorOutputText);
-        //        Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Unable to map host drive");
-        //        return false;
-        //    }
-        //    if (!System.IO.Directory.Exists(@"\\" + connectionPara.TAG + @"\c$"))
-        //    {
-        //        CtrlFunctions.RunHiddenCmd("cmd.exe", @"/c net use \\" + connectionPara.TAG + @" /delete");
-        //        return ReMapDriveWithCredSwitch(ref connectionPara, out cmdOutput);
-        //    }
-        //    return true;
-        //}
-
         private static bool ReMapDriveWithCredSwitch(ref ConnectionPara connectionPara, out CmdOutput cmdOutput)
         {
             CredentialsSwitch(ref connectionPara);
@@ -176,35 +153,6 @@ namespace TP_MasterTool.Klasy
             }
             return true;
         }
-        //public static bool SilentMapEndpointDrive(ref ConnectionPara connectionPara)
-        //{
-        //    CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("cmd.exe", @"/c net use \\" + connectionPara.TAG + " " + connectionPara.password + " /user:" + connectionPara.userName);
-        //    if (cmdOutput.exitCode != 0)
-        //    {
-        //        if (cmdOutput.errorOutputText.Contains("The user name or password is incorrect"))
-        //        {
-        //            CredentialsSwitch(ref connectionPara);
-        //            CmdOutput cmdOutput2 = CtrlFunctions.RunHiddenCmd("cmd.exe", @"/c net use \\" + connectionPara.TAG + " " + connectionPara.password + " /user:" + connectionPara.userName);
-        //            if (cmdOutput2.exitCode != 0)
-        //            {
-        //                return false;
-        //            }
-        //            return true;
-        //        }
-        //        return false;
-        //    }
-        //    if (!System.IO.Directory.Exists(@"\\" + connectionPara.TAG + @"\c$"))
-        //    {
-        //        CtrlFunctions.RunHiddenCmd("cmd.exe", @"/c net use \\" + connectionPara.TAG + @" /delete");
-        //        CredentialsSwitch(ref connectionPara);
-        //        CmdOutput cmdOutput2 = CtrlFunctions.RunHiddenCmd("cmd.exe", @"/c net use \\" + connectionPara.TAG + " " + connectionPara.password + " /user:" + connectionPara.userName);
-        //        if (cmdOutput2.exitCode != 0)
-        //        {
-        //            return false;
-        //        }
-        //    }
-        //    return true;
-        //}
         private static void CredentialsSwitch(ref ConnectionPara connectionPara)
         {
             if (connectionPara.storeType == "T")
