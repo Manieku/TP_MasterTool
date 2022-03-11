@@ -78,10 +78,10 @@ namespace TP_MasterTool
         public static Color errorColor = Color.FromArgb(255, 150, 150);
         public static Color successColor = Color.LightGreen;
 
-        public static string PRODuserName = ""; 
-        public static string PRODpassword = ""; 
-        public static string TESTuserName = ""; 
-        public static string TESTpassword = ""; 
+        public static string PRODuserName = "";
+        public static string PRODpassword = "";
+        public static string TESTuserName = "";
+        public static string TESTpassword = "";
         public static string SQLuserName = "";
         public static string SQLpassword = "";
 

@@ -21,7 +21,7 @@ namespace TP_MasterTool.Klasy
         public static void MaintenanceModeCheck(ref Logger myLog)
         {
             myLog.Add("Maintenance Check");
-            if(System.IO.File.Exists(Globals.configPath + "MaintenanceConfig.ini"))
+            if (System.IO.File.Exists(Globals.configPath + "MaintenanceConfig.ini"))
             {
                 CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Maintenance", System.IO.File.ReadAllText(Globals.configPath + "MaintenanceConfig.ini"));
                 Environment.Exit(0);
@@ -152,7 +152,7 @@ namespace TP_MasterTool.Klasy
         private static void ToolBoxSetup(ref Logger myLog)
         {
             myLog.Add("Credentials initialization");
-            if(!CtrlFunctions.DecryptToString(Globals.configPath + "credentials.crypt", "cycuszki", out string tempCredentials))
+            if (!CtrlFunctions.DecryptToString(Globals.configPath + "credentials.crypt", "cycuszki", out string tempCredentials))
             {
                 myLog.Add("Unable to decrypt credentials from encrypted file" + Environment.NewLine + tempCredentials);
                 myLog.SaveLog("CriticalError");

@@ -6,7 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using System.Xml.Linq;
 using TP_MasterTool.Forms.CustomMessageBox;
 using TP_MasterTool.Klasy;
 
@@ -141,7 +140,7 @@ namespace TP_MasterTool.Forms
             DNFiskalRename(rownr, connectionPara);
         }
 
-        
+
         private void EsfClientRestart(ConnectionPara connectionPara, int rownr)
         {
             CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c net stop esfclient && net start esfclient");
@@ -284,7 +283,7 @@ namespace TP_MasterTool.Forms
         }
         private void Check_F_Drive(int rownr, ConnectionPara connectionPara)
         {
-            if(!System.IO.Directory.Exists(@"\\" + connectionPara.TAG + @"\f$\Backup"))
+            if (!System.IO.Directory.Exists(@"\\" + connectionPara.TAG + @"\f$\Backup"))
             {
                 gridChange(rownr, "Error", Globals.errorColor);
                 lock (logLock)
@@ -303,7 +302,7 @@ namespace TP_MasterTool.Forms
         private void DNFiskalRename(int rownr, ConnectionPara connectionPara)
         {
             string[] xmlFiles = Directory.GetFiles(@"\\" + connectionPara.TAG + @"\c$\DNFiscalAdapter\work", "*AB120001*.xml");
-            foreach(string xmlFile in xmlFiles)
+            foreach (string xmlFile in xmlFiles)
             {
                 string zawartosc = System.IO.File.ReadAllText(xmlFile);
                 System.IO.File.WriteAllText(xmlFile, zawartosc.Replace("AB120001", "08070003"));

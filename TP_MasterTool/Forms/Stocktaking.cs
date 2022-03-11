@@ -122,8 +122,8 @@ namespace TP_MasterTool.Forms
             //here you enter your function to execution
             //----------------------- temp --------------------------------
             CheckStocktakingStatus(rownr, connectionPara);
-            
-            lock(logLock)
+
+            lock (logLock)
             {
                 Telemetry.LogFunctionUsage(Globals.Funkcje.Stocktaking);
             }
@@ -174,7 +174,7 @@ namespace TP_MasterTool.Forms
         private bool GenerateRaport(string path)
         {
             string raport = "TAG,Status,8E File 1,8E File 2,8E File 3,8E File 4,8E.D File 1,8E.D File 2,8E.D File 3,8E.D File 4" + Environment.NewLine;
-            foreach(DataGridViewRow row in dataGridView1.Rows)
+            foreach (DataGridViewRow row in dataGridView1.Rows)
             {
                 raport += String.Join(",", row.Cells[0].Value, row.Cells[1].Value, row.Cells[2].Value, row.Cells[3].Value, row.Cells[4].Value, row.Cells[5].Value, row.Cells[6].Value, row.Cells[7].Value, row.Cells[8].Value, row.Cells[9].Value) + Environment.NewLine;
             }
@@ -278,7 +278,7 @@ namespace TP_MasterTool.Forms
             cancel = false;
             enableUI();
             string logPath = @".\Logs\StocktakingRaport " + Logger.Datownik() + ".csv";
-            
+
             if (GenerateRaport(logPath))
             {
                 CustomMsgBox.Show(CustomMsgBox.MsgType.Done, "Finished", "Tool finished all tasks." + Environment.NewLine + "Log file created and saved as: " + Path.GetFullPath(logPath));

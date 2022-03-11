@@ -771,12 +771,12 @@ namespace TP_MasterTool.Forms
             else if (activityName == "DSFinVKExport")
             {
                 log += AddToLog(Environment.NewLine + "Exporting CSV Files:");
-                if(!CtrlFunctions.BackstoreCsvExport(connectionPara))
+                if (!CtrlFunctions.BackstoreCsvExport(connectionPara))
                 {
                     log += AddToLog("-> Failed");
                     log += AddToLog("Restarting TPDotnet Process Manager:");
                     cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c net stop ""TPDotnet Process Manager"" && net start ""TPDotnet Process Manager""");
-                    if(cmdOutput.exitCode != 0)
+                    if (cmdOutput.exitCode != 0)
                     {
                         log += AddToLog("-> Failed");
                         log += AddToLog(Environment.NewLine + ">>> CSV Export failed and ToolBox wasn't able to restart TPDotnet service, please proceed with manual investigation <<<");

@@ -229,7 +229,7 @@ namespace TP_MasterTool.Klasy
                     }
                 }
             }
-            catch(Exception exp)
+            catch (Exception exp)
             {
                 Logger.QuickLog(Globals.Funkcje.DecryptToString, "File: " + filePath + Environment.NewLine + "Key: " + decryptKey, "", "CriticalError", exp.ToString());
                 decryptedString = "Unable to decrypt " + Path.GetFileName(filePath) + Environment.NewLine + exp.Message;

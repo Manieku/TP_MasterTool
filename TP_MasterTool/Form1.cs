@@ -114,17 +114,6 @@ namespace TP_MasterTool
         }
         private void Test_Button_Click(object sender, EventArgs e)
         {
-            string[] test = { "placki", "placki2", "placki3" };
-            List<string> output = new List<string>();
-
-            foreach(string file in test)
-            {
-                output.Add(file + " - dodane");
-            }
-            using (DropDownSelect dds = new DropDownSelect("test", output.ToArray()))
-            {
-                dds.ShowDialog();
-            }
             //string output = "";
             //foreach (string file in System.IO.Directory.GetFiles(@"\\" + connectionPara.TAG + @"\d$\TPDotnet\Server\HostData\Download\Data", "*", System.IO.SearchOption.AllDirectories))
             //{
@@ -509,8 +498,75 @@ namespace TP_MasterTool
         //------------------EoD Checker--------------------
         private void EoDCheckerMenuItem_Click(object sender, EventArgs e)
         {
-            EodCheck eodCheck = new EodCheck();
-            eodCheck.Show();
+            ConnectionPara connectionPara = Main.interfejs.connectionPara;
+            Logger myLog = new Logger(Globals.Funkcje.EodCheck, "None", connectionPara.TAG);
+            string[] files;
+            try
+            {
+                myLog.Add("Reading log files");
+                files = System.IO.Directory.GetFiles(@"\\" + connectionPara.TAG + @"\d$\TPDotnet\Log", "LOG_*_" + connectionPara.TAG + "_????????_??????_MANUALEOD.xml");
+            }
+            catch (Exception exp)
+            {
+                myLog.Add("Error reading log files");
+                myLog.Add(exp.ToString());
+                myLog.SaveLog("ErrorLog");
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Error reading log files", "ToolBox wasn't able to read log files:" + Environment.NewLine + exp.Message);
+                return;
+            }
+            if (files.Length == 0)
+            {
+                myLog.Add("No log files found");
+                myLog.SaveLog("WarningLog");
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "No log files found", "ToolBox wasn't able to find any log files");
+                return;
+            }
+            List<string> fileList = new List<string>();
+            foreach (string file in files)
+            {
+                fileList.Add(System.IO.Path.GetFileName(file) + " - " + XDocument.Load(file).Root.Element("BATCHRESULT").Element("szFinalResult").Value);
+            }
+
+            string selectedFile = null;
+            using (DropDownSelect dropDownSelect = new DropDownSelect("Select Eod Raport to analyse", fileList.ToArray()))
+            {
+                if (dropDownSelect.ShowDialog() == DialogResult.OK)
+                {
+                    selectedFile = dropDownSelect.ReturnValue1;            //values preserved after close
+                }
+                else
+                {
+                    return;
+                }
+            }
+            myLog.Add("Selected file: " + selectedFile);
+            Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.EodCheck, selectedFile);
+            XDocument eodXml;
+            try
+            {
+                eodXml = XDocument.Load(@"\\" + connectionPara.TAG + @"\d$\TPDotnet\Log\" + selectedFile.Split(' ')[0]);
+            }
+            catch (Exception exp)
+            {
+                myLog.Add("Error reading log file");
+                myLog.Add(exp.ToString());
+                myLog.SaveLog("ErrorLog");
+                Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Error reading log file");
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Error reading log file", "ToolBox wasn't able to read log file:" + Environment.NewLine + exp.Message);
+                return;
+            }
+            string output = "";
+            foreach (XElement node in eodXml.Root.Elements("ACTIVITYLOG"))
+            {
+                if (node.Element("szFinalResult").Value == "AbortedCancel" || node.Element("szFinalResult").Value == "Failure")
+                {
+                    output += node.ToString() + Environment.NewLine;
+                }
+            }
+            output += Environment.NewLine + eodXml.Root.Element("BATCHRESULT").ToString();
+
+            Telemetry.LogFunctionUsage(Globals.Funkcje.EodCheck);
+            CustomMsgBox.Show(CustomMsgBox.MsgType.Done, "Eod Result", output);
         } //dont support IP MODE
 
         //------------------DumpFile analyse--------------------
