@@ -314,18 +314,8 @@ namespace TP_MasterTool.Klasy
         {
             errorMsg = "";
             Logger myLog = new Logger(Globals.Funkcje.GetSMART, "", connectionPara.TAG);
-            if (!System.IO.Directory.Exists(@"\\" + connectionPara.TAG + @"\c$\SMART"))
-            {
-                myLog.Add("SMART Folder not Found");
-                if (!FileController.CopyFolder(Globals.toolsPath + @"CrystalDiskInfo", @"\\" + connectionPara.TAG + @"\c$\SMART", true, ref myLog))
-                {
-                    myLog.SaveLog("ErrorLog");
-                    errorMsg = @"ToolBox wasn't able to copy CrystalDiskInfo into targeted host. Please initialize it anew and try again";
-                    return false;
-                }
-            }
-
-            if(System.IO.File.Exists(@"\\" + connectionPara.TAG + @"\c$\SMART\smart.lock"))
+            System.IO.Directory.CreateDirectory(@"\\" + connectionPara.TAG + @"\c$\SMART");
+            if (System.IO.File.Exists(@"\\" + connectionPara.TAG + @"\c$\SMART\smart.lock"))
             {
                 myLog.Add("CrystalDiskInfo is already running");
                 myLog.SaveLog("InfoLog");
@@ -334,10 +324,22 @@ namespace TP_MasterTool.Klasy
             }
             else
             {
-                if(!CreateLock(@"\\" + connectionPara.TAG + @"\c$\SMART\smart.lock", ref myLog))
+                if (!CreateLock(@"\\" + connectionPara.TAG + @"\c$\SMART\smart.lock", ref myLog))
                 {
                     myLog.SaveLog("ErrorLog");
                     errorMsg = @"ToolBox wasn't able to lock CrystalDiskInfo process. Please initialize it anew and try again";
+                    return false;
+                }
+            }
+
+            if (!System.IO.File.Exists(@"\\" + connectionPara.TAG + @"\c$\SMART\DiskInfo64.exe"))
+            {
+                myLog.Add("SMART files not Found");
+                if (!FileController.CopyFolder(Globals.toolsPath + @"CrystalDiskInfo", @"\\" + connectionPara.TAG + @"\c$\SMART", true, ref myLog))
+                {
+                    myLog.SaveLog("ErrorLog");
+                    errorMsg = @"ToolBox wasn't able to copy CrystalDiskInfo into targeted host. Please initialize it anew and try again";
+                    DeleteLock(@"\\" + connectionPara.TAG + @"\c$\SMART\smart.lock");
                     return false;
                 }
             }
