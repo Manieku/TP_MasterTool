@@ -53,10 +53,10 @@ namespace TP_MasterTool.Forms
             this.radioButton2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.radioButton2.Location = new System.Drawing.Point(98, 12);
             this.radioButton2.Name = "radioButton2";
-            this.radioButton2.Size = new System.Drawing.Size(91, 24);
+            this.radioButton2.Size = new System.Drawing.Size(113, 24);
             this.radioButton2.TabIndex = 1;
             this.radioButton2.TabStop = true;
-            this.radioButton2.Text = "Suggest";
+            this.radioButton2.Text = "Suggestion";
             this.radioButton2.UseVisualStyleBackColor = true;
             // 
             // richTextBox1

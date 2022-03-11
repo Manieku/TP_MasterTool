@@ -22,11 +22,10 @@ namespace TP_MasterTool.Forms
             {
                 filename = "Suggestion - ";
             }
-            string path = Globals.reportsFolderPath + filename + Environment.UserName + " - " + Logger.Datownik() + ".txt";
 
             try
             {
-                System.IO.File.AppendAllLines(path, richTextBox1.Lines);
+                System.IO.File.AppendAllLines(Globals.reportsFolderPath + filename + Environment.UserName + " - " + Logger.Datownik() + ".txt", richTextBox1.Lines);
             }
             catch (Exception exp)
             {
