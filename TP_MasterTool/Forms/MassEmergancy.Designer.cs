@@ -38,6 +38,7 @@ namespace TP_MasterTool.Forms
             this.Status = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.StartStopButton = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
+            this.functionSelectList = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -103,14 +104,14 @@ namespace TP_MasterTool.Forms
             this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.TAG,
             this.Status});
-            this.dataGridView1.Location = new System.Drawing.Point(17, 75);
+            this.dataGridView1.Location = new System.Drawing.Point(17, 104);
             this.dataGridView1.Margin = new System.Windows.Forms.Padding(4);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.ReadOnly = true;
             this.dataGridView1.RowHeadersVisible = false;
             this.dataGridView1.RowHeadersWidth = 51;
             this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView1.Size = new System.Drawing.Size(344, 394);
+            this.dataGridView1.Size = new System.Drawing.Size(344, 365);
             this.dataGridView1.TabIndex = 4;
             this.dataGridView1.CellContentDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentDoubleClick);
             // 
@@ -155,11 +156,21 @@ namespace TP_MasterTool.Forms
             this.label1.TabIndex = 6;
             this.label1.Text = "0 / 0";
             // 
+            // functionSelectList
+            // 
+            this.functionSelectList.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.functionSelectList.FormattingEnabled = true;
+            this.functionSelectList.Location = new System.Drawing.Point(17, 73);
+            this.functionSelectList.Name = "functionSelectList";
+            this.functionSelectList.Size = new System.Drawing.Size(349, 24);
+            this.functionSelectList.TabIndex = 7;
+            // 
             // MassEmergancy
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(377, 517);
+            this.Controls.Add(this.functionSelectList);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.StartStopButton);
             this.Controls.Add(this.dataGridView1);
@@ -170,7 +181,7 @@ namespace TP_MasterTool.Forms
             this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.MinimumSize = new System.Drawing.Size(395, 564);
             this.Name = "MassEmergancy";
-            this.Text = "MassEmergancy";
+            this.Text = "Random Randomness";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -188,5 +199,6 @@ namespace TP_MasterTool.Forms
         private System.Windows.Forms.DataGridViewTextBoxColumn Status;
         private System.Windows.Forms.Button StartStopButton;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ComboBox functionSelectList;
     }
 }

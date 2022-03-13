@@ -126,8 +126,9 @@ namespace TP_MasterTool
             //CtrlFunctions.EncryptFile(@".\mojepasy.txt", "cycuszki", Globals.configPath + "credentials.crypt");
             //MessageBox.Show("krypto krypto superman lezy");
 
-            //MassEmergancy massEmergancy = new MassEmergancy();
-            //massEmergancy.Show();
+            MassEmergancy massEmergancy = new MassEmergancy();
+            massEmergancy.Show();
+
             //Logger.GeneratePortalReport(@".\EoD_Abort_Test_Report.txt", @".\EoD_Abort_Test_AddInfo.txt", @".\logo.txt", @".\output.txt");
         }
         //--------------------/UI Controls/---------------------------
@@ -1318,7 +1319,7 @@ namespace TP_MasterTool
         }
         public void DisableUI()
         {
-            List<string> wyjatki = new List<string> { "Last Connected", "Ping's", "JPOSRFID Logs Secure", "TP.Reports Regen+Zip", "Invalid Transfer", "TransactionsXML to CSV", "MonitoringSlayer", "UpdatePackage Invalid Check", "Stocktaking", "WSUS but BETTER" };
+            List<string> wyjatki = new List<string> { "Last Connected", "Ping's", "JPOSRFID Logs Secure", "TP.Reports Regen+Zip", "Invalid Transfer", "TransactionsXML to CSV", "MonitoringSlayer", "UpdatePackage Invalid Check", "Stocktaking", "WSUS but BETTER", "Random Collection of Randomness" };
             foreach (ToolStripMenuItem menu in menuStrip1.Items)
             {
                 if (menu.Text == "Preferences") { break; }
@@ -1505,5 +1506,10 @@ namespace TP_MasterTool
         {
             userSettings.notePadLines = notepad.Text;
         } // Save notepad content after change
+
+        private void randomCollectionOfRandomnessToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            new MassEmergancy().Show();
+        }
     }
 }

@@ -67,6 +67,7 @@ namespace TP_MasterTool
             ADVKbCheck,
             ADVExecute,
             ADVDismSfc,
+            AdvRandomness,
             Stocktaking,
             DeleteLock,
             GetSqlInfo,

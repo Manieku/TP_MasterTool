@@ -154,6 +154,8 @@
             this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
             this.showNotepadMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.stayOnTopMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator26 = new System.Windows.Forms.ToolStripSeparator();
+            this.resetSettingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.currentVersionMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator16 = new System.Windows.Forms.ToolStripSeparator();
@@ -180,8 +182,7 @@
             this.importNote = new System.Windows.Forms.Button();
             this.FiveMinTimer = new System.Windows.Forms.Timer(this.components);
             this.HourTimer = new System.Windows.Forms.Timer(this.components);
-            this.toolStripSeparator26 = new System.Windows.Forms.ToolStripSeparator();
-            this.resetSettingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.randomCollectionOfRandomnessToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.Basic_Info.SuspendLayout();
             this.StatusBar.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -1136,7 +1137,8 @@
             // ADVMenuItem
             // 
             this.ADVMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.WSUSButBETTERMenuItem});
+            this.WSUSButBETTERMenuItem,
+            this.randomCollectionOfRandomnessToolStripMenuItem});
             this.ADVMenuItem.Name = "ADVMenuItem";
             this.ADVMenuItem.Size = new System.Drawing.Size(53, 24);
             this.ADVMenuItem.Text = "ADV";
@@ -1145,7 +1147,7 @@
             // WSUSButBETTERMenuItem
             // 
             this.WSUSButBETTERMenuItem.Name = "WSUSButBETTERMenuItem";
-            this.WSUSButBETTERMenuItem.Size = new System.Drawing.Size(212, 26);
+            this.WSUSButBETTERMenuItem.Size = new System.Drawing.Size(325, 26);
             this.WSUSButBETTERMenuItem.Text = "WSUS but BETTER";
             this.WSUSButBETTERMenuItem.Click += new System.EventHandler(this.WSUSButBETTERMenuItem_Click);
             // 
@@ -1169,7 +1171,7 @@
             this.modernLayoutMenuItem,
             this.oldLayoutMenuItem});
             this.layoutToolStripMenuItem.Name = "layoutToolStripMenuItem";
-            this.layoutToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.layoutToolStripMenuItem.Size = new System.Drawing.Size(185, 26);
             this.layoutToolStripMenuItem.Text = "Layout";
             // 
             // modernLayoutMenuItem
@@ -1193,14 +1195,14 @@
             // toolStripSeparator9
             // 
             this.toolStripSeparator9.Name = "toolStripSeparator9";
-            this.toolStripSeparator9.Size = new System.Drawing.Size(221, 6);
+            this.toolStripSeparator9.Size = new System.Drawing.Size(182, 6);
             // 
             // showNotepadMenuItem
             // 
             this.showNotepadMenuItem.Checked = true;
             this.showNotepadMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.showNotepadMenuItem.Name = "showNotepadMenuItem";
-            this.showNotepadMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.showNotepadMenuItem.Size = new System.Drawing.Size(185, 26);
             this.showNotepadMenuItem.Text = "Notepad";
             this.showNotepadMenuItem.Click += new System.EventHandler(this.ShowNotepadMenuItem_Click);
             // 
@@ -1208,9 +1210,21 @@
             // 
             this.stayOnTopMenuItem.CheckOnClick = true;
             this.stayOnTopMenuItem.Name = "stayOnTopMenuItem";
-            this.stayOnTopMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.stayOnTopMenuItem.Size = new System.Drawing.Size(185, 26);
             this.stayOnTopMenuItem.Text = "Stay On Top";
             this.stayOnTopMenuItem.Click += new System.EventHandler(this.stayOnTopMenuItem_Click);
+            // 
+            // toolStripSeparator26
+            // 
+            this.toolStripSeparator26.Name = "toolStripSeparator26";
+            this.toolStripSeparator26.Size = new System.Drawing.Size(182, 6);
+            // 
+            // resetSettingsMenuItem
+            // 
+            this.resetSettingsMenuItem.Name = "resetSettingsMenuItem";
+            this.resetSettingsMenuItem.Size = new System.Drawing.Size(185, 26);
+            this.resetSettingsMenuItem.Text = "Reset Settings";
+            this.resetSettingsMenuItem.Click += new System.EventHandler(this.resetSettingsMenuItem_Click);
             // 
             // aboutToolStripMenuItem
             // 
@@ -1503,17 +1517,12 @@
             this.HourTimer.Interval = 3600000;
             this.HourTimer.Tick += new System.EventHandler(this.HourTimer_Tick);
             // 
-            // toolStripSeparator26
+            // randomCollectionOfRandomnessToolStripMenuItem
             // 
-            this.toolStripSeparator26.Name = "toolStripSeparator26";
-            this.toolStripSeparator26.Size = new System.Drawing.Size(221, 6);
-            // 
-            // resetSettingsMenuItem
-            // 
-            this.resetSettingsMenuItem.Name = "resetSettingsMenuItem";
-            this.resetSettingsMenuItem.Size = new System.Drawing.Size(224, 26);
-            this.resetSettingsMenuItem.Text = "Reset Settings";
-            this.resetSettingsMenuItem.Click += new System.EventHandler(this.resetSettingsMenuItem_Click);
+            this.randomCollectionOfRandomnessToolStripMenuItem.Name = "randomCollectionOfRandomnessToolStripMenuItem";
+            this.randomCollectionOfRandomnessToolStripMenuItem.Size = new System.Drawing.Size(325, 26);
+            this.randomCollectionOfRandomnessToolStripMenuItem.Text = "Random Collection of Randomness";
+            this.randomCollectionOfRandomnessToolStripMenuItem.Click += new System.EventHandler(this.randomCollectionOfRandomnessToolStripMenuItem_Click);
             // 
             // Main
             // 
@@ -1704,6 +1713,7 @@
         public System.Windows.Forms.ToolStripMenuItem stayOnTopMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator26;
         private System.Windows.Forms.ToolStripMenuItem resetSettingsMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem randomCollectionOfRandomnessToolStripMenuItem;
     }
 }
 

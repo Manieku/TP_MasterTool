@@ -32,6 +32,17 @@ namespace TP_MasterTool.Forms
         Logger logger = new Logger(Globals.Funkcje.MassEmergancy, "None", "");
         private readonly object rowLock = new object();
         private readonly object logLock = new object();
+        string[] functionList =
+        {
+            "EsfClient Restart",
+            "JPOS Logs Check",
+            "Backup Jobs Check",
+            "Backup Jobs Reset",
+            "Delete Old Backup Files",
+            "Get MAC",
+            @"Check F:\ Drive",
+            "Download JavaPos Logs"
+        };
 
         public MassEmergancy()
         {
@@ -46,6 +57,7 @@ namespace TP_MasterTool.Forms
                 slave.DoWork += slave_DoWork;
                 slave.RunWorkerCompleted += slave_RunWorkerCompleted;
             }
+            functionSelectList.DataSource = functionList;
         }
         private void StartStopButton_Click(object sender, EventArgs e)
         {
@@ -128,18 +140,44 @@ namespace TP_MasterTool.Forms
                 return;
             }
 
+            string selection = functionSelectList.SelectedItem.ToString();
+            if(selection == "EsfClient Restart")
+            {
+                EsfClientRestart(connectionPara, rownr);
+            }
+            else if(selection == "JPOS Logs Check")
+            {
+                JposError(rownr, connectionPara);
+            }
+            else if(selection == "Backup Jobs Check")
+            {
+                BackupJobsCheck(rownr, connectionPara);
+            }
+            else if(selection == "Backup Jobs Reset")
+            {
+                BackupJobsReset(rownr, connectionPara);
+            }
+            else if(selection == "Delete Old Backup Files")
+            {
+                DeleteOldBackupFiles(rownr, connectionPara);
+            }
+            else if(selection == "Get MAC")
+            {
+                GetMac(rownr, connectionPara);
+            }
+            else if(selection == @"Check F:\ Drive")
+            {
+                Check_F_Drive(rownr, connectionPara);
+            }
+            else if(selection == "Download JavaPos Logs")
+            {
+                DownloadJavaPosLog(rownr, connectionPara);
+            }
+            Telemetry.LogFunctionUsage(Globals.Funkcje.AdvRandomness);
             //here you enter your function to execution
             //----------------------- temp --------------------------------
-            //EsfClientRestart(connectionPara, rownr);
-            //JposError(rownr, connectionPara);
-            //BackupJobsCheck(rownr, connectionPara);
-            //BackupJobsReset(rownr, connectionPara);
-            //DeleteOldBackupFiles(rownr, connectionPara);
-            //GetMac(rownr, connectionPara);
-            //Check_F_Drive(rownr, connectionPara);
-            DNFiskalRename(rownr, connectionPara);
+            //DNFiskalRename(rownr, connectionPara);
         }
-
 
         private void EsfClientRestart(ConnectionPara connectionPara, int rownr)
         {
@@ -166,13 +204,13 @@ namespace TP_MasterTool.Forms
             string[] files = System.IO.Directory.GetFiles(@"\\" + connectionPara.TAG + @"\d$\TPDotnet\DeviceService", "JPOSRFIDScannerLogs*");
             if (files.Length == 0)
             {
-                ErrorLog(rownr, "Affected");
+                ErrorLog(rownr, "No logs found");
                 return;
             }
             gridChange(rownr, "Done", Color.LightGreen);
             lock (logLock)
             {
-                log[rownr] += " - " + Logger.LogTime() + "[SUCCESS] Not Affected";
+                log[rownr] += " - " + Logger.LogTime() + "[SUCCESS] Logs are present";
             }
         }
         private void BackupJobsCheck(int rownr, ConnectionPara connectionPara)
@@ -183,7 +221,7 @@ namespace TP_MasterTool.Forms
                 string[] cFiles = Directory.GetFiles(@"\\" + connectionPara.TAG + @"\f$\Backup\TPBackup", connectionPara.TAG + "_C*.v2i");
                 lock (logLock)
                 {
-                    log[rownr] += cFiles.Length.ToString() + " ";
+                    log[rownr] += " " + cFiles.Length.ToString() + " ";
                 }
             }
             catch
@@ -309,7 +347,40 @@ namespace TP_MasterTool.Forms
                 System.IO.File.Move(xmlFile, xmlFile.Replace("AB120001", "08070003"));
             }
         }
-
+        private void DownloadJavaPosLog(int rownr, ConnectionPara connectionPara)
+        {
+            string[] files = null;
+            try
+            {
+                files = System.IO.Directory.GetFiles(@"\\" + connectionPara.TAG + @"\c$\ProgramData\javapos\wn\log", "javapos.log*");
+            }
+            catch
+            {
+                ErrorLog(rownr, "Failed to get files");
+                return;
+            }
+            if(files.Length == 0)
+            {
+                ErrorLog(rownr, "No logs found");
+                return;
+            }
+            int i = 1;
+            foreach(string file in files)
+            {
+                try
+                {
+                    gridChange(rownr, "Copying " + i + " of " + files.Length + " files");
+                    System.IO.Directory.CreateDirectory(@".\Logs\JavaPosLogs\" + connectionPara.TAG);
+                    System.IO.File.Copy(file, @".\Logs\JavaPosLogs\" + connectionPara.TAG + @"\" + Path.GetFileName(file));
+                    i++;
+                }
+                catch
+                {
+                    ErrorLog(rownr, "Unable to copy file " + file);
+                    return;
+                }
+            }
+        }
 
 
         private void slave_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -362,11 +433,19 @@ namespace TP_MasterTool.Forms
         }
         private void enableUI()//function fired up in wrapUp to enable UI elements anew
         {
-
+            functionSelectList.Enabled = true;
+            SingleRadioButton.Enabled = true;
+            MassRadioButton.Enabled = true;
+            FetchTxtButton.Enabled = true;
+            textBox.Enabled = true;
         }
         private void disableUI()//function fired up after start to disable UI elements
         {
-
+            functionSelectList.Enabled = false;
+            SingleRadioButton.Enabled = false;
+            MassRadioButton.Enabled = false;
+            FetchTxtButton.Enabled = false;
+            textBox.Enabled = false;
         }
         private void slaveMaster()
         {
@@ -409,7 +488,6 @@ namespace TP_MasterTool.Forms
                 log[rownr] += " - " + Logger.LogTime() + @"[ERROR] " + errorMsg;
             }
         }
-
         private void wrapUp()
         {
             label1.Text = dataGridView1.Rows.Count + " / " + dataGridView1.Rows.Count;
