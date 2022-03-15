@@ -36,6 +36,7 @@ namespace TP_MasterTool.Forms
         {
             "EsfClient Restart",
             "EsfClient Reinit",
+            "TP Process Manager Restart",
             "JPOS Logs Check",
             "Backup Jobs Check",
             "Backup Jobs Reset",
@@ -150,6 +151,10 @@ namespace TP_MasterTool.Forms
             {
                 EsfClientReinit(rownr, connectionPara);
             }
+            else if(selection == "TP Process Manager Restart")
+            {
+                TpProcessManagerRestart(rownr, connectionPara);
+            }
             else if(selection == "JPOS Logs Check")
             {
                 JposError(rownr, connectionPara);
@@ -186,6 +191,7 @@ namespace TP_MasterTool.Forms
 
         private void EsfClientRestart(ConnectionPara connectionPara, int rownr)
         {
+            gridChange(rownr, "Restarting Client");
             CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c net stop esfclient && net start esfclient");
             if (cmdOutput.exitCode != 0)
             {
@@ -201,7 +207,6 @@ namespace TP_MasterTool.Forms
             {
                 log[rownr] += " - " + Logger.LogTime() + "[SUCCESS] ESF Client Restarted";
             }
-
         }
         private void EsfClientReinit(int rownr, ConnectionPara connectionPara)
         {
@@ -222,6 +227,25 @@ namespace TP_MasterTool.Forms
                 log[rownr] += " - " + Logger.LogTime() + "[SUCCESS] ESF Client Reinitialized";
             }
 
+        }
+        private void TpProcessManagerRestart(int rownr, ConnectionPara connectionPara)
+        {
+            gridChange(rownr, "Restarting Process");
+            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c net stop ""TPDotnet Process Manager"" && net start ""TPDotnet Process Manager""");
+            if (cmdOutput.exitCode != 0)
+            {
+                gridChange(rownr, "Error", Globals.errorColor);
+                lock (logLock)
+                {
+                    log[rownr] += " - " + Logger.LogTime() + "[ERROR] CMD exited with error code: " + cmdOutput.exitCode;
+                }
+                return;
+            }
+            gridChange(rownr, "Done", Color.LightGreen);
+            lock (logLock)
+            {
+                log[rownr] += " - " + Logger.LogTime() + "[SUCCESS] TP Process Manager Restarted";
+            }
         }
         private void JposError(int rownr, ConnectionPara connectionPara)
         {
