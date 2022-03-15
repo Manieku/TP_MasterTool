@@ -126,8 +126,6 @@ namespace TP_MasterTool
             //CtrlFunctions.EncryptFile(@".\mojepasy.txt", "cycuszki", Globals.configPath + "credentials.crypt");
             //MessageBox.Show("krypto krypto superman lezy");
 
-            MassEmergancy massEmergancy = new MassEmergancy();
-            massEmergancy.Show();
 
             //Logger.GeneratePortalReport(@".\EoD_Abort_Test_Report.txt", @".\EoD_Abort_Test_AddInfo.txt", @".\logo.txt", @".\output.txt");
         }
