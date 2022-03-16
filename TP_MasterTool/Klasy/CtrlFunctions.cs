@@ -374,16 +374,12 @@ namespace TP_MasterTool.Klasy
         }
         public static string RegenerateEoDReports(ConnectionPara connectionPara, string startDate, string endDate)
         {
-            try
+            if (!System.IO.File.Exists(@"\\" + connectionPara.TAG + @"\c$\temp\runeodreports.bat"))
             {
-                if (!System.IO.File.Exists(@"\\" + connectionPara.TAG + @"\c$\temp\runeodreports.bat"))
+                if(!FileController.CopyFile(Globals.toolsPath + "runeodreports.bat", @"\\" + connectionPara.TAG + @"\c$\temp\runeodreports.bat", false, out Exception copyExp))
                 {
-                    Microsoft.VisualBasic.FileIO.FileSystem.CopyFile(Globals.toolsPath + "runeodreports.bat", @"\\" + connectionPara.TAG + @"\c$\temp\runeodreports.bat", true);
+                    return "[ERROR] Unable to copy script -> " + copyExp.Message;
                 }
-            }
-            catch (Exception exp)
-            {
-                return "[ERROR] Unable to copy script -> " + exp.Message;
             }
 
             try

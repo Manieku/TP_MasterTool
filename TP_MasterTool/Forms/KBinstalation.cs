@@ -182,16 +182,12 @@ namespace TP_MasterTool.Forms
             foreach (string cmdFile in cmds)
             {
                 dataGridView1.Rows[rownr].Cells[1].Value = "Copying " + cmdFile;
-                try
-                {
-                    System.IO.File.Copy(Globals.toolsPath + cmdFile, @"\\" + connectionPara.TAG + @"\c$\temp\" + cmdFile, true);
-                }
-                catch (Exception exp)
+                if(!FileController.CopyFile(Globals.toolsPath + cmdFile, @"\\" + connectionPara.TAG + @"\c$\temp\" + cmdFile, false, out Exception copyExp))
                 {
                     gridChange(rownr, "Error", Globals.errorColor);
                     lock (logLock)
                     {
-                        log[rownr] += "," + Logger.LogTime() + ",[ERROR],Unable to copy " + cmdFile + "," + exp.Message;
+                        log[rownr] += "," + Logger.LogTime() + ",[ERROR],Unable to copy " + cmdFile + "," + copyExp.Message;
                     }
                     return;
                 }

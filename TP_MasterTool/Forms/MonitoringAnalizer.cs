@@ -541,13 +541,8 @@ namespace TP_MasterTool.Forms
             {
                 gridChange(rownr, "Applying workaround");
                 log += AddToLog("Applying workaround");
-                try
+                if(!FileController.CopyFile(Globals.toolsPath + "WsusWorkaround.cmd", @"\\" + connectionPara.TAG + @"\c$\temp\WsusWorkaround.cmd", false, out _))
                 {
-                    System.IO.File.Copy(Globals.toolsPath + "WsusWorkaround.cmd", @"\\" + connectionPara.TAG + @"\c$\temp\WsusWorkaround.cmd", true);
-                }
-                catch
-                {
-                    gridChange(rownr, "Error", Globals.errorColor);
                     log += AddToLog(Environment.NewLine + ">>> Create solution task for ADV with note below and close L2 task <<<");
                     log += AddToLog("");
                     log += AddToLog(">> Notes for ticket:");

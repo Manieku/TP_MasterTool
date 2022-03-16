@@ -161,13 +161,9 @@ namespace TP_MasterTool.Forms
 
             foreach (string file in files)
             {
-                try
+                if(!FileController.CopyFile(file, @"\\" + connectionPara.TAG + @"\d$\TPDotnet\DeviceService\JPOSLogs\" + System.IO.Path.GetFileName(file), false, out Exception copyExp))
                 {
-                    Microsoft.VisualBasic.FileIO.FileSystem.CopyFile(file, @"\\" + connectionPara.TAG + @"\d$\TPDotnet\DeviceService\JPOSLogs\" + System.IO.Path.GetFileName(file));
-                }
-                catch (Exception exp)
-                {
-                    ErrorLog(rownr, "Unable to copy log: " + file + " -> " + exp.Message);
+                    ErrorLog(rownr, "Unable to copy log: " + file + " -> " + copyExp.Message);
                     return;
                 }
             }
@@ -205,13 +201,10 @@ namespace TP_MasterTool.Forms
                     return;
                 }
             }
-            try
+
+            if(!FileController.CopyFile(grabFromPath + @"\" + outputFolderName + @".zip", Globals.userTempLogsPath + outputFolderName + @".zip", false, out Exception copyExp))
             {
-                Microsoft.VisualBasic.FileIO.FileSystem.CopyFile(grabFromPath + @"\" + outputFolderName + @".zip", Globals.userTempLogsPath + outputFolderName + @".zip", true);
-            }
-            catch (Exception exp)
-            {
-                ErrorLog(rownr, "Unable to copy log: " + grabFromPath + @"\" + outputFolderName + @".zip" + " -> " + exp.Message);
+                ErrorLog(rownr, "Unable to copy log: " + grabFromPath + @"\" + outputFolderName + @".zip" + " -> " + copyExp.Message);
                 return;
             }
 
