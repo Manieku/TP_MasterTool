@@ -10,71 +10,28 @@ namespace TP_MasterTool
     public static class FileController
     {
         //----------FILE----------------
-        public static bool CopyFileWithUI(string source, string destination, ref Logger myLog)
+        public static bool CopyFile(string source, string destination, bool uiVisible, out Exception exp)
         {
-            myLog.Add("CopyWithUI: " + source + " - " + destination);
+            exp = null;
             try
             {
-                Microsoft.VisualBasic.FileIO.FileSystem.CopyFile(source, destination, Microsoft.VisualBasic.FileIO.UIOption.AllDialogs, Microsoft.VisualBasic.FileIO.UICancelOption.ThrowException);
+                if(uiVisible)
+                {
+                    Microsoft.VisualBasic.FileIO.FileSystem.CopyFile(source, destination, Microsoft.VisualBasic.FileIO.UIOption.AllDialogs, Microsoft.VisualBasic.FileIO.UICancelOption.ThrowException);
+                }
+                else
+                {
+                    Microsoft.VisualBasic.FileIO.FileSystem.CopyFile(source, destination, true);
+                }
             }
-            catch (System.IO.FileNotFoundException exp)
+            catch(Exception tempExp)
             {
-                myLog.Add(exp.ToString());
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "File Not Found Exception", "File couldn't be found. Please check if needed file is created and if machine is properly initialized." + Environment.NewLine + "Error: " + exp.Message);
+                if (tempExp.GetType().ToString() != "System.OperationCanceledException")
+                {
+                    exp = tempExp;
+                }
                 return false;
             }
-            catch (System.IO.PathTooLongException exp)
-            {
-                myLog.Add(exp.ToString());
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Path Too Long Exception", "Path to file you try to copy or target path is too long." + Environment.NewLine + "Error: " + exp.Message);
-                return false;
-            }
-            catch (OperationCanceledException)
-            {
-                myLog.Add("User canceled copying");
-                return false;
-            }
-            catch (Exception exp)
-            {
-                myLog.Add(exp.ToString());
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Unknown error occurred", "Unfortunately program encountered an unexpected error. Logs are collected and send to dev team." + Environment.NewLine + "Error: " + exp.Message);
-                return false;
-            }
-            myLog.Add("Copied successfully");
-            return true;
-        }
-        public static bool CopyFile(string source, string destination, bool nadpis, ref Logger myLog)
-        {
-            myLog.Add("CopyFile: " + source + " - " + destination + " with override: " + nadpis);
-            try
-            {
-                Microsoft.VisualBasic.FileIO.FileSystem.CopyFile(source, destination, nadpis);
-            }
-            catch (System.IO.FileNotFoundException exp)
-            {
-                myLog.Add(exp.ToString());
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "File Not Found Exception", "File couldn't be found. Please check if needed file is created and if machine is properly initialized." + Environment.NewLine + "Error: " + exp.Message);
-                return false;
-            }
-            catch (System.IO.PathTooLongException exp)
-            {
-                myLog.Add(exp.ToString());
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Path Too Long Exception", "Path to file you try to copy or target path is too long." + Environment.NewLine + "Error: " + exp.Message);
-                return false;
-            }
-            catch (System.IO.IOException exp)
-            {
-                myLog.Add(exp.ToString());
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "The destination file already exists", "The destination file already exists. Please check if file: " + destination + "should be there or if function wasn't executed already.");
-                return false;
-            }
-            catch (Exception exp)
-            {
-                myLog.Add(exp.ToString());
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Unknown error occurred", "Unfortunately program encountered an unexpected error. Logs are collected and send to dev team." + Environment.NewLine + "Error: " + exp.Message);
-                return false;
-            }
-            myLog.Add("Copied successfully");
             return true;
         }
         public static bool MoveFileWithUI(string source, string destiniation, ref Logger myLog)
@@ -441,10 +398,16 @@ namespace TP_MasterTool
                                 return;
                             }
                         }
-                        if (!FileController.CopyFileWithUI(grabFromPath + @"\" + outputFolderName + @".zip", Globals.userTempLogsPath + outputFolderName + @".zip", ref myLog))
+                        myLog.Add("Copying: " + grabFromPath + @"\" + outputFolderName + @".zip");
+                        if (!FileController.CopyFile(grabFromPath + @"\" + outputFolderName + @".zip", Globals.userTempLogsPath + outputFolderName + @".zip", true, out Exception copyExp))
                         {
-                            Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Copy error");
-                            myLog.SaveLog("ErrorLog");
+                            if (copyExp != null)
+                            {
+                                myLog.Add("Failed:" + Environment.NewLine + copyExp.ToString());
+                                myLog.SaveLog("ErrorLog");
+                                Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Error during copying");
+                                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Downloading Error", "ToolBox encountered error during downloading logs:" + Environment.NewLine + copyExp.Message);
+                            }
                         }
                     }
                     Process.Start("explorer.exe", grabFromPath);

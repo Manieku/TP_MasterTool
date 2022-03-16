@@ -317,17 +317,23 @@ namespace TP_MasterTool.Klasy
                 slave.DoWork += (s, args) =>
                 {
                     string fileName = connectionPara.TAG + " - " + type + " Log.evtx";
-                    if (!FileController.CopyFileWithUI(@"\\" + connectionPara.TAG + @"\c$\Windows\System32\winevt\Logs\" + type + @".evtx", @".\Logs\Windows\" + fileName, ref myLog))
+                    myLog.Add("Copying: " + type + @".evtx");
+                    if (!FileController.CopyFile(@"\\" + connectionPara.TAG + @"\c$\Windows\System32\winevt\Logs\" + type + @".evtx", @".\Logs\Windows\" + fileName, true, out Exception copyExp))
                     {
-                        Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Error during copying");
-                        myLog.SaveLog("ErrorLog");
+                        if (copyExp != null)
+                        {
+                            myLog.Add("Failed:" + Environment.NewLine + copyExp.ToString());
+                            myLog.SaveLog("ErrorLog");
+                            Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Error during copying");
+                            CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Downloading Error", "ToolBox encountered error during downloading logs:" + Environment.NewLine + copyExp.Message);
+                        }
                         return;
                     }
                     if (CustomMsgBox.Show(CustomMsgBox.MsgType.Decision, "File open", "Do you want to open " + fileName + " ?") == DialogResult.Cancel)
                     {
                         return;
                     }
-                    myLog.Add("Open");
+                    myLog.Add("Opening");
                     try
                     {
                         Process.Start(@".\Logs\Windows\" + fileName);

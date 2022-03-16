@@ -69,11 +69,11 @@ namespace TP_MasterTool.Klasy
             myLog.Add("FilesChceck");
             if (!System.IO.File.Exists(@".\psexec.exe"))
             {
-                myLog.Add("Psexec not found");
-                if (!FileController.CopyFile(Globals.toolsPath + "PsExec.exe", @".\PsExec.exe", true, ref myLog))
+                myLog.Add("Psexec not found - Copying");
+                if (!FileController.CopyFile(Globals.toolsPath + "PsExec.exe", @".\PsExec.exe", false, out Exception copyExp))
                 {
                     myLog.wasError = true;
-                    myLog.Add("psexec.exe is missing and couldn't be copy into tool folder");
+                    myLog.Add(copyExp.ToString());
                     CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "PsExec.exe not found", "PsExec.exe could not be found in main folder with aplication. Please chceck if files are present otherwise most of funcionality will be unavaible");
                 }
             }

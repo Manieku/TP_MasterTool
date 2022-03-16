@@ -114,6 +114,17 @@ namespace TP_MasterTool
         }
         private void Test_Button_Click(object sender, EventArgs e)
         {
+            if(!FileController.CopyFile(@".\test.evtx", @".\test2.evtx", true, out Exception exp))
+            {
+                if(exp != null)
+                {
+                    MessageBox.Show(exp.Message);
+                }
+                else
+                {
+                    MessageBox.Show("canceled");
+                }
+            }
             //string output = "";
             //foreach (string file in System.IO.Directory.GetFiles(@"\\" + connectionPara.TAG + @"\d$\TPDotnet\Server\HostData\Download\Data", "*", System.IO.SearchOption.AllDirectories))
             //{
@@ -444,13 +455,13 @@ namespace TP_MasterTool
                 return;
             }
             Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.WinDirStatInstall, "");
-            Telemetry.LogFunctionUsage(Globals.Funkcje.WinDirStatInstall);
-            Logger winDirStatLog = new Logger(Globals.Funkcje.WinDirStatInstall, "None", connectionPara.TAG);
-            if (!FileController.CopyFile(Globals.toolsPath + "windirstat.exe", @"\\" + connectionPara.TAG + @"\c$\temp\windirstat.exe", true, ref winDirStatLog))
+            if (!FileController.CopyFile(Globals.toolsPath + "windirstat.exe", @"\\" + connectionPara.TAG + @"\c$\temp\windirstat.exe", false, out Exception copyExp))
             {
-                winDirStatLog.SaveLog("ErrorLog");
+                Logger.QuickLog(Globals.Funkcje.WinDirStatInstall, "Copying exe to host", connectionPara.TAG, "ErrorLog", copyExp.ToString());
                 Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Copying windirstat failed");
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Copying Error", "ToolBox encountered error while trying to copy winDirStat:" + Environment.NewLine + copyExp.Message);
             }
+            Telemetry.LogFunctionUsage(Globals.Funkcje.WinDirStatInstall);
             ChangeStatusBar("Ready");
         }
 
@@ -685,21 +696,28 @@ namespace TP_MasterTool
 
             ChangeStatusBar("Copying posDB...");
 
-            if (!FileController.CopyFile(@"\\" + connectionPara.TAG + @"\c$\Users\" + connectionPara.country + connectionPara.storeNr + connectionPara.storeType + @".AL\AppData\Local\Diebold_Nixdorf\mobile_cache\Local Storage\http_localhost_8088.localstorage", @".\http_localhost_8088.localstorage", true, ref colonFixLog))
+            colonFixLog.Add("Copying localstorage from till");
+            if (!FileController.CopyFile(@"\\" + connectionPara.TAG + @"\c$\Users\" + connectionPara.country + connectionPara.storeNr + connectionPara.storeType + @".AL\AppData\Local\Diebold_Nixdorf\mobile_cache\Local Storage\http_localhost_8088.localstorage", @".\http_localhost_8088.localstorage", false, out Exception copyExp))
             {
-                colonFixLog.SaveLog("ErrorLog");
+                colonFixLog.wasError = true;
+                colonFixLog.Add(copyExp.ToString());
                 Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "localstorage file copy error");
-                ChangeStatusBar("Ready");
-                return;
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Localstorage copy error", "ToolBox encountered error while copying localstorage file:" + Environment.NewLine + copyExp.Message);
             }
-            if (!FileController.CopyFile(Globals.toolsPath + "ActOperatorID.txt", @".\ActOperatorID.txt", true, ref colonFixLog))
+            colonFixLog.Add("Copying ActOperatorID");
+            if (!FileController.CopyFile(Globals.toolsPath + "ActOperatorID.txt", @".\ActOperatorID.txt", false, out copyExp))
+            {
+                colonFixLog.wasError = true;
+                colonFixLog.Add(copyExp.ToString());
+                Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "ActOperatorID file copy error");
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "ActOperatorID copy error", "ToolBox encountered error while copying ActOperatorID file:" + Environment.NewLine + copyExp.Message);
+            }
+            if(colonFixLog.wasError)
             {
                 colonFixLog.SaveLog("ErrorLog");
-                Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "ActOperatorID file copy error");
                 ChangeStatusBar("Ready");
                 return;
             }
-
             ChangeStatusBar("Waiting for confirmation");
             if (CustomMsgBox.Show(CustomMsgBox.MsgType.Info, "Waiting for file repair and confirmation", "Please repair database file and press OK to copy file back to the till.") != DialogResult.OK)
             {
@@ -957,11 +975,14 @@ namespace TP_MasterTool
 
                     Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.ApcServiceFix, "");
                     Main.ChangeStatusBar("Copying config file");
-                    if (!FileController.CopyFile(Globals.toolsPath + "m11.cfg", @"\\" + connectionPara.TAG + @"\c$\Program Files (x86)\APC\PowerChute Business Edition\agent\m11.cfg", true, ref myLog))
+                    myLog.Add("Copying config file");
+                    if (!FileController.CopyFile(Globals.toolsPath + "m11.cfg", @"\\" + connectionPara.TAG + @"\c$\Program Files (x86)\APC\PowerChute Business Edition\agent\m11.cfg", false, out Exception copyExp))
                     {
                         Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Copying config file error");
+                        myLog.Add(copyExp.ToString());
                         myLog.SaveLog("ErrorLog");
                         Main.ChangeStatusBar("Ready");
+                        CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Config Copying Error", "ToolBox encountered error while copying config file:" + Environment.NewLine + copyExp.Message);
                         return;
                     }
 
