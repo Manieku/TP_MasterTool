@@ -1383,12 +1383,15 @@ namespace TP_MasterTool
             if (connectionPara == null)
             {
                 Main.ChangeStatusBar("Ready");
+                Main.SetIP("Invalid TAG", Globals.errorColor);
+                Main.SetTAG(tempTAG, Globals.errorColor);
                 Telemetry.LogOnMachineAction(tempTAG, Globals.Funkcje.Error, Main.GetIP());
                 return;
             }
 
             if (connectionPara.IP == "DNS ERROR")
             {
+                Main.SetIP("DNS ERROR", Globals.errorColor);
                 Telemetry.LogOnMachineAction(tempTAG, Globals.Funkcje.Error, Main.GetIP());
                 if (CustomMsgBox.Show(CustomMsgBox.MsgType.Decision, connectionPara.TAG + " - DNS Error", "Would you like to connect to this host via IP?") != DialogResult.OK)
                 {
@@ -1406,8 +1409,14 @@ namespace TP_MasterTool
                 StartButton_Click(this, e);
                 return;
             }
-
-
+            if (connectionPara.IPMode)
+            {
+                Main.SetIP("IP MODE", Globals.errorColor);
+            }
+            else
+            {
+                Main.SetIP(connectionPara.IP, Color.LightGreen);
+            }
             interfejs.DeDifferencesOnOff();
 
             CtrlFunctions.SubNetScan(connectionPara);

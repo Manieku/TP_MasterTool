@@ -95,7 +95,7 @@ namespace TP_MasterTool.Forms
             int rownr = (int)e.Argument;
             dataGridView1.Rows[rownr].Cells[1].Value = "Connecting";
 
-            ConnectionPara connectionPara = ConnectionPara.EstablishConnectionSilent(dataGridView1.Rows[rownr].Cells[0].Value.ToString());
+            ConnectionPara connectionPara = ConnectionPara.EstablishConnection(dataGridView1.Rows[rownr].Cells[0].Value.ToString());
             if (connectionPara == null)
             {
                 gridChange(rownr, "Invalid TAG", Globals.errorColor);
@@ -103,7 +103,7 @@ namespace TP_MasterTool.Forms
             }
             else if (connectionPara.IP == "DNS ERROR")
             {
-                ConnectionPara connectionPara2 = ConnectionPara.EstablishConnectionSilent(CtrlFunctions.GetIpFromDNSError(connectionPara));
+                ConnectionPara connectionPara2 = ConnectionPara.EstablishConnection(CtrlFunctions.GetIpFromDNSError(connectionPara));
                 if (connectionPara2 == null || connectionPara2.IP == "DNS ERROR")
                 {
                     gridChange(rownr, "DNS Error", Globals.errorColor);

@@ -117,7 +117,7 @@ namespace TP_MasterTool.Forms
                 gridChange(rownr, "Log Creation Error", Globals.errorColor);
                 return;
             }
-            ConnectionPara connectionPara = ConnectionPara.EstablishConnectionSilent((string)dataGridView1.Rows[rownr].Cells[1].Value);
+            ConnectionPara connectionPara = ConnectionPara.EstablishConnection((string)dataGridView1.Rows[rownr].Cells[1].Value);
             if (connectionPara == null)
             {
                 gridChange(rownr, "Invalid TAG", Globals.errorColor);
@@ -652,7 +652,7 @@ namespace TP_MasterTool.Forms
 
             gridChange(rownr, "Connecting to " + String.Join(".", connectionPara.IPbytes[0], connectionPara.IPbytes[1], connectionPara.IPbytes[2], "180"));
             log += AddToLog("Connecting to " + String.Join(".", connectionPara.IPbytes[0], connectionPara.IPbytes[1], connectionPara.IPbytes[2], "180"));
-            ConnectionPara connectionParaTPS = ConnectionPara.EstablishConnectionSilent(String.Join(".", connectionPara.IPbytes[0], connectionPara.IPbytes[1], connectionPara.IPbytes[2], "180"));
+            ConnectionPara connectionParaTPS = ConnectionPara.EstablishConnection(String.Join(".", connectionPara.IPbytes[0], connectionPara.IPbytes[1], connectionPara.IPbytes[2], "180"));
             if (connectionParaTPS == null)
             {
                 log += AddToLog("-> Unable to establish connection");

@@ -57,34 +57,6 @@ namespace TP_MasterTool.Klasy
             tag = tag.Trim().ToUpper();
             if (IPAddress.TryParse(tag, out _))
             {
-                Main.SetIP("IP MODE", Globals.errorColor);
-                return new ConnectionPara(tag, "", true);
-            }
-            if (new Regex(@"[A-Z]{2}[0-9]{4}[A-Z]{3}[0-9]{2}[A-Z]").IsMatch(tag) && tag.Length == 12)
-            {
-                string tempIP = CtrlFunctions.DnsGetIP(tag);
-                if (tempIP == "DNS ERROR")
-                {
-                    Main.SetIP(tempIP, Globals.errorColor);
-                }
-                else
-                {
-                    Main.SetIP(tempIP, Color.LightGreen);
-                }
-                return new ConnectionPara(tag, tempIP, false);
-            }
-            else
-            {
-                Main.SetIP("Invalid TAG", Globals.errorColor);
-                Main.SetTAG(tag, Globals.errorColor);
-                return null;
-            }
-        }
-        public static ConnectionPara EstablishConnectionSilent(string tag)
-        {
-            tag = tag.Trim().ToUpper();
-            if (IPAddress.TryParse(tag, out _))
-            {
                 return new ConnectionPara(tag, "", true);
             }
             if (new Regex(@"[A-Z]{2}[0-9]{4}[A-Z]{3}[0-9]{2}[A-Z]").IsMatch(tag) && tag.Length == 12)

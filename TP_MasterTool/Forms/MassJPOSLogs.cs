@@ -97,7 +97,7 @@ namespace TP_MasterTool.Forms
             int rownr = (int)e.Argument;
             dataGridView1.Rows[rownr].Cells[1].Value = "Connecting";
 
-            ConnectionPara connectionPara = ConnectionPara.EstablishConnectionSilent(dataGridView1.Rows[rownr].Cells[0].Value.ToString());
+            ConnectionPara connectionPara = ConnectionPara.EstablishConnection(dataGridView1.Rows[rownr].Cells[0].Value.ToString());
             if (connectionPara == null)
             {
                 ErrorLog(rownr, "Unable to establish connection -> Invalid TAG");

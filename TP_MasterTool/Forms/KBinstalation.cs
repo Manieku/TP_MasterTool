@@ -85,7 +85,7 @@ namespace TP_MasterTool.Forms
             //here you enter your function to execution
             int rownr = (int)e.Argument;
             dataGridView1.Rows[rownr].Cells[1].Value = "Connecting";
-            ConnectionPara connectionPara = ConnectionPara.EstablishConnectionSilent(dataGridView1.Rows[rownr].Cells[0].Value.ToString());
+            ConnectionPara connectionPara = ConnectionPara.EstablishConnection(dataGridView1.Rows[rownr].Cells[0].Value.ToString());
             if (connectionPara == null)
             {
                 gridChange(rownr, "Error", Globals.errorColor);
