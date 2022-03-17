@@ -365,7 +365,10 @@ namespace TP_MasterTool
                 Main.ChangeStatusBar("Ready");
                 return;
             }
-            FileController.SaveTxtToFile(@".\Logs\Ping(" + GetTAG() + ") - " + Logger.Datownik() + ".txt", "Ping executed at: " + DateTime.Now.ToString() + Environment.NewLine + cmdOutput.outputText, ref myLog);
+            if(!FileController.SaveTxtToFile(@".\Logs\Ping(" + GetTAG() + ") - " + Logger.Datownik() + ".txt", "Ping executed at: " + DateTime.Now.ToString() + Environment.NewLine + cmdOutput.outputText, out Exception saveExp))
+            {
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "File Save Error", "ToolBox encountered error while trying to save file:" + Environment.NewLine + saveExp.Message);
+            }
             ChangeStatusBar("Ready");
         }
         private void PingOverTimeMenuItem_Click(object sender, EventArgs e)
@@ -1099,8 +1102,9 @@ namespace TP_MasterTool
             {
                 output += node.Element("WorkstationID").Value + "," + node.Element("SequenceNumber").Value + "," + node.Element("BusinessDayDate").Value + "," + node.Element("EndDateTime").Value + Environment.NewLine;
             }
-            if (!FileController.SaveTxtToFile(Globals.userTempLogsPath + "TransactionsXMLToCSV - " + Logger.Datownik() + ".csv", output, ref myLog))
+            if (!FileController.SaveTxtToFile(Globals.userTempLogsPath + "TransactionsXMLToCSV - " + Logger.Datownik() + ".csv", output, out Exception saveExp))
             {
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "File Save Error", "ToolBox encountered error while trying to save file:" + Environment.NewLine + saveExp.Message);
                 return;
             }
             CustomMsgBox.Show(CustomMsgBox.MsgType.Done, "Conversion successful", @"CSV file successfully saved at T:\temp\ToolBoxLogs");

@@ -74,7 +74,7 @@ namespace TP_MasterTool
             }
             return "";
         }
-        public static bool SaveTxtDialog(string text, ref Logger myLog)
+        public static void SaveTxtDialog(string text, ref Logger myLog)
         {
             using (SaveFileDialog saveFileDialog = new SaveFileDialog())
             {
@@ -85,7 +85,7 @@ namespace TP_MasterTool
 
                 if (saveFileDialog.ShowDialog() != DialogResult.OK)
                 {
-                    return false;
+                    return;
                 }
                 if (System.IO.File.Exists(saveFileDialog.FileName))
                 {
@@ -96,46 +96,30 @@ namespace TP_MasterTool
                     catch (Exception exp)
                     {
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "File Override Error", "Unable to override selected file:" + Environment.NewLine + exp.Message);
-                        return false;
+                        return;
                     }
                 }
-                return FileController.SaveTxtToFile(saveFileDialog.FileName, string.Join(Environment.NewLine, text), ref myLog);
+                if(!FileController.SaveTxtToFile(saveFileDialog.FileName, text, out Exception saveExp))
+                {
+                    CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "File Save Error", "ToolBox encountered error while trying to save file:" + Environment.NewLine + saveExp.Message);
+                }
             }
         }
-        public static bool SaveTxtToFile(string filePath, string text, ref Logger myLog)
+        public static bool SaveTxtToFile(string filePath, string text, out Exception saveExp)
         {
-            myLog.Add("saveTxtToFile: " + filePath);
+            saveExp = null;
             try
             {
                 System.IO.File.AppendAllText(filePath, text);
             }
-            catch (System.IO.PathTooLongException exp)
-            {
-                myLog.Add(exp.ToString());
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Path Too Long Exception", "Path or filename exceed the system-defined maximum length." + Environment.NewLine + "Error: " + exp.Message);
-                return false;
-            }
-            catch (System.IO.DirectoryNotFoundException exp)
-            {
-                myLog.Add(exp.ToString());
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Directory Not Found Exception", "The specified path is invalid (for example, the directory doesn't exist or it is on an unmapped drive)." + Environment.NewLine + "Please check if machine is properly initialized." + Environment.NewLine + "Error: " + exp.Message);
-                return false;
-            }
-            catch (System.IO.IOException exp)
-            {
-                myLog.Add(exp.ToString());
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "I/O Exception", "An I/O error occurred while opening the file." + Environment.NewLine + "Error: " + exp.Message);
-                return false;
-            }
             catch (Exception exp)
             {
-                myLog.Add(exp.ToString());
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Unknown error occurred", "Unfortunately program encountered an unexpected error. Logs are collected and send to dev team." + Environment.NewLine + "Error: " + exp.Message);
+                saveExp = exp;
                 return false;
             }
-            myLog.Add("Writing to File successful");
             return true;
         }
+
         //----------FOLDER-------------
         public static bool CopyFolder(string source, string destination, bool nadpis, ref Logger myLog)
         {

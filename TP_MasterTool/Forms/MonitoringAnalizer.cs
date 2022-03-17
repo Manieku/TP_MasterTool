@@ -196,7 +196,11 @@ namespace TP_MasterTool.Forms
                 return;
             }
 
-            FileController.SaveTxtToFile(thisLogPath, output, ref logger);
+            if(!FileController.SaveTxtToFile(thisLogPath, output, out Exception saveExp))
+            {
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "File Save Error", "ToolBox encountered error while trying to save file " + thisLogPath + Environment.NewLine + saveExp.Message);
+                return;
+            }
             lock (logLock)
             {
                 Telemetry.LogFunctionUsage(Globals.Funkcje.MonitoringSlayer);

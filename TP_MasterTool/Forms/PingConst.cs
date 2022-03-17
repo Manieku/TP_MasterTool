@@ -69,8 +69,10 @@ namespace TP_MasterTool
                 controlButton.Text = "Start";
                 this.Text = host;
             }
-            if (!FileController.SaveTxtToFile(filename, Environment.NewLine + ">>> Results <<<" + Environment.NewLine + string.Join(Environment.NewLine, richTextBox1.Lines), ref myLog))
+            if (!FileController.SaveTxtToFile(filename, Environment.NewLine + ">>> Results <<<" + Environment.NewLine + string.Join(Environment.NewLine, richTextBox1.Lines), out Exception saveExp))
             {
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "File Save Error", "ToolBox encountered error while trying to save file:" + Environment.NewLine + saveExp.Message);
+                myLog.Add(saveExp.ToString());
                 myLog.SaveLog("ErrorLog");
                 return;
             }

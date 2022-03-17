@@ -354,10 +354,12 @@ namespace TP_MasterTool.Forms
             cancel = false;
             enableUI();
             string logPath = @".\Logs\MassLogKBinstall " + Logger.Datownik() + ".csv";
-            if (FileController.SaveTxtToFile(logPath, string.Join(Environment.NewLine, log), ref logger))
+            if (!FileController.SaveTxtToFile(logPath, string.Join(Environment.NewLine, log), out Exception saveExp))
             {
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Done, "Finished", "Tool finished all tasks." + Environment.NewLine + "Log file created and saved as: " + Path.GetFullPath(logPath));
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "File Save Error", "ToolBox encountered error while trying to save file:" + Environment.NewLine + saveExp.Message);
+                return;
             }
+            CustomMsgBox.Show(CustomMsgBox.MsgType.Done, "Finished", "Tool finished all tasks." + Environment.NewLine + "Log file created and saved as: " + Path.GetFullPath(logPath));
         } //fireup at the end of list or after abortion when all slaves done their 
         private void runCmd(string exe, string command, bool wait4Exit)
         {
