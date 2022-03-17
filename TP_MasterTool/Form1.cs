@@ -173,7 +173,7 @@ namespace TP_MasterTool
             Telemetry.LogFunctionUsage(Globals.Funkcje.ImportNote);
             try
             {
-                notepad.Lines = System.IO.File.ReadAllLines(FileController.OpenFileDialog("Text files (*.txt)|*.txt", ref myLog));
+                notepad.Lines = System.IO.File.ReadAllLines(FileController.OpenFileDialog("Text files (*.txt)|*.txt"));
             }
             catch { }
         }
@@ -393,12 +393,13 @@ namespace TP_MasterTool
                     }
                     else
                     {
-                        if (!FileController.MoveFile(@"\\" + connectionPara.TAG + @"\c$\SMART\DiskInfo.txt", @".\Logs\SMART\SMART - " + connectionPara.TAG + ".txt", true, ref myLog))
+                        if (!FileController.MoveFile(@"\\" + connectionPara.TAG + @"\c$\SMART\DiskInfo.txt", @".\Logs\SMART\SMART - " + connectionPara.TAG + ".txt", false, out Exception moveExp))
                         {
-                            Logger.QuickLog(Globals.Funkcje.GetSMART, @"\\" + connectionPara.TAG + @"\c$\SMART\DiskInfo.txt | " + @".\Logs\SMART\SMART - " + connectionPara.TAG + ".txt", connectionPara.TAG, "WarningLog", "ToolBox wasn't able to copy command output back from targeted host.");
-                            errorMsg = @"ToolBox wasn't able to copy command output back from targeted host. You can check it manually at \\" + connectionPara.TAG + @"\C$\SMART\DiskInfo.txt";
+                            Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.GetSMART, "Retrieving result error");
+                            Logger.QuickLog(Globals.Funkcje.GetSMART, @"\\" + connectionPara.TAG + @"\c$\SMART\DiskInfo.txt | " + @".\Logs\SMART\SMART - " + connectionPara.TAG + ".txt", connectionPara.TAG, "WarningLog", "ToolBox wasn't able to copy command output back from targeted host." + Environment.NewLine + moveExp.ToString());
                             ChangeStatusBar("Ready");
                             sMARTToolStripMenuItem.Enabled = true;
+                            CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Retrieving result error", @"ToolBox wasn't able to copy command output back from targeted host. You can check it manually at \\" + connectionPara.TAG + @"\C$\SMART\DiskInfo.txt");
                             return;
                         }
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Done, "SMART Values Saved", @"Disc SMART values successfully saved at .\Logs\SMART\SMART - " + connectionPara.TAG + ".txt");
@@ -726,11 +727,14 @@ namespace TP_MasterTool
                 return;
             }
             ChangeStatusBar("Copying DB back to till...");
-            if (!FileController.MoveFile(@".\http_localhost_8088.localstorage", @"\\" + connectionPara.TAG + @"\c$\Users\" + connectionPara.country + connectionPara.storeNr + @"P.AL\AppData\Local\Diebold_Nixdorf\mobile_cache\Local Storage\http_localhost_8088.localstorage", true, ref colonFixLog))
+            colonFixLog.Add("Copying DB back to till");
+            if (!FileController.MoveFile(@".\http_localhost_8088.localstorage", @"\\" + connectionPara.TAG + @"\c$\Users\" + connectionPara.country + connectionPara.storeNr + connectionPara.storeType + @".AL\AppData\Local\Diebold_Nixdorf\mobile_cache\Local Storage\http_localhost_8088.localstorage", false, out Exception moveExp))
             {
+                colonFixLog.Add(moveExp.ToString());
                 colonFixLog.SaveLog("ErrorLog");
                 Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, @"Copying localstorage file back error");
                 ChangeStatusBar("Ready");
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Copying localstorage file back error", "ToolBox encountered error trying to copy localstorage file back to till:" + Environment.NewLine + moveExp.Message);
                 return;
             }
 
@@ -1064,7 +1068,7 @@ namespace TP_MasterTool
         {
             Logger myLog = new Logger(Globals.Funkcje.TransactionsXMLToCSV, "none", "none");
             Telemetry.LogFunctionUsage(Globals.Funkcje.TransactionsXMLToCSV);
-            string filePath = FileController.OpenFileDialog("XML files (*.xml)|*.xml", ref myLog);
+            string filePath = FileController.OpenFileDialog("XML files (*.xml)|*.xml");
             if (filePath == "")
             {
                 return;

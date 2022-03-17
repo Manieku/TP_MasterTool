@@ -34,81 +34,32 @@ namespace TP_MasterTool
             }
             return true;
         }
-        public static bool MoveFileWithUI(string source, string destiniation, ref Logger myLog)
+        public static bool MoveFile(string source, string destination, bool uiVisible, out Exception exp)
         {
-            myLog.Add("MoveWithUI: " + source + " - " + destiniation);
+            exp = null;
             try
             {
-                Microsoft.VisualBasic.FileIO.FileSystem.MoveFile(source, destiniation, Microsoft.VisualBasic.FileIO.UIOption.AllDialogs, Microsoft.VisualBasic.FileIO.UICancelOption.ThrowException);
+                if (uiVisible)
+                {
+                    Microsoft.VisualBasic.FileIO.FileSystem.MoveFile(source, destination, Microsoft.VisualBasic.FileIO.UIOption.AllDialogs, Microsoft.VisualBasic.FileIO.UICancelOption.ThrowException);
+                }
+                else
+                {
+                    Microsoft.VisualBasic.FileIO.FileSystem.MoveFile(source, destination, true);
+                }
             }
-            catch (System.IO.FileNotFoundException exp)
+            catch (Exception tempExp)
             {
-                myLog.Add(exp.ToString());
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "File Not Found Exception", "File couldn't be found. Please check if needed file is created and if machine is properly initialized." + Environment.NewLine + "Error: " + exp.Message);
-                return false;
-            }
-            catch (System.IO.PathTooLongException exp)
-            {
-                myLog.Add(exp.ToString());
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Path Too Long Exception", "Path to file you try to move or target path is too long." + Environment.NewLine + "Error: " + exp.Message);
-                return false;
-            }
-            catch (System.IO.IOException exp)
-            {
-                myLog.Add(exp.ToString());
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "I/O Exception", "The file is in use by another process, or an I/O error occured." + Environment.NewLine + "Error: " + exp.Message);
-                return false;
-            }
-            catch (OperationCanceledException)
-            {
-                myLog.Add("User canceled copying");
-                return false;
-            }
-            catch (Exception exp)
-            {
-                myLog.Add(exp.ToString());
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Unknown error occurred", "Unfortunately program encountered an unexpected error. Logs are collected and send to dev team." + Environment.NewLine + "Error: " + exp.Message);
+                if (tempExp.GetType().ToString() != "System.OperationCanceledException")
+                {
+                    exp = tempExp;
+                }
                 return false;
             }
             return true;
         }
-        public static bool MoveFile(string source, string destiniation, bool nadpis, ref Logger myLog)
+        public static string OpenFileDialog(string filter)
         {
-            myLog.Add("MoveFile: " + source + " - " + destiniation + " with override: " + nadpis);
-            try
-            {
-                Microsoft.VisualBasic.FileIO.FileSystem.MoveFile(source, destiniation, nadpis);
-            }
-            catch (System.IO.FileNotFoundException exp)
-            {
-                myLog.Add(exp.ToString());
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "File Not Found Exception", "File couldn't be found. Please check if needed file is created and if machine is properly initialized." + Environment.NewLine + "Error: " + exp.Message);
-                return false;
-            }
-            catch (System.IO.PathTooLongException exp)
-            {
-                myLog.Add(exp.ToString());
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Path Too Long Exception", "Path to file you try to move or target path is too long." + Environment.NewLine + "Error: " + exp.Message);
-                return false;
-            }
-            catch (System.IO.IOException exp)
-            {
-                myLog.Add(exp.ToString());
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "I/O Exception", "The file is in use by another process, or an I/O error occured." + Environment.NewLine + "Error: " + exp.Message);
-                return false;
-            }
-            catch (Exception exp)
-            {
-                myLog.Add(exp.ToString());
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Unknown error occurred", "Unfortunately program encountered an unexpected error. Logs are collected and send to dev team." + Environment.NewLine + "Error: " + exp.Message);
-                return false;
-            }
-            return true;
-        }
-        public static string OpenFileDialog(string filter, ref Logger myLog)
-        {
-            myLog.Add("openTxtDialog: ");
-            string filePath = "";
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
                 openFileDialog.InitialDirectory = System.IO.Path.GetFullPath(@".\");
@@ -118,15 +69,10 @@ namespace TP_MasterTool
 
                 if (openFileDialog.ShowDialog() == DialogResult.OK)
                 {
-                    filePath = openFileDialog.FileName;
-                    myLog.log += filePath;
-                }
-                else
-                {
-                    myLog.log += "Canceled";
+                    return openFileDialog.FileName;
                 }
             }
-            return filePath;
+            return "";
         }
         public static bool SaveTxtDialog(string text, ref Logger myLog)
         {
