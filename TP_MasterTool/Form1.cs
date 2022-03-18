@@ -826,10 +826,14 @@ namespace TP_MasterTool
                         return;
                     }
                     string outputFolderName = @"\\" + connectionPara.TAG + @"\d$\WNI\4GSS\Parked - " + tixnr + "(" + connectionPara.TAG + ") " + Logger.Datownik();
-                    if (!FileController.MakeFolder(outputFolderName, ref myLog))
+                    myLog.Add("Creating folder: " + outputFolderName);
+                    if (!FileController.MakeFolder(outputFolderName, out Exception makeExp))
                     {
+                        Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Creating folder error");
+                        myLog.Add(makeExp.ToString());
                         myLog.SaveLog("ErrorLog");
                         ChangeStatusBar("Ready");
+                        CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Creating Folder Error", "ToolBox was unable to create folder " + outputFolderName + Environment.NewLine + makeExp.Message);
                         return;
                     }
                     myLog.Add("Moving Files");

@@ -145,21 +145,22 @@ namespace TP_MasterTool
             }
             return true;
         }
-        public static bool MakeFolder(string path, ref Logger myLog)
+        public static bool MakeFolder(string path, out Exception makeExp)
         {
-            if (System.IO.Directory.Exists(path)) { return true; }
-            myLog.Add("Create Folder: " + path);
+            makeExp = null;
+            if (System.IO.Directory.Exists(path))
+            {
+                return true;
+            }
             try
             {
                 System.IO.Directory.CreateDirectory(path);
             }
-            catch (Exception exp)
+            catch (Exception tempExp)
             {
-                myLog.Add(exp.ToString());
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Create Folder Error", "ToolBox encountered error while creating folder:" + Environment.NewLine + exp.Message);
+                makeExp = tempExp;
                 return false;
             }
-            myLog.Add("Folder creation successful");
             return true;
         }
         public static bool ClearFolder(string path, bool silent, bool fileOnly, ref Logger myLog)

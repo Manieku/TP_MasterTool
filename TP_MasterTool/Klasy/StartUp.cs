@@ -48,20 +48,26 @@ namespace TP_MasterTool.Klasy
                 Environment.Exit(0);
             }
 
-            List<bool> checkList = new List<bool>
+            List<string> checkList = new List<string>
             {
-                FileController.MakeFolder(@".\Logs\SMART", ref myLog),
-                FileController.MakeFolder(@".\Logs\Windows", ref myLog),
-                FileController.MakeFolder(@".\Config", ref myLog),
-                FileController.MakeFolder(@".\Notes", ref myLog),
-                FileController.MakeFolder(Globals.telemetryLogPath, ref myLog),
-                FileController.MakeFolder(Globals.machineLogPath, ref myLog),
-                FileController.MakeFolder(Globals.logErrorPath, ref myLog),
-                FileController.MakeFolder(Globals.versionLogPath, ref myLog)
+                @".\Logs\SMART",
+                @".\Logs\Windows",
+                @".\Config",
+                @".\Notes",
+                Globals.telemetryLogPath,
+                Globals.machineLogPath,
+                Globals.logErrorPath,
+                Globals.versionLogPath,
             };
-            if (checkList.Contains(false))
+            foreach(string path in checkList)
             {
-                myLog.wasError = true;
+                myLog.Add("Creating folder: " + path);
+                if(!FileController.MakeFolder(path, out Exception makeExp))
+                {
+                    myLog.Add("-> Failed: " + makeExp.ToString());
+                    myLog.wasError = true;
+                    CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Creation Folder Error", "ToolBox was unable to create folder: " + path + Environment.NewLine + makeExp.Message);
+                }
             }
         }
         private static void FilesCheck(ref Logger myLog)

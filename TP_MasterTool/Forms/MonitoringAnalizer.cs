@@ -78,10 +78,13 @@ namespace TP_MasterTool.Forms
                 return;
             }
             logsPath = @"D:\C&A 2lvl\MonitoringSlayer";
-            if (!FileController.MakeFolder(logsPath, ref logger))
+            logger.Add("Creating folder: " + logsPath);
+            if (!FileController.MakeFolder(logsPath, out Exception makeExp))
             {
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Execution Error", @"ToolBox was unable to create output folder at D:\C&A 2lvl\MonitoringSlayer");
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Execution Error", @"ToolBox was unable to create output folder at D:\C&A 2lvl\MonitoringSlayer" + Environment.NewLine + makeExp.Message);
+                logger.Add(makeExp.ToString());
                 logger.SaveLog("ErrorLog");
+                return;
             }
 
             StartStopButton.Text = "Abort";
