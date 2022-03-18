@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using TP_MasterTool.Forms.CustomMessageBox;
 using TP_MasterTool.Klasy;
@@ -16,13 +15,6 @@ namespace TP_MasterTool.Forms
 
     public partial class Stocktaking : Form
     {
-        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        static extern bool GetDiskFreeSpaceEx(string lpDirectoryName,
-        out ulong lpFreeBytesAvailable,
-        out ulong lpTotalNumberOfBytes,
-        out ulong lpTotalNumberOfFreeBytes);
-
         List<BackgroundWorker> slaveList;
         int masterRow;
         readonly int bgwCount = 20;

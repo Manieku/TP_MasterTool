@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using TP_MasterTool.Forms.CustomMessageBox;
@@ -17,13 +16,6 @@ namespace TP_MasterTool.Forms
 
     public partial class UpdatePackageInvalid : Form
     {
-        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        static extern bool GetDiskFreeSpaceEx(string lpDirectoryName,
-        out ulong lpFreeBytesAvailable,
-        out ulong lpTotalNumberOfBytes,
-        out ulong lpTotalNumberOfFreeBytes);
-
         List<BackgroundWorker> slaveList;
         int masterRow;
         readonly int bgwCount = 20;
