@@ -2,10 +2,14 @@
 {
     static class Shutdown
     {
-        public static bool DeleteWindowsLogs(ref Logger myLog)
+        public static void DeleteWindowsLogs(ref Logger myLog)
         {
             myLog.Add("Deleting windows logs");
-            return FileController.ClearFolder(@".\Logs\Windows", true, false, ref myLog);
+            if(!FileController.ClearFolder(@".\Logs\Windows", true, out string errorList))
+            {
+                myLog.Add(errorList);
+                myLog.wasError = true;
+            }
         }
         public static void ShutdownProcedure()
         {

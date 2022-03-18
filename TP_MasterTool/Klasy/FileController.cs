@@ -163,23 +163,18 @@ namespace TP_MasterTool
             }
             return true;
         }
-        public static bool ClearFolder(string path, bool silent, bool fileOnly, ref Logger myLog)
+        public static bool ClearFolder(string path, bool fileOnly, out string errorList)
         {
-            bool error = false;
-            myLog.Add("Clear Folder(" + silent + " " + fileOnly + "): " + path);
+            errorList = "";
             System.IO.DirectoryInfo directory = new System.IO.DirectoryInfo(path);
             if (!directory.Exists)
             {
-                myLog.Add("Folder don't exists");
-                if (!silent)
-                {
-                    CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Folder don't exists", "Folder you're trying to clear don't exists");
-                }
+                errorList += "Selected folder doesn't exist";
                 return false;
             }
             if (!fileOnly)
             {
-                foreach (System.IO.DirectoryInfo folder in directory.GetDirectories())
+                foreach (System.IO.DirectoryInfo folder in directory.EnumerateDirectories())
                 {
                     try
                     {
@@ -187,12 +182,11 @@ namespace TP_MasterTool
                     }
                     catch (Exception exp)
                     {
-                        myLog.Add("Unable to delete folder: " + exp.Message);
-                        error = true;
+                        errorList += "Unable to delete folder: " + exp.Message + Environment.NewLine;
                     }
                 }
             }
-            foreach (System.IO.FileInfo file in directory.GetFiles())
+            foreach (System.IO.FileInfo file in directory.EnumerateFiles())
             {
                 try
                 {
@@ -200,21 +194,14 @@ namespace TP_MasterTool
                 }
                 catch (Exception exp)
                 {
-                    myLog.Add("Unable to delete file: " + exp.Message);
-                    error = true;
+                    errorList += "Unable to delete file: " + exp.Message + Environment.NewLine;
                 }
             }
-            if (error && !silent)
+            if(errorList != "")
             {
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Error encounter during deleting", "Some files/folders couldn't be deleted from:" + Environment.NewLine + path);
+                return false;
             }
-            if (error)
-            {
-                myLog.wasError = true;
-                return error;
-            }
-            myLog.Add("Deleting files successful");
-            return error;
+            return true;
         }
         //--------COMPLEX--------------
         public static bool ZipAndStealFolder(string prefix, string remotePath, string absolutePath, ConnectionPara connectionPara)

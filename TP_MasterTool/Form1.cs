@@ -780,11 +780,12 @@ namespace TP_MasterTool
 
                     ChangeStatusBar("Clearing Cache");
                     myLog.Add("Clearing Cache");
-                    FileController.ClearFolder(@"\\" + connectionPara.TAG + @"\c$\Users\" + connectionPara.country + connectionPara.storeNr + connectionPara.storeType + @".AL\AppData\Local\Diebold_Nixdorf\mobile_cache\Local Storage", false, true, ref myLog);
-                    if (myLog.wasError)
+                    if(!FileController.ClearFolder(@"\\" + connectionPara.TAG + @"\c$\Users\" + connectionPara.country + connectionPara.storeNr + connectionPara.storeType + @".AL\AppData\Local\Diebold_Nixdorf\mobile_cache\Local Storage", false, out string errorList))
                     {
                         Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Unable to delete files");
+                        myLog.Add(errorList);
                         myLog.SaveLog("ErrorLog");
+                        CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Clearing Folder Error", "ToolBox was unable to delete files in folder:" + Environment.NewLine + errorList);
                     }
                     ChangeStatusBar("Ready");
                     Telemetry.LogFunctionUsage(Globals.Funkcje.LocalCacheClear);
