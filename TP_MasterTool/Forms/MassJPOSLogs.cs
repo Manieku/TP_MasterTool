@@ -161,13 +161,9 @@ namespace TP_MasterTool.Forms
 
             foreach (string file in files)
             {
-                try
+                if(!FileController.CopyFile(file, @"\\" + connectionPara.TAG + @"\d$\TPDotnet\DeviceService\JPOSLogs\" + System.IO.Path.GetFileName(file), false, out Exception copyExp))
                 {
-                    Microsoft.VisualBasic.FileIO.FileSystem.CopyFile(file, @"\\" + connectionPara.TAG + @"\d$\TPDotnet\DeviceService\JPOSLogs\" + System.IO.Path.GetFileName(file));
-                }
-                catch (Exception exp)
-                {
-                    ErrorLog(rownr, "Unable to copy log: " + file + " -> " + exp.Message);
+                    ErrorLog(rownr, "Unable to copy log: " + file + " -> " + copyExp.Message);
                     return;
                 }
             }
@@ -205,13 +201,10 @@ namespace TP_MasterTool.Forms
                     return;
                 }
             }
-            try
+
+            if(!FileController.CopyFile(grabFromPath + @"\" + outputFolderName + @".zip", Globals.userTempLogsPath + outputFolderName + @".zip", false, out Exception copyExp))
             {
-                Microsoft.VisualBasic.FileIO.FileSystem.CopyFile(grabFromPath + @"\" + outputFolderName + @".zip", Globals.userTempLogsPath + outputFolderName + @".zip", true);
-            }
-            catch (Exception exp)
-            {
-                ErrorLog(rownr, "Unable to copy log: " + grabFromPath + @"\" + outputFolderName + @".zip" + " -> " + exp.Message);
+                ErrorLog(rownr, "Unable to copy log: " + grabFromPath + @"\" + outputFolderName + @".zip" + " -> " + copyExp.Message);
                 return;
             }
 
@@ -249,7 +242,7 @@ namespace TP_MasterTool.Forms
         }
         private void FetchTxtButton_Click(object sender, EventArgs e)
         {
-            textBox.Text = FileController.OpenFileDialog("Text files (*.txt)|*.txt", ref logger);
+            textBox.Text = FileController.OpenFileDialog("Text files (*.txt)|*.txt");
         }
         private void PopulateGrid()
         {
@@ -349,10 +342,12 @@ namespace TP_MasterTool.Forms
             catch { }
             enableUI();
             string logPath = @".\Logs\MassJPOSLog " + Logger.Datownik() + ".txt";
-            if (FileController.SaveTxtToFile(logPath, string.Join(Environment.NewLine, log), ref logger))
+            if (!FileController.SaveTxtToFile(logPath, string.Join(Environment.NewLine, log), out Exception saveExp))
             {
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Done, "Finished", "Tool finished all tasks." + Environment.NewLine + "Log file created and saved as: " + Path.GetFullPath(logPath));
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "File Save Error", "ToolBox encountered error while trying to save file:" + Environment.NewLine + saveExp.Message);
+                return;
             }
+            CustomMsgBox.Show(CustomMsgBox.MsgType.Done, "Finished", "Tool finished all tasks." + Environment.NewLine + "Log file created and saved as: " + Path.GetFullPath(logPath));
         } //fireup at the end of list or after abortion when all slaves done their 
         private void dataGridView1_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
         {

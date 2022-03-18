@@ -53,11 +53,7 @@ namespace TP_MasterTool.Forms
                 cancel = true;
                 StartStopButton.Text = "Aborting...";
                 StartStopButton.Enabled = false;
-                try
-                {
-                    GenerateRaport(@".\Logs\StocktakingRaport " + Logger.Datownik() + ".csv");
-                }
-                catch { }
+                FileController.SaveTxtToFile(@".\Logs\BackupStocktakingRaport " + Logger.Datownik() + ".csv", GenerateRaport(), out _);
                 return;
             }
 
@@ -171,14 +167,14 @@ namespace TP_MasterTool.Forms
 
             gridChange(rownr, "Checked", Globals.successColor);
         }
-        private bool GenerateRaport(string path)
+        private string GenerateRaport()
         {
             string raport = "TAG,Status,8E File 1,8E File 2,8E File 3,8E File 4,8E.D File 1,8E.D File 2,8E.D File 3,8E.D File 4" + Environment.NewLine;
             foreach (DataGridViewRow row in dataGridView1.Rows)
             {
                 raport += String.Join(",", row.Cells[0].Value, row.Cells[1].Value, row.Cells[2].Value, row.Cells[3].Value, row.Cells[4].Value, row.Cells[5].Value, row.Cells[6].Value, row.Cells[7].Value, row.Cells[8].Value, row.Cells[9].Value) + Environment.NewLine;
             }
-            return FileController.SaveTxtToFile(path, raport, ref logger);
+            return raport;
         }
 
 
@@ -204,7 +200,7 @@ namespace TP_MasterTool.Forms
         }
         private void FetchTxtButton_Click(object sender, EventArgs e)
         {
-            textBox.Text = FileController.OpenFileDialog("Text files (*.txt)|*.txt", ref logger);
+            textBox.Text = FileController.OpenFileDialog("Text files (*.txt)|*.txt");
         }
         private void PopulateGrid()
         {
@@ -279,13 +275,12 @@ namespace TP_MasterTool.Forms
             enableUI();
             string logPath = @".\Logs\StocktakingRaport " + Logger.Datownik() + ".csv";
 
-            if (GenerateRaport(logPath))
+            if (!FileController.SaveTxtToFile(logPath, GenerateRaport(), out Exception saveExp))
             {
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Done, "Finished", "Tool finished all tasks." + Environment.NewLine + "Log file created and saved as: " + Path.GetFullPath(logPath));
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Raport Save Error", "Tool encountered error while saving raport at: " + Path.GetFullPath(logPath));
                 return;
             }
-
-            CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Raport Save Error", "Tool encountered error while saving raport at: " + Path.GetFullPath(logPath));
+            CustomMsgBox.Show(CustomMsgBox.MsgType.Done, "Finished", "Tool finished all tasks." + Environment.NewLine + "Log file created and saved as: " + Path.GetFullPath(logPath));
         } //fireup at the end of list or after abortion when all slaves done their 
 
     }

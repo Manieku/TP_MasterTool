@@ -43,16 +43,12 @@ namespace TP_MasterTool.Klasy
                 return;
             }
             myLog.Add("Downloading updater");
-            try
-            {
-                Microsoft.VisualBasic.FileIO.FileSystem.CopyFile(Globals.toolsPath + "TP_Updater.exe", @".\TP_Updater.exe", true);
-            }
-            catch (Exception exp)
+            if(!FileController.CopyFile(Globals.toolsPath + "TP_Updater.exe", @".\TP_Updater.exe", false, out Exception copyExp))
             {
                 myLog.wasError = true;
                 myLog.Add("Failed to download");
-                myLog.Add(exp.ToString());
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Problem with update", "Toolbox encounter problem during downloading updater with error:\n" + exp.Message + "\nPlease restart toolbox and try again or inform dev team.");
+                myLog.Add(copyExp.ToString());
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Problem with update", "Toolbox encounter problem during downloading updater with error:\n" + copyExp.Message + "\nPlease restart toolbox and try again or inform dev team.");
                 return;
             }
 

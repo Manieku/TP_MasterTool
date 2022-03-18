@@ -78,10 +78,13 @@ namespace TP_MasterTool.Forms
                 return;
             }
             logsPath = @"D:\C&A 2lvl\MonitoringSlayer";
-            if (!FileController.MakeFolder(logsPath, ref logger))
+            logger.Add("Creating folder: " + logsPath);
+            if (!FileController.MakeFolder(logsPath, out Exception makeExp))
             {
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Execution Error", @"ToolBox was unable to create output folder at D:\C&A 2lvl\MonitoringSlayer");
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Execution Error", @"ToolBox was unable to create output folder at D:\C&A 2lvl\MonitoringSlayer" + Environment.NewLine + makeExp.Message);
+                logger.Add(makeExp.ToString());
                 logger.SaveLog("ErrorLog");
+                return;
             }
 
             StartStopButton.Text = "Abort";
@@ -196,7 +199,11 @@ namespace TP_MasterTool.Forms
                 return;
             }
 
-            FileController.SaveTxtToFile(thisLogPath, output, ref logger);
+            if(!FileController.SaveTxtToFile(thisLogPath, output, out Exception saveExp))
+            {
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "File Save Error", "ToolBox encountered error while trying to save file " + thisLogPath + Environment.NewLine + saveExp.Message);
+                return;
+            }
             lock (logLock)
             {
                 Telemetry.LogFunctionUsage(Globals.Funkcje.MonitoringSlayer);
@@ -214,7 +221,7 @@ namespace TP_MasterTool.Forms
         }
         private void FetchTxtButton_Click(object sender, EventArgs e)
         {
-            textBox.Text = FileController.OpenFileDialog("TXT files (*.txt)|*.txt", ref logger);
+            textBox.Text = FileController.OpenFileDialog("TXT files (*.txt)|*.txt");
         }
         private bool PopulateGrid()
         {
@@ -541,13 +548,8 @@ namespace TP_MasterTool.Forms
             {
                 gridChange(rownr, "Applying workaround");
                 log += AddToLog("Applying workaround");
-                try
+                if(!FileController.CopyFile(Globals.toolsPath + "WsusWorkaround.cmd", @"\\" + connectionPara.TAG + @"\c$\temp\WsusWorkaround.cmd", false, out _))
                 {
-                    System.IO.File.Copy(Globals.toolsPath + "WsusWorkaround.cmd", @"\\" + connectionPara.TAG + @"\c$\temp\WsusWorkaround.cmd", true);
-                }
-                catch
-                {
-                    gridChange(rownr, "Error", Globals.errorColor);
                     log += AddToLog(Environment.NewLine + ">>> Create solution task for ADV with note below and close L2 task <<<");
                     log += AddToLog("");
                     log += AddToLog(">> Notes for ticket:");

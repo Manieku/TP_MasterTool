@@ -282,9 +282,10 @@ namespace TP_MasterTool.Klasy
 
             if (!System.IO.File.Exists(@"\\" + connectionPara.TAG + @"\c$\SMART\DiskInfo64.exe"))
             {
-                myLog.Add("SMART files not Found");
-                if (!FileController.CopyFolder(Globals.toolsPath + @"CrystalDiskInfo", @"\\" + connectionPara.TAG + @"\c$\SMART", true, ref myLog))
+                myLog.Add("SMART files not Found" + Environment.NewLine + "Copying CrystalDiskInfo Folder");
+                if (!FileController.CopyFolder(Globals.toolsPath + @"CrystalDiskInfo", @"\\" + connectionPara.TAG + @"\c$\SMART", false, out Exception copyExp))
                 {
+                    myLog.Add(copyExp.ToString());
                     myLog.SaveLog("ErrorLog");
                     errorMsg = @"ToolBox wasn't able to copy CrystalDiskInfo into targeted host. Please initialize it anew and try again";
                     DeleteLock(@"\\" + connectionPara.TAG + @"\c$\SMART\smart.lock");
@@ -317,17 +318,23 @@ namespace TP_MasterTool.Klasy
                 slave.DoWork += (s, args) =>
                 {
                     string fileName = connectionPara.TAG + " - " + type + " Log.evtx";
-                    if (!FileController.CopyFileWithUI(@"\\" + connectionPara.TAG + @"\c$\Windows\System32\winevt\Logs\" + type + @".evtx", @".\Logs\Windows\" + fileName, ref myLog))
+                    myLog.Add("Copying: " + type + @".evtx");
+                    if (!FileController.CopyFile(@"\\" + connectionPara.TAG + @"\c$\Windows\System32\winevt\Logs\" + type + @".evtx", @".\Logs\Windows\" + fileName, true, out Exception copyExp))
                     {
-                        Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Error during copying");
-                        myLog.SaveLog("ErrorLog");
+                        if (copyExp != null)
+                        {
+                            myLog.Add("Failed:" + Environment.NewLine + copyExp.ToString());
+                            myLog.SaveLog("ErrorLog");
+                            Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Error during copying");
+                            CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Downloading Error", "ToolBox encountered error during downloading logs:" + Environment.NewLine + copyExp.Message);
+                        }
                         return;
                     }
                     if (CustomMsgBox.Show(CustomMsgBox.MsgType.Decision, "File open", "Do you want to open " + fileName + " ?") == DialogResult.Cancel)
                     {
                         return;
                     }
-                    myLog.Add("Open");
+                    myLog.Add("Opening");
                     try
                     {
                         Process.Start(@".\Logs\Windows\" + fileName);
@@ -368,16 +375,12 @@ namespace TP_MasterTool.Klasy
         }
         public static string RegenerateEoDReports(ConnectionPara connectionPara, string startDate, string endDate)
         {
-            try
+            if (!System.IO.File.Exists(@"\\" + connectionPara.TAG + @"\c$\temp\runeodreports.bat"))
             {
-                if (!System.IO.File.Exists(@"\\" + connectionPara.TAG + @"\c$\temp\runeodreports.bat"))
+                if(!FileController.CopyFile(Globals.toolsPath + "runeodreports.bat", @"\\" + connectionPara.TAG + @"\c$\temp\runeodreports.bat", false, out Exception copyExp))
                 {
-                    Microsoft.VisualBasic.FileIO.FileSystem.CopyFile(Globals.toolsPath + "runeodreports.bat", @"\\" + connectionPara.TAG + @"\c$\temp\runeodreports.bat", true);
+                    return "[ERROR] Unable to copy script -> " + copyExp.Message;
                 }
-            }
-            catch (Exception exp)
-            {
-                return "[ERROR] Unable to copy script -> " + exp.Message;
             }
 
             try

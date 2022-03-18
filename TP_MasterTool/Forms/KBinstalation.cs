@@ -182,16 +182,12 @@ namespace TP_MasterTool.Forms
             foreach (string cmdFile in cmds)
             {
                 dataGridView1.Rows[rownr].Cells[1].Value = "Copying " + cmdFile;
-                try
-                {
-                    System.IO.File.Copy(Globals.toolsPath + cmdFile, @"\\" + connectionPara.TAG + @"\c$\temp\" + cmdFile, true);
-                }
-                catch (Exception exp)
+                if(!FileController.CopyFile(Globals.toolsPath + cmdFile, @"\\" + connectionPara.TAG + @"\c$\temp\" + cmdFile, false, out Exception copyExp))
                 {
                     gridChange(rownr, "Error", Globals.errorColor);
                     lock (logLock)
                     {
-                        log[rownr] += "," + Logger.LogTime() + ",[ERROR],Unable to copy " + cmdFile + "," + exp.Message;
+                        log[rownr] += "," + Logger.LogTime() + ",[ERROR],Unable to copy " + cmdFile + "," + copyExp.Message;
                     }
                     return;
                 }
@@ -273,7 +269,7 @@ namespace TP_MasterTool.Forms
         }
         private void FetchTxtButton_Click(object sender, EventArgs e)
         {
-            textBox.Text = FileController.OpenFileDialog("Text files (*.txt)|*.txt", ref logger);
+            textBox.Text = FileController.OpenFileDialog("Text files (*.txt)|*.txt");
         }
         private void PopulateGrid()
         {
@@ -358,10 +354,12 @@ namespace TP_MasterTool.Forms
             cancel = false;
             enableUI();
             string logPath = @".\Logs\MassLogKBinstall " + Logger.Datownik() + ".csv";
-            if (FileController.SaveTxtToFile(logPath, string.Join(Environment.NewLine, log), ref logger))
+            if (!FileController.SaveTxtToFile(logPath, string.Join(Environment.NewLine, log), out Exception saveExp))
             {
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Done, "Finished", "Tool finished all tasks." + Environment.NewLine + "Log file created and saved as: " + Path.GetFullPath(logPath));
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "File Save Error", "ToolBox encountered error while trying to save file:" + Environment.NewLine + saveExp.Message);
+                return;
             }
+            CustomMsgBox.Show(CustomMsgBox.MsgType.Done, "Finished", "Tool finished all tasks." + Environment.NewLine + "Log file created and saved as: " + Path.GetFullPath(logPath));
         } //fireup at the end of list or after abortion when all slaves done their 
         private void runCmd(string exe, string command, bool wait4Exit)
         {

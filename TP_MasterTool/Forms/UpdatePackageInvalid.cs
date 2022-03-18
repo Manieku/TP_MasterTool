@@ -217,7 +217,7 @@ namespace TP_MasterTool.Forms
         }
         private void FetchTxtButton_Click(object sender, EventArgs e)
         {
-            textBox.Text = FileController.OpenFileDialog("Text files (*.txt)|*.txt", ref logger);
+            textBox.Text = FileController.OpenFileDialog("Text files (*.txt)|*.txt");
         }
         private void PopulateGrid()
         {
@@ -299,11 +299,18 @@ namespace TP_MasterTool.Forms
             enableUI();
             string logPath = @".\Logs\UpdatePackageInvalidCheckLog " + Logger.Datownik() + ".txt";
             string logPath2 = @".\Logs\UpdatePackageInvalidCheckResult " + Logger.Datownik() + ".txt";
-            FileController.SaveTxtToFile(logPath2, string.Join(Environment.NewLine, raport1, raport2), ref logger);
-            if (FileController.SaveTxtToFile(logPath, string.Join(Environment.NewLine, log), ref logger))
+            if(!FileController.SaveTxtToFile(logPath2, string.Join(Environment.NewLine, raport1, raport2), out Exception saveExp))
             {
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Done, "Finished", "Tool finished all tasks." + Environment.NewLine + "Log file created and saved as: " + Path.GetFullPath(logPath));
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "File Save Error", "ToolBox encountered error while trying to save Result file:" + Environment.NewLine + saveExp.Message);
+                return;
             }
+            if (!FileController.SaveTxtToFile(logPath, string.Join(Environment.NewLine, log), out saveExp))
+            {
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "File Save Error", "ToolBox encountered error while trying to save log file:" + Environment.NewLine + saveExp.Message);
+                return;
+            }
+            CustomMsgBox.Show(CustomMsgBox.MsgType.Done, "Finished", "Tool finished all tasks." + Environment.NewLine + "Log file created and saved as: " + Path.GetFullPath(logPath));
+
         } //fireup at the end of list or after abortion when all slaves done their 
 
         private void dataGridView1_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)

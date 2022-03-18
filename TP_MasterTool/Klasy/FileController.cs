@@ -10,148 +10,56 @@ namespace TP_MasterTool
     public static class FileController
     {
         //----------FILE----------------
-        public static bool CopyFileWithUI(string source, string destination, ref Logger myLog)
+        public static bool CopyFile(string source, string destination, bool uiVisible, out Exception exp)
         {
-            myLog.Add("CopyWithUI: " + source + " - " + destination);
+            exp = null;
             try
             {
-                Microsoft.VisualBasic.FileIO.FileSystem.CopyFile(source, destination, Microsoft.VisualBasic.FileIO.UIOption.AllDialogs, Microsoft.VisualBasic.FileIO.UICancelOption.ThrowException);
+                if(uiVisible)
+                {
+                    Microsoft.VisualBasic.FileIO.FileSystem.CopyFile(source, destination, Microsoft.VisualBasic.FileIO.UIOption.AllDialogs, Microsoft.VisualBasic.FileIO.UICancelOption.ThrowException);
+                }
+                else
+                {
+                    Microsoft.VisualBasic.FileIO.FileSystem.CopyFile(source, destination, true);
+                }
             }
-            catch (System.IO.FileNotFoundException exp)
+            catch(Exception tempExp)
             {
-                myLog.Add(exp.ToString());
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "File Not Found Exception", "File couldn't be found. Please check if needed file is created and if machine is properly initialized." + Environment.NewLine + "Error: " + exp.Message);
-                return false;
-            }
-            catch (System.IO.PathTooLongException exp)
-            {
-                myLog.Add(exp.ToString());
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Path Too Long Exception", "Path to file you try to copy or target path is too long." + Environment.NewLine + "Error: " + exp.Message);
-                return false;
-            }
-            catch (OperationCanceledException)
-            {
-                myLog.Add("User canceled copying");
-                return false;
-            }
-            catch (Exception exp)
-            {
-                myLog.Add(exp.ToString());
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Unknown error occurred", "Unfortunately program encountered an unexpected error. Logs are collected and send to dev team." + Environment.NewLine + "Error: " + exp.Message);
-                return false;
-            }
-            myLog.Add("Copied successfully");
-            return true;
-        }
-        public static bool CopyFile(string source, string destination, bool nadpis, ref Logger myLog)
-        {
-            myLog.Add("CopyFile: " + source + " - " + destination + " with override: " + nadpis);
-            try
-            {
-                Microsoft.VisualBasic.FileIO.FileSystem.CopyFile(source, destination, nadpis);
-            }
-            catch (System.IO.FileNotFoundException exp)
-            {
-                myLog.Add(exp.ToString());
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "File Not Found Exception", "File couldn't be found. Please check if needed file is created and if machine is properly initialized." + Environment.NewLine + "Error: " + exp.Message);
-                return false;
-            }
-            catch (System.IO.PathTooLongException exp)
-            {
-                myLog.Add(exp.ToString());
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Path Too Long Exception", "Path to file you try to copy or target path is too long." + Environment.NewLine + "Error: " + exp.Message);
-                return false;
-            }
-            catch (System.IO.IOException exp)
-            {
-                myLog.Add(exp.ToString());
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "The destination file already exists", "The destination file already exists. Please check if file: " + destination + "should be there or if function wasn't executed already.");
-                return false;
-            }
-            catch (Exception exp)
-            {
-                myLog.Add(exp.ToString());
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Unknown error occurred", "Unfortunately program encountered an unexpected error. Logs are collected and send to dev team." + Environment.NewLine + "Error: " + exp.Message);
-                return false;
-            }
-            myLog.Add("Copied successfully");
-            return true;
-        }
-        public static bool MoveFileWithUI(string source, string destiniation, ref Logger myLog)
-        {
-            myLog.Add("MoveWithUI: " + source + " - " + destiniation);
-            try
-            {
-                Microsoft.VisualBasic.FileIO.FileSystem.MoveFile(source, destiniation, Microsoft.VisualBasic.FileIO.UIOption.AllDialogs, Microsoft.VisualBasic.FileIO.UICancelOption.ThrowException);
-            }
-            catch (System.IO.FileNotFoundException exp)
-            {
-                myLog.Add(exp.ToString());
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "File Not Found Exception", "File couldn't be found. Please check if needed file is created and if machine is properly initialized." + Environment.NewLine + "Error: " + exp.Message);
-                return false;
-            }
-            catch (System.IO.PathTooLongException exp)
-            {
-                myLog.Add(exp.ToString());
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Path Too Long Exception", "Path to file you try to move or target path is too long." + Environment.NewLine + "Error: " + exp.Message);
-                return false;
-            }
-            catch (System.IO.IOException exp)
-            {
-                myLog.Add(exp.ToString());
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "I/O Exception", "The file is in use by another process, or an I/O error occured." + Environment.NewLine + "Error: " + exp.Message);
-                return false;
-            }
-            catch (OperationCanceledException)
-            {
-                myLog.Add("User canceled copying");
-                return false;
-            }
-            catch (Exception exp)
-            {
-                myLog.Add(exp.ToString());
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Unknown error occurred", "Unfortunately program encountered an unexpected error. Logs are collected and send to dev team." + Environment.NewLine + "Error: " + exp.Message);
+                if (tempExp.GetType().ToString() != "System.OperationCanceledException")
+                {
+                    exp = tempExp;
+                }
                 return false;
             }
             return true;
         }
-        public static bool MoveFile(string source, string destiniation, bool nadpis, ref Logger myLog)
+        public static bool MoveFile(string source, string destination, bool uiVisible, out Exception exp)
         {
-            myLog.Add("MoveFile: " + source + " - " + destiniation + " with override: " + nadpis);
+            exp = null;
             try
             {
-                Microsoft.VisualBasic.FileIO.FileSystem.MoveFile(source, destiniation, nadpis);
+                if (uiVisible)
+                {
+                    Microsoft.VisualBasic.FileIO.FileSystem.MoveFile(source, destination, Microsoft.VisualBasic.FileIO.UIOption.AllDialogs, Microsoft.VisualBasic.FileIO.UICancelOption.ThrowException);
+                }
+                else
+                {
+                    Microsoft.VisualBasic.FileIO.FileSystem.MoveFile(source, destination, true);
+                }
             }
-            catch (System.IO.FileNotFoundException exp)
+            catch (Exception tempExp)
             {
-                myLog.Add(exp.ToString());
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "File Not Found Exception", "File couldn't be found. Please check if needed file is created and if machine is properly initialized." + Environment.NewLine + "Error: " + exp.Message);
-                return false;
-            }
-            catch (System.IO.PathTooLongException exp)
-            {
-                myLog.Add(exp.ToString());
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Path Too Long Exception", "Path to file you try to move or target path is too long." + Environment.NewLine + "Error: " + exp.Message);
-                return false;
-            }
-            catch (System.IO.IOException exp)
-            {
-                myLog.Add(exp.ToString());
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "I/O Exception", "The file is in use by another process, or an I/O error occured." + Environment.NewLine + "Error: " + exp.Message);
-                return false;
-            }
-            catch (Exception exp)
-            {
-                myLog.Add(exp.ToString());
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Unknown error occurred", "Unfortunately program encountered an unexpected error. Logs are collected and send to dev team." + Environment.NewLine + "Error: " + exp.Message);
+                if (tempExp.GetType().ToString() != "System.OperationCanceledException")
+                {
+                    exp = tempExp;
+                }
                 return false;
             }
             return true;
         }
-        public static string OpenFileDialog(string filter, ref Logger myLog)
+        public static string OpenFileDialog(string filter)
         {
-            myLog.Add("openTxtDialog: ");
-            string filePath = "";
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
                 openFileDialog.InitialDirectory = System.IO.Path.GetFullPath(@".\");
@@ -161,17 +69,12 @@ namespace TP_MasterTool
 
                 if (openFileDialog.ShowDialog() == DialogResult.OK)
                 {
-                    filePath = openFileDialog.FileName;
-                    myLog.log += filePath;
-                }
-                else
-                {
-                    myLog.log += "Canceled";
+                    return openFileDialog.FileName;
                 }
             }
-            return filePath;
+            return "";
         }
-        public static bool SaveTxtDialog(string text, ref Logger myLog)
+        public static void SaveTxtDialog(string text, ref Logger myLog)
         {
             using (SaveFileDialog saveFileDialog = new SaveFileDialog())
             {
@@ -182,7 +85,7 @@ namespace TP_MasterTool
 
                 if (saveFileDialog.ShowDialog() != DialogResult.OK)
                 {
-                    return false;
+                    return;
                 }
                 if (System.IO.File.Exists(saveFileDialog.FileName))
                 {
@@ -193,164 +96,85 @@ namespace TP_MasterTool
                     catch (Exception exp)
                     {
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "File Override Error", "Unable to override selected file:" + Environment.NewLine + exp.Message);
-                        return false;
+                        return;
                     }
                 }
-                return FileController.SaveTxtToFile(saveFileDialog.FileName, string.Join(Environment.NewLine, text), ref myLog);
+                if(!FileController.SaveTxtToFile(saveFileDialog.FileName, text, out Exception saveExp))
+                {
+                    CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "File Save Error", "ToolBox encountered error while trying to save file:" + Environment.NewLine + saveExp.Message);
+                }
             }
         }
-        public static bool SaveTxtToFile(string filePath, string text, ref Logger myLog)
+        public static bool SaveTxtToFile(string filePath, string text, out Exception saveExp)
         {
-            myLog.Add("saveTxtToFile: " + filePath);
+            saveExp = null;
             try
             {
                 System.IO.File.AppendAllText(filePath, text);
             }
-            catch (System.IO.PathTooLongException exp)
-            {
-                myLog.Add(exp.ToString());
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Path Too Long Exception", "Path or filename exceed the system-defined maximum length." + Environment.NewLine + "Error: " + exp.Message);
-                return false;
-            }
-            catch (System.IO.DirectoryNotFoundException exp)
-            {
-                myLog.Add(exp.ToString());
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Directory Not Found Exception", "The specified path is invalid (for example, the directory doesn't exist or it is on an unmapped drive)." + Environment.NewLine + "Please check if machine is properly initialized." + Environment.NewLine + "Error: " + exp.Message);
-                return false;
-            }
-            catch (System.IO.IOException exp)
-            {
-                myLog.Add(exp.ToString());
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "I/O Exception", "An I/O error occurred while opening the file." + Environment.NewLine + "Error: " + exp.Message);
-                return false;
-            }
             catch (Exception exp)
             {
-                myLog.Add(exp.ToString());
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Unknown error occurred", "Unfortunately program encountered an unexpected error. Logs are collected and send to dev team." + Environment.NewLine + "Error: " + exp.Message);
+                saveExp = exp;
                 return false;
             }
-            myLog.Add("Writing to File successful");
             return true;
         }
+
         //----------FOLDER-------------
-        public static bool CopyFolder(string source, string destination, bool nadpis, ref Logger myLog)
+        public static bool CopyFolder(string source, string destination, bool uiVisible, out Exception exp)
         {
-            myLog.Add("copyFolder: " + source + " - " + destination + " with override: " + nadpis);
+            exp = null;
             try
             {
-                Microsoft.VisualBasic.FileIO.FileSystem.CopyDirectory(source, destination, nadpis);
+                if (uiVisible)
+                {
+                    Microsoft.VisualBasic.FileIO.FileSystem.CopyDirectory(source, destination, Microsoft.VisualBasic.FileIO.UIOption.AllDialogs, Microsoft.VisualBasic.FileIO.UICancelOption.ThrowException);
+                }
+                else
+                {
+                    Microsoft.VisualBasic.FileIO.FileSystem.CopyDirectory(source, destination, true);
+                }
             }
-            catch (System.IO.DirectoryNotFoundException exp)
+            catch (Exception tempExp)
             {
-                myLog.Add(exp.ToString());
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Directory Not Found Exception", "Directory couldn't be found. Please check if needed directory is created and if machine is properly initialized." + Environment.NewLine + "Error: " + exp.Message);
-                return false;
-            }
-            catch (System.IO.PathTooLongException exp)
-            {
-                myLog.Add(exp.ToString());
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Path Too Long Exception", "Path to directory you try to copy or target path is too long." + Environment.NewLine + "Error: " + exp.Message);
-                return false;
-            }
-            catch (System.IO.IOException exp)
-            {
-                myLog.Add(exp.ToString());
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "The destination file already exists", "The destination file already exists. Please check if file: " + destination + "should be there or if function wasn't executed already.");
-                return false;
-            }
-            catch (Exception exp)
-            {
-                myLog.Add(exp.ToString());
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Unknown error occurred", "Unfortunately program encountered an unexpected error. Logs are collected and send to dev team." + Environment.NewLine + "Error: " + exp.Message);
+                if (tempExp.GetType().ToString() != "System.OperationCanceledException")
+                {
+                    exp = tempExp;
+                }
                 return false;
             }
             return true;
         }
-        public static bool CopyFolderWithUI(string source, string destination, ref Logger myLog)
+        public static bool MakeFolder(string path, out Exception makeExp)
         {
-            myLog.Add("copyFolderWithUI: " + source + " - " + destination);
-            try
+            makeExp = null;
+            if (System.IO.Directory.Exists(path))
             {
-                Microsoft.VisualBasic.FileIO.FileSystem.CopyDirectory(source, destination, Microsoft.VisualBasic.FileIO.UIOption.AllDialogs, Microsoft.VisualBasic.FileIO.UICancelOption.ThrowException);
+                return true;
             }
-            catch (System.IO.DirectoryNotFoundException exp)
-            {
-                myLog.Add(exp.ToString());
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Directory Not Found Exception", "Directory couldn't be found. Please check if needed directory is created and if machine is properly initialized." + Environment.NewLine + "Error: " + exp.Message);
-                return false;
-            }
-            catch (System.IO.PathTooLongException exp)
-            {
-                myLog.Add(exp.ToString());
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Path Too Long Exception", "Path to directory you try to copy or target path is too long." + Environment.NewLine + "Error: " + exp.Message);
-                return false;
-            }
-            catch (System.IO.IOException exp)
-            {
-                myLog.Add(exp.ToString());
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "The destination file already exists", "The destination file already exists. Please check if file: " + destination + "should be there or if function wasn't executed already.");
-                return false;
-            }
-            catch (OperationCanceledException)
-            {
-                myLog.Add("User canceled copying");
-                return false;
-            }
-            catch (Exception exp)
-            {
-                myLog.Add(exp.ToString());
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Unknown error occurred", "Unfortunately program encountered an unexpected error. Logs are collected and send to dev team." + Environment.NewLine + "Error: " + exp.Message);
-                return false;
-            }
-            return true;
-        }
-        public static bool MakeFolder(string path, ref Logger myLog)
-        {
-            if (System.IO.Directory.Exists(path)) { return true; }
-            myLog.Add("Create Folder: " + path);
             try
             {
                 System.IO.Directory.CreateDirectory(path);
             }
-            catch (System.IO.PathTooLongException exp)
+            catch (Exception tempExp)
             {
-                myLog.Add(exp.ToString());
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Path Too Long Exception", "The specified path exceed the system-defined maximum length." + Environment.NewLine + "Error: " + exp.Message);
+                makeExp = tempExp;
                 return false;
             }
-            catch (System.IO.DirectoryNotFoundException exp)
-            {
-                myLog.Add(exp.ToString());
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Directory Not Found Exception", "The specified path is invalid (for example, it is on an unmapped drive)." + Environment.NewLine + "Please check if machine is properly initialized." + Environment.NewLine + "Error: " + exp.Message);
-                return false;
-            }
-            catch (Exception exp)
-            {
-                myLog.Add(exp.ToString());
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Unknown error occurred", "Unfortunately program encountered an unexpected error. Logs are collected and send to dev team." + Environment.NewLine + "Error: " + exp.Message);
-                return false;
-            }
-            myLog.Add("Folder creation successful");
             return true;
         }
-        public static bool ClearFolder(string path, bool silent, bool fileOnly, ref Logger myLog)
+        public static bool ClearFolder(string path, bool fileOnly, out string errorList)
         {
-            bool error = false;
-            myLog.Add("Clear Folder(" + silent + " " + fileOnly + "): " + path);
+            errorList = "";
             System.IO.DirectoryInfo directory = new System.IO.DirectoryInfo(path);
             if (!directory.Exists)
             {
-                myLog.Add("Folder don't exists");
-                if (!silent)
-                {
-                    CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Folder don't exists", "Folder you're trying to clear don't exists");
-                }
+                errorList += "Selected folder doesn't exist";
                 return false;
             }
             if (!fileOnly)
             {
-                foreach (System.IO.DirectoryInfo folder in directory.GetDirectories())
+                foreach (System.IO.DirectoryInfo folder in directory.EnumerateDirectories())
                 {
                     try
                     {
@@ -358,12 +182,11 @@ namespace TP_MasterTool
                     }
                     catch (Exception exp)
                     {
-                        myLog.Add("Unable to delete folder: " + exp.Message);
-                        error = true;
+                        errorList += "Unable to delete folder: " + exp.Message + Environment.NewLine;
                     }
                 }
             }
-            foreach (System.IO.FileInfo file in directory.GetFiles())
+            foreach (System.IO.FileInfo file in directory.EnumerateFiles())
             {
                 try
                 {
@@ -371,21 +194,14 @@ namespace TP_MasterTool
                 }
                 catch (Exception exp)
                 {
-                    myLog.Add("Unable to delete file: " + exp.Message);
-                    error = true;
+                    errorList += "Unable to delete file: " + exp.Message + Environment.NewLine;
                 }
             }
-            if (error && !silent)
+            if(errorList != "")
             {
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Error encounter during deleting", "Some files/folders couldn't be deleted from:" + Environment.NewLine + path);
+                return false;
             }
-            if (error)
-            {
-                myLog.wasError = true;
-                return error;
-            }
-            myLog.Add("Deleting files successful");
-            return error;
+            return true;
         }
         //--------COMPLEX--------------
         public static bool ZipAndStealFolder(string prefix, string remotePath, string absolutePath, ConnectionPara connectionPara)
@@ -441,10 +257,16 @@ namespace TP_MasterTool
                                 return;
                             }
                         }
-                        if (!FileController.CopyFileWithUI(grabFromPath + @"\" + outputFolderName + @".zip", Globals.userTempLogsPath + outputFolderName + @".zip", ref myLog))
+                        myLog.Add("Copying: " + grabFromPath + @"\" + outputFolderName + @".zip");
+                        if (!FileController.CopyFile(grabFromPath + @"\" + outputFolderName + @".zip", Globals.userTempLogsPath + outputFolderName + @".zip", true, out Exception copyExp))
                         {
-                            Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Copy error");
-                            myLog.SaveLog("ErrorLog");
+                            if (copyExp != null)
+                            {
+                                myLog.Add("Failed:" + Environment.NewLine + copyExp.ToString());
+                                myLog.SaveLog("ErrorLog");
+                                Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Error during copying");
+                                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Downloading Error", "ToolBox encountered error during downloading logs:" + Environment.NewLine + copyExp.Message);
+                            }
                         }
                     }
                     Process.Start("explorer.exe", grabFromPath);

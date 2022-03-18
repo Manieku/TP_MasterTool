@@ -454,7 +454,7 @@ namespace TP_MasterTool.Forms
         }
         private void FetchTxtButton_Click(object sender, EventArgs e)
         {
-            textBox.Text = FileController.OpenFileDialog("Text files (*.txt)|*.txt", ref logger);
+            textBox.Text = FileController.OpenFileDialog("Text files (*.txt)|*.txt");
         }
         private void PopulateGrid()
         {
@@ -549,11 +549,13 @@ namespace TP_MasterTool.Forms
             }
             catch { }
             enableUI();
-            string logPath = @".\Logs\MassTemplateLog " + Logger.Datownik() + ".txt";
-            if (FileController.SaveTxtToFile(logPath, string.Join(Environment.NewLine, log), ref logger))
+            string logPath = @".\Logs\" + functionSelectList.SelectedItem.ToString() + " " + Logger.Datownik() + ".txt";
+            if (!FileController.SaveTxtToFile(logPath, string.Join(Environment.NewLine, log), out Exception saveExp))
             {
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Done, "Finished", "Tool finished all tasks." + Environment.NewLine + "Log file created and saved as: " + Path.GetFullPath(logPath));
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "File Save Error", "ToolBox encountered error while trying to save file:" + Environment.NewLine + saveExp.Message);
+                return;
             }
+            CustomMsgBox.Show(CustomMsgBox.MsgType.Done, "Finished", "Tool finished all tasks." + Environment.NewLine + "Log file created and saved as: " + Path.GetFullPath(logPath));
         } //fireup at the end of list or after abortion when all slaves done their 
 
         private void dataGridView1_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)

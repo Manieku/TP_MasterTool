@@ -114,6 +114,17 @@ namespace TP_MasterTool
         }
         private void Test_Button_Click(object sender, EventArgs e)
         {
+            if(!FileController.CopyFile(@".\test.evtx", @".\test2.evtx", true, out Exception exp))
+            {
+                if(exp != null)
+                {
+                    MessageBox.Show(exp.Message);
+                }
+                else
+                {
+                    MessageBox.Show("canceled");
+                }
+            }
             //string output = "";
             //foreach (string file in System.IO.Directory.GetFiles(@"\\" + connectionPara.TAG + @"\d$\TPDotnet\Server\HostData\Download\Data", "*", System.IO.SearchOption.AllDirectories))
             //{
@@ -162,7 +173,7 @@ namespace TP_MasterTool
             Telemetry.LogFunctionUsage(Globals.Funkcje.ImportNote);
             try
             {
-                notepad.Lines = System.IO.File.ReadAllLines(FileController.OpenFileDialog("Text files (*.txt)|*.txt", ref myLog));
+                notepad.Lines = System.IO.File.ReadAllLines(FileController.OpenFileDialog("Text files (*.txt)|*.txt"));
             }
             catch { }
         }
@@ -354,7 +365,10 @@ namespace TP_MasterTool
                 Main.ChangeStatusBar("Ready");
                 return;
             }
-            FileController.SaveTxtToFile(@".\Logs\Ping(" + GetTAG() + ") - " + Logger.Datownik() + ".txt", "Ping executed at: " + DateTime.Now.ToString() + Environment.NewLine + cmdOutput.outputText, ref myLog);
+            if(!FileController.SaveTxtToFile(@".\Logs\Ping(" + GetTAG() + ") - " + Logger.Datownik() + ".txt", "Ping executed at: " + DateTime.Now.ToString() + Environment.NewLine + cmdOutput.outputText, out Exception saveExp))
+            {
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "File Save Error", "ToolBox encountered error while trying to save file:" + Environment.NewLine + saveExp.Message);
+            }
             ChangeStatusBar("Ready");
         }
         private void PingOverTimeMenuItem_Click(object sender, EventArgs e)
@@ -382,12 +396,13 @@ namespace TP_MasterTool
                     }
                     else
                     {
-                        if (!FileController.MoveFile(@"\\" + connectionPara.TAG + @"\c$\SMART\DiskInfo.txt", @".\Logs\SMART\SMART - " + connectionPara.TAG + ".txt", true, ref myLog))
+                        if (!FileController.MoveFile(@"\\" + connectionPara.TAG + @"\c$\SMART\DiskInfo.txt", @".\Logs\SMART\SMART - " + connectionPara.TAG + ".txt", false, out Exception moveExp))
                         {
-                            Logger.QuickLog(Globals.Funkcje.GetSMART, @"\\" + connectionPara.TAG + @"\c$\SMART\DiskInfo.txt | " + @".\Logs\SMART\SMART - " + connectionPara.TAG + ".txt", connectionPara.TAG, "WarningLog", "ToolBox wasn't able to copy command output back from targeted host.");
-                            errorMsg = @"ToolBox wasn't able to copy command output back from targeted host. You can check it manually at \\" + connectionPara.TAG + @"\C$\SMART\DiskInfo.txt";
+                            Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.GetSMART, "Retrieving result error");
+                            Logger.QuickLog(Globals.Funkcje.GetSMART, @"\\" + connectionPara.TAG + @"\c$\SMART\DiskInfo.txt | " + @".\Logs\SMART\SMART - " + connectionPara.TAG + ".txt", connectionPara.TAG, "WarningLog", "ToolBox wasn't able to copy command output back from targeted host." + Environment.NewLine + moveExp.ToString());
                             ChangeStatusBar("Ready");
                             sMARTToolStripMenuItem.Enabled = true;
+                            CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Retrieving result error", @"ToolBox wasn't able to copy command output back from targeted host. You can check it manually at \\" + connectionPara.TAG + @"\C$\SMART\DiskInfo.txt");
                             return;
                         }
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Done, "SMART Values Saved", @"Disc SMART values successfully saved at .\Logs\SMART\SMART - " + connectionPara.TAG + ".txt");
@@ -444,13 +459,13 @@ namespace TP_MasterTool
                 return;
             }
             Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.WinDirStatInstall, "");
-            Telemetry.LogFunctionUsage(Globals.Funkcje.WinDirStatInstall);
-            Logger winDirStatLog = new Logger(Globals.Funkcje.WinDirStatInstall, "None", connectionPara.TAG);
-            if (!FileController.CopyFile(Globals.toolsPath + "windirstat.exe", @"\\" + connectionPara.TAG + @"\c$\temp\windirstat.exe", true, ref winDirStatLog))
+            if (!FileController.CopyFile(Globals.toolsPath + "windirstat.exe", @"\\" + connectionPara.TAG + @"\c$\temp\windirstat.exe", false, out Exception copyExp))
             {
-                winDirStatLog.SaveLog("ErrorLog");
+                Logger.QuickLog(Globals.Funkcje.WinDirStatInstall, "Copying exe to host", connectionPara.TAG, "ErrorLog", copyExp.ToString());
                 Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Copying windirstat failed");
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Copying Error", "ToolBox encountered error while trying to copy winDirStat:" + Environment.NewLine + copyExp.Message);
             }
+            Telemetry.LogFunctionUsage(Globals.Funkcje.WinDirStatInstall);
             ChangeStatusBar("Ready");
         }
 
@@ -685,21 +700,28 @@ namespace TP_MasterTool
 
             ChangeStatusBar("Copying posDB...");
 
-            if (!FileController.CopyFile(@"\\" + connectionPara.TAG + @"\c$\Users\" + connectionPara.country + connectionPara.storeNr + connectionPara.storeType + @".AL\AppData\Local\Diebold_Nixdorf\mobile_cache\Local Storage\http_localhost_8088.localstorage", @".\http_localhost_8088.localstorage", true, ref colonFixLog))
+            colonFixLog.Add("Copying localstorage from till");
+            if (!FileController.CopyFile(@"\\" + connectionPara.TAG + @"\c$\Users\" + connectionPara.country + connectionPara.storeNr + connectionPara.storeType + @".AL\AppData\Local\Diebold_Nixdorf\mobile_cache\Local Storage\http_localhost_8088.localstorage", @".\http_localhost_8088.localstorage", false, out Exception copyExp))
             {
-                colonFixLog.SaveLog("ErrorLog");
+                colonFixLog.wasError = true;
+                colonFixLog.Add(copyExp.ToString());
                 Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "localstorage file copy error");
-                ChangeStatusBar("Ready");
-                return;
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Localstorage copy error", "ToolBox encountered error while copying localstorage file:" + Environment.NewLine + copyExp.Message);
             }
-            if (!FileController.CopyFile(Globals.toolsPath + "ActOperatorID.txt", @".\ActOperatorID.txt", true, ref colonFixLog))
+            colonFixLog.Add("Copying ActOperatorID");
+            if (!FileController.CopyFile(Globals.toolsPath + "ActOperatorID.txt", @".\ActOperatorID.txt", false, out copyExp))
+            {
+                colonFixLog.wasError = true;
+                colonFixLog.Add(copyExp.ToString());
+                Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "ActOperatorID file copy error");
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "ActOperatorID copy error", "ToolBox encountered error while copying ActOperatorID file:" + Environment.NewLine + copyExp.Message);
+            }
+            if(colonFixLog.wasError)
             {
                 colonFixLog.SaveLog("ErrorLog");
-                Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "ActOperatorID file copy error");
                 ChangeStatusBar("Ready");
                 return;
             }
-
             ChangeStatusBar("Waiting for confirmation");
             if (CustomMsgBox.Show(CustomMsgBox.MsgType.Info, "Waiting for file repair and confirmation", "Please repair database file and press OK to copy file back to the till.") != DialogResult.OK)
             {
@@ -708,11 +730,14 @@ namespace TP_MasterTool
                 return;
             }
             ChangeStatusBar("Copying DB back to till...");
-            if (!FileController.MoveFile(@".\http_localhost_8088.localstorage", @"\\" + connectionPara.TAG + @"\c$\Users\" + connectionPara.country + connectionPara.storeNr + @"P.AL\AppData\Local\Diebold_Nixdorf\mobile_cache\Local Storage\http_localhost_8088.localstorage", true, ref colonFixLog))
+            colonFixLog.Add("Copying DB back to till");
+            if (!FileController.MoveFile(@".\http_localhost_8088.localstorage", @"\\" + connectionPara.TAG + @"\c$\Users\" + connectionPara.country + connectionPara.storeNr + connectionPara.storeType + @".AL\AppData\Local\Diebold_Nixdorf\mobile_cache\Local Storage\http_localhost_8088.localstorage", false, out Exception moveExp))
             {
+                colonFixLog.Add(moveExp.ToString());
                 colonFixLog.SaveLog("ErrorLog");
                 Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, @"Copying localstorage file back error");
                 ChangeStatusBar("Ready");
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Copying localstorage file back error", "ToolBox encountered error trying to copy localstorage file back to till:" + Environment.NewLine + moveExp.Message);
                 return;
             }
 
@@ -755,11 +780,12 @@ namespace TP_MasterTool
 
                     ChangeStatusBar("Clearing Cache");
                     myLog.Add("Clearing Cache");
-                    FileController.ClearFolder(@"\\" + connectionPara.TAG + @"\c$\Users\" + connectionPara.country + connectionPara.storeNr + connectionPara.storeType + @".AL\AppData\Local\Diebold_Nixdorf\mobile_cache\Local Storage", false, true, ref myLog);
-                    if (myLog.wasError)
+                    if(!FileController.ClearFolder(@"\\" + connectionPara.TAG + @"\c$\Users\" + connectionPara.country + connectionPara.storeNr + connectionPara.storeType + @".AL\AppData\Local\Diebold_Nixdorf\mobile_cache\Local Storage", false, out string errorList))
                     {
                         Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Unable to delete files");
+                        myLog.Add(errorList);
                         myLog.SaveLog("ErrorLog");
+                        CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Clearing Folder Error", "ToolBox was unable to delete files in folder:" + Environment.NewLine + errorList);
                     }
                     ChangeStatusBar("Ready");
                     Telemetry.LogFunctionUsage(Globals.Funkcje.LocalCacheClear);
@@ -801,10 +827,14 @@ namespace TP_MasterTool
                         return;
                     }
                     string outputFolderName = @"\\" + connectionPara.TAG + @"\d$\WNI\4GSS\Parked - " + tixnr + "(" + connectionPara.TAG + ") " + Logger.Datownik();
-                    if (!FileController.MakeFolder(outputFolderName, ref myLog))
+                    myLog.Add("Creating folder: " + outputFolderName);
+                    if (!FileController.MakeFolder(outputFolderName, out Exception makeExp))
                     {
+                        Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Creating folder error");
+                        myLog.Add(makeExp.ToString());
                         myLog.SaveLog("ErrorLog");
                         ChangeStatusBar("Ready");
+                        CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Creating Folder Error", "ToolBox was unable to create folder " + outputFolderName + Environment.NewLine + makeExp.Message);
                         return;
                     }
                     myLog.Add("Moving Files");
@@ -957,11 +987,14 @@ namespace TP_MasterTool
 
                     Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.ApcServiceFix, "");
                     Main.ChangeStatusBar("Copying config file");
-                    if (!FileController.CopyFile(Globals.toolsPath + "m11.cfg", @"\\" + connectionPara.TAG + @"\c$\Program Files (x86)\APC\PowerChute Business Edition\agent\m11.cfg", true, ref myLog))
+                    myLog.Add("Copying config file");
+                    if (!FileController.CopyFile(Globals.toolsPath + "m11.cfg", @"\\" + connectionPara.TAG + @"\c$\Program Files (x86)\APC\PowerChute Business Edition\agent\m11.cfg", false, out Exception copyExp))
                     {
                         Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Copying config file error");
+                        myLog.Add(copyExp.ToString());
                         myLog.SaveLog("ErrorLog");
                         Main.ChangeStatusBar("Ready");
+                        CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Config Copying Error", "ToolBox encountered error while copying config file:" + Environment.NewLine + copyExp.Message);
                         return;
                     }
 
@@ -1043,7 +1076,7 @@ namespace TP_MasterTool
         {
             Logger myLog = new Logger(Globals.Funkcje.TransactionsXMLToCSV, "none", "none");
             Telemetry.LogFunctionUsage(Globals.Funkcje.TransactionsXMLToCSV);
-            string filePath = FileController.OpenFileDialog("XML files (*.xml)|*.xml", ref myLog);
+            string filePath = FileController.OpenFileDialog("XML files (*.xml)|*.xml");
             if (filePath == "")
             {
                 return;
@@ -1074,8 +1107,9 @@ namespace TP_MasterTool
             {
                 output += node.Element("WorkstationID").Value + "," + node.Element("SequenceNumber").Value + "," + node.Element("BusinessDayDate").Value + "," + node.Element("EndDateTime").Value + Environment.NewLine;
             }
-            if (!FileController.SaveTxtToFile(Globals.userTempLogsPath + "TransactionsXMLToCSV - " + Logger.Datownik() + ".csv", output, ref myLog))
+            if (!FileController.SaveTxtToFile(Globals.userTempLogsPath + "TransactionsXMLToCSV - " + Logger.Datownik() + ".csv", output, out Exception saveExp))
             {
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "File Save Error", "ToolBox encountered error while trying to save file:" + Environment.NewLine + saveExp.Message);
                 return;
             }
             CustomMsgBox.Show(CustomMsgBox.MsgType.Done, "Conversion successful", @"CSV file successfully saved at T:\temp\ToolBoxLogs");

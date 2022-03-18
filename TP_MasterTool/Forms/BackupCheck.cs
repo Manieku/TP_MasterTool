@@ -232,14 +232,12 @@ namespace TP_MasterTool.Forms
             output += dFilesStatusLabel.Text + dSummaryLabel.Text + Environment.NewLine;
 
             string fileName = "BackupCheck(" + connectionPara.TAG + ") - " + Logger.Datownik() + ".txt";
-            if (FileController.SaveTxtToFile(@".\Logs\" + fileName, output, ref myLog))
+            if (!FileController.SaveTxtToFile(@".\Logs\" + fileName, output, out Exception saveExp))
             {
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Done, "Raport Saved", "Raport was successfully saved in Logs folder as: " + fileName);
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "File Save Error", "ToolBox encountered error while trying to save file:" + Environment.NewLine + saveExp.Message);
+                return;
             }
-            else
-            {
-                myLog.SaveLog("ErrorLog");
-            }
+            CustomMsgBox.Show(CustomMsgBox.MsgType.Done, "Raport Saved", "Raport was successfully saved in Logs folder as: " + fileName);
         }
     }
 }
