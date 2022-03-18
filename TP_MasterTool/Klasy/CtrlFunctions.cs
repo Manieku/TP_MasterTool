@@ -282,9 +282,10 @@ namespace TP_MasterTool.Klasy
 
             if (!System.IO.File.Exists(@"\\" + connectionPara.TAG + @"\c$\SMART\DiskInfo64.exe"))
             {
-                myLog.Add("SMART files not Found");
-                if (!FileController.CopyFolder(Globals.toolsPath + @"CrystalDiskInfo", @"\\" + connectionPara.TAG + @"\c$\SMART", true, ref myLog))
+                myLog.Add("SMART files not Found" + Environment.NewLine + "Copying CrystalDiskInfo Folder");
+                if (!FileController.CopyFolder(Globals.toolsPath + @"CrystalDiskInfo", @"\\" + connectionPara.TAG + @"\c$\SMART", false, out Exception copyExp))
                 {
+                    myLog.Add(copyExp.ToString());
                     myLog.SaveLog("ErrorLog");
                     errorMsg = @"ToolBox wasn't able to copy CrystalDiskInfo into targeted host. Please initialize it anew and try again";
                     DeleteLock(@"\\" + connectionPara.TAG + @"\c$\SMART\smart.lock");
