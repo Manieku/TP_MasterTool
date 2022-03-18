@@ -43,7 +43,6 @@ namespace TP_MasterTool.Forms
             this.dBackupFilesDataGrid = new System.Windows.Forms.DataGridView();
             this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.VeritasLogTextBox = new System.Windows.Forms.RichTextBox();
             this.rescanButton = new System.Windows.Forms.Button();
             this.saveButton = new System.Windows.Forms.Button();
@@ -51,7 +50,6 @@ namespace TP_MasterTool.Forms
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dBackupFilesDataGrid)).BeginInit();
-            this.groupBox3.SuspendLayout();
             this.SuspendLayout();
             // 
             // driveSpaceLabel
@@ -212,26 +210,15 @@ namespace TP_MasterTool.Forms
             this.dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
             this.dataGridViewTextBoxColumn2.ReadOnly = true;
             // 
-            // groupBox3
-            // 
-            this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox3.Controls.Add(this.VeritasLogTextBox);
-            this.groupBox3.Location = new System.Drawing.Point(16, 493);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(846, 525);
-            this.groupBox3.TabIndex = 6;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Veritas Log";
-            // 
             // VeritasLogTextBox
             // 
-            this.VeritasLogTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.VeritasLogTextBox.Location = new System.Drawing.Point(3, 18);
+            this.VeritasLogTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.VeritasLogTextBox.Location = new System.Drawing.Point(16, 503);
             this.VeritasLogTextBox.Name = "VeritasLogTextBox";
             this.VeritasLogTextBox.ReadOnly = true;
-            this.VeritasLogTextBox.Size = new System.Drawing.Size(840, 504);
+            this.VeritasLogTextBox.Size = new System.Drawing.Size(840, 222);
             this.VeritasLogTextBox.TabIndex = 0;
             this.VeritasLogTextBox.Text = "";
             // 
@@ -261,15 +248,15 @@ namespace TP_MasterTool.Forms
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(874, 1030);
+            this.ClientSize = new System.Drawing.Size(874, 753);
+            this.Controls.Add(this.VeritasLogTextBox);
             this.Controls.Add(this.saveButton);
             this.Controls.Add(this.rescanButton);
-            this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.statusLabel);
             this.Controls.Add(this.driveSpaceLabel);
-            this.MinimumSize = new System.Drawing.Size(892, 1028);
+            this.MinimumSize = new System.Drawing.Size(892, 800);
             this.Name = "BackupCheck";
             this.Text = "BackupCheck";
             this.Shown += new System.EventHandler(this.BackupCheck_Shown);
@@ -279,7 +266,6 @@ namespace TP_MasterTool.Forms
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dBackupFilesDataGrid)).EndInit();
-            this.groupBox3.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -301,7 +287,6 @@ namespace TP_MasterTool.Forms
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
         private System.Windows.Forms.Label cSummaryLabel;
         private System.Windows.Forms.Label dSummaryLabel;
-        private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.RichTextBox VeritasLogTextBox;
         private System.Windows.Forms.Button rescanButton;
         private System.Windows.Forms.Button saveButton;
