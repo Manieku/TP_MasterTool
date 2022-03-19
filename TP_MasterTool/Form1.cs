@@ -104,6 +104,10 @@ namespace TP_MasterTool
             InitializeComponent();
             Application.ThreadException += new System.Threading.ThreadExceptionEventHandler(Logger.UnhandledError);
         }
+        private bool testowytest(string placki, int cycuszki)
+        {
+            throw new Exception();
+        }
         private void Form1_Load(object sender, EventArgs e)
         {
             interfejs = this;
@@ -114,17 +118,7 @@ namespace TP_MasterTool
         }
         private void Test_Button_Click(object sender, EventArgs e)
         {
-            if(!FileController.CopyFile(@".\test.evtx", @".\test2.evtx", true, out Exception exp))
-            {
-                if(exp != null)
-                {
-                    MessageBox.Show(exp.Message);
-                }
-                else
-                {
-                    MessageBox.Show("canceled");
-                }
-            }
+            testowytest("plackowmaty", 69);
             //string output = "";
             //foreach (string file in System.IO.Directory.GetFiles(@"\\" + connectionPara.TAG + @"\d$\TPDotnet\Server\HostData\Download\Data", "*", System.IO.SearchOption.AllDirectories))
             //{

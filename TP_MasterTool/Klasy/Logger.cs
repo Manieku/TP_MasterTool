@@ -18,7 +18,7 @@ namespace TP_MasterTool
             public static string programVersion = FileVersionInfo.GetVersionInfo(executionLocation).FileVersion;
             public static string AddEnviromentData()
             {
-                string data = Environment.NewLine + Environment.NewLine +
+                return Environment.NewLine + Environment.NewLine +
                     "============= EnviromentData =============" + Environment.NewLine +
                     "User: " + activeUser + Environment.NewLine +
                     "Tool Version: " + programVersion + Environment.NewLine +
@@ -26,13 +26,12 @@ namespace TP_MasterTool
                     "Psexec in folder: " + System.IO.File.Exists(@".\psexec.exe").ToString() + Environment.NewLine +
                     "Memory Usage: " + (((Process.GetCurrentProcess().WorkingSet64) / 1024) / 1024).ToString() + "MB" + Environment.NewLine +
                     "=====================================";
-                return data;
             }
         }
         public static void UnhandledError(object sender, System.Threading.ThreadExceptionEventArgs e)
         {
-            Logger myLog = new Logger(Globals.Funkcje.UnhandledException, "None", "");
-            myLog.log += Environment.NewLine + e.Exception.ToString();
+            Logger myLog = new Logger(Globals.Funkcje.UnhandledException, e.Exception.TargetSite.ToString(), Main.GetTAG());
+            myLog.Add(e.Exception.ToString());
             myLog.SaveLog("CriticalError");
             CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Unhandled exception encountered", "Congratuation! You found unhandled error in application. Logs are collected and send to dev team. Application will restart to recover full functionality" + "\n" + "Error: " + e.Exception.Message);
             Application.Restart();
