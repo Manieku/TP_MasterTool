@@ -105,18 +105,12 @@ namespace TP_MasterTool.Forms
         }
         private string AnalizeFiles(ref DataGridView dataGrid, ref Label summaryLabel)
         {
-            string output = "";
             bool fileCountError = false;
             bool uptodateError = false;
             bool dupicatesError = false;
 
-            if (dataGrid.Rows.Count == 2)
+            if (dataGrid.Rows.Count != 2)
             {
-                output += "- Only 2 backup files: OK" + Environment.NewLine;
-            }
-            else
-            {
-                output += "- Only 2 backup files: FAILED" + Environment.NewLine;
                 fileCountError = true;
             }
 
@@ -135,28 +129,22 @@ namespace TP_MasterTool.Forms
                     yesterday = true;
                 }
             }
-            if (today && yesterday)
+            if (!today && !yesterday)
             {
-                output += "- Up to date: OK" + Environment.NewLine;
-            }
-            else
-            {
-                output += "- Up to date: FAILED" + Environment.NewLine;
                 uptodateError = true;
             }
 
             if (dates.Count != dates.Distinct().Count())
             {
-                output += "- No Duplicates: FAILED" + Environment.NewLine;
                 dupicatesError = true;
-            }
-            else
-            {
-                output += "- No Duplicates: OK" + Environment.NewLine;
             }
 
             summaryLabel.Text += Summary(fileCountError, uptodateError, dupicatesError);
-            return output;
+
+            return "- Only 2 backup files: " + !fileCountError + Environment.NewLine +
+                "- Up to date: " + !uptodateError + Environment.NewLine +
+                "- No Duplicates: " + !dupicatesError + Environment.NewLine;
+
         }
         private string Summary(bool fileCountError, bool uptodateError, bool duplicatesError)
         {
