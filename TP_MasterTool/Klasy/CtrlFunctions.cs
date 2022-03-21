@@ -362,9 +362,9 @@ namespace TP_MasterTool.Klasy
             }
             return true;
         }
-        public static string GetDiskSpaceInfo(string drive, ConnectionPara connectionPara)
+        public static string GetDiskSpaceInfo(string drive, ConnectionPara connectionPara, out ulong TotalNumberOfFreeBytes)
         {
-            if (!GetDiskFreeSpaceEx(@"\\" + connectionPara.TAG + @"\" + drive + @"$\", out _, out ulong TotalNumberOfBytes, out ulong TotalNumberOfFreeBytes))
+            if (!GetDiskFreeSpaceEx(@"\\" + connectionPara.TAG + @"\" + drive + @"$\", out _, out ulong TotalNumberOfBytes, out TotalNumberOfFreeBytes))
             {
                 return " - Error reading disc space";
             }

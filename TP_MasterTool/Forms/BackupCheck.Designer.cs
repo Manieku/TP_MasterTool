@@ -58,9 +58,9 @@ namespace TP_MasterTool.Forms
             this.driveSpaceLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.driveSpaceLabel.Location = new System.Drawing.Point(13, 13);
             this.driveSpaceLabel.Name = "driveSpaceLabel";
-            this.driveSpaceLabel.Size = new System.Drawing.Size(235, 18);
+            this.driveSpaceLabel.Size = new System.Drawing.Size(155, 18);
             this.driveSpaceLabel.TabIndex = 0;
-            this.driveSpaceLabel.Text = "F:\\ Drive Free Space: Calculating...";
+            this.driveSpaceLabel.Text = "F:\\ Drive: Calculating...";
             // 
             // statusLabel
             // 

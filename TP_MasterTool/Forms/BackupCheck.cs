@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using TP_MasterTool.Forms.CustomMessageBox;
 using TP_MasterTool.Klasy;
@@ -12,16 +11,9 @@ namespace TP_MasterTool.Forms
 {
     public partial class BackupCheck : Form
     {
-        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        static extern bool GetDiskFreeSpaceEx(string lpDirectoryName,
-            out ulong lpFreeBytesAvailable,
-            out ulong lpTotalNumberOfBytes,
-            out ulong lpTotalNumberOfFreeBytes);
-
         readonly ConnectionPara connectionPara = Main.interfejs.connectionPara;
         Logger myLog;
-        readonly string spaceLabelDefault = @"F:\ Drive Free Space: ";
+        readonly string spaceLabelDefault = @"F:\ Drive: ";
 
         public BackupCheck()
         {
@@ -70,20 +62,12 @@ namespace TP_MasterTool.Forms
         private void GetDiskSpaceInfo()
         {
             myLog.Add("Reading disc space info");
-            if (!GetDiskFreeSpaceEx(@"\\" + connectionPara.TAG + @"\F$\", out _, out _, out ulong TotalNumberOfFreeBytes))
-            {
-                myLog.Add("Error reading disc space");
-                myLog.wasError = true;
-                driveSpaceLabel.Text = spaceLabelDefault + "Error reading disc space";
-                statusLabel.Text = "Status: ERROR";
-                return;
-            }
-            driveSpaceLabel.Text = spaceLabelDefault + (TotalNumberOfFreeBytes / (1024 * 1024)).ToString() + " MB";
-            if ((TotalNumberOfFreeBytes / (1024 * 1024)) < 102400)
+            driveSpaceLabel.Text = spaceLabelDefault + CtrlFunctions.GetDiskSpaceInfo("F", connectionPara, out ulong freeBytes);
+            if ((freeBytes / (1024 * 1024)) < 102400)
             {
                 statusLabel.Text = "Status: [ERROR] Low disc space - please check if there aren't duplicated backup files.";
             }
-            else if ((TotalNumberOfFreeBytes / (1024 * 1024)) < 321536)
+            else if ((freeBytes / (1024 * 1024)) < 321536)
             {
                 statusLabel.Text = "Status: [CAUTION] Disc usage is beyond typical norm - please check if there aren't any unnesesary files or old backups.";
             }
@@ -91,7 +75,7 @@ namespace TP_MasterTool.Forms
             {
                 statusLabel.Text = "Status: OK";
             }
-            myLog.Add("Read successfully: " + (TotalNumberOfFreeBytes / (1024 * 1024)).ToString());
+            myLog.Add("Read successfully: " + (freeBytes / (1024 * 1024)).ToString());
         }
         private void GetBackupFiles(ref DataGridView dataGridView, string filter)
         {

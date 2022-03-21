@@ -104,10 +104,6 @@ namespace TP_MasterTool
             InitializeComponent();
             Application.ThreadException += new System.Threading.ThreadExceptionEventHandler(Logger.UnhandledError);
         }
-        private bool testowytest(string placki, int cycuszki)
-        {
-            throw new Exception();
-        }
         private void Form1_Load(object sender, EventArgs e)
         {
             interfejs = this;
@@ -118,7 +114,6 @@ namespace TP_MasterTool
         }
         private void Test_Button_Click(object sender, EventArgs e)
         {
-            testowytest("plackowmaty", 69);
             //string output = "";
             //foreach (string file in System.IO.Directory.GetFiles(@"\\" + connectionPara.TAG + @"\d$\TPDotnet\Server\HostData\Download\Data", "*", System.IO.SearchOption.AllDirectories))
             //{
@@ -427,7 +422,7 @@ namespace TP_MasterTool
                     {
                         if (System.IO.Directory.Exists(@"\\" + connectionPara.TAG + @"\" + letter + @"$"))
                         {
-                            output += "Drive " + letter.ToUpper() + ":\\ Informations:" + "\n" + CtrlFunctions.GetDiskSpaceInfo(letter, connectionPara) + "\n\n";
+                            output += "Drive " + letter.ToUpper() + ":\\ Informations:" + "\n" + CtrlFunctions.GetDiskSpaceInfo(letter, connectionPara, out _) + "\n\n";
                             error = false;
                         }
                     }
@@ -448,7 +443,6 @@ namespace TP_MasterTool
             ChangeStatusBar("Copying...");
             if (System.IO.File.Exists(@"\\" + connectionPara.TAG + @"\c$\temp\windirstat.exe"))
             {
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Info, "", "WinDirStat is already on target host");
                 ChangeStatusBar("Ready");
                 return;
             }
@@ -473,7 +467,6 @@ namespace TP_MasterTool
         //------------------BootTime--------------------
         private void SystemBootTimeMenuItem_Click(object sender, EventArgs e)
         {
-            Telemetry.LogFunctionUsage(Globals.Funkcje.GetSystemBootTime);
             Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.GetSystemBootTime, "");
             using (BackgroundWorker slave = new BackgroundWorker())
             {
@@ -490,6 +483,7 @@ namespace TP_MasterTool
                         return;
                     }
                     CustomMsgBox.Show(CustomMsgBox.MsgType.Info, "Last Boot Time Info", cmdOutput.outputText);
+                    Telemetry.LogFunctionUsage(Globals.Funkcje.GetSystemBootTime);
                     ChangeStatusBar("Ready");
                 };
                 slave.RunWorkerAsync();
@@ -582,12 +576,6 @@ namespace TP_MasterTool
         {
             ConnectionPara connectionPara = Main.interfejs.connectionPara;
 
-            if (!System.IO.Directory.Exists(@"\\" + connectionPara.TAG + @"\c$\Windows\Minidump"))
-            {
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Info, "No Minidump found", "ToolBox couldn't find minidump folder on host");
-                return;
-            }
-
             System.IO.FileInfo[] files;
             Logger myLog = new Logger(Globals.Funkcje.MiniDumpAnalyser, "", connectionPara.TAG);
 
@@ -611,14 +599,12 @@ namespace TP_MasterTool
             using (DropDownSelect dropDownSelect = new DropDownSelect("Select minidump to analyse", files.Select(f => f.FullName).ToArray()))
             {
                 var result = dropDownSelect.ShowDialog();
-                if (result == DialogResult.OK)
-                {
-                    selectedMinidump = dropDownSelect.ReturnValue1;            //values preserved after close
-                }
-                else
+                if (result != DialogResult.OK)
                 {
                     return;
                 }
+                selectedMinidump = dropDownSelect.ReturnValue1;            //values preserved after close
+
             }
             Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.MiniDumpAnalyser, selectedMinidump);
             Telemetry.LogFunctionUsage(Globals.Funkcje.MiniDumpAnalyser);
@@ -1045,14 +1031,13 @@ namespace TP_MasterTool
                     Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.BackstoreCsvExport, "");
                     if (CtrlFunctions.BackstoreCsvExport(connectionPara))
                     {
-                        Telemetry.LogFunctionUsage(Globals.Funkcje.BackstoreCsvExport);
-                        CustomMsgBox.Show(CustomMsgBox.MsgType.Done, "CSV Export Result", "CSV Files was successfully exported.");
-                    }
-                    else
-                    {
                         Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.BackstoreCsvExport, "Failed");
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "CSV Export Result", "CSV Files export failed.");
+                        return;
                     }
+                    Telemetry.LogFunctionUsage(Globals.Funkcje.BackstoreCsvExport);
+                    CustomMsgBox.Show(CustomMsgBox.MsgType.Done, "CSV Export Result", "CSV Files was successfully exported.");
+
                 };
                 slave.RunWorkerAsync();
             }
@@ -1106,7 +1091,7 @@ namespace TP_MasterTool
                 CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "File Save Error", "ToolBox encountered error while trying to save file:" + Environment.NewLine + saveExp.Message);
                 return;
             }
-            CustomMsgBox.Show(CustomMsgBox.MsgType.Done, "Conversion successful", @"CSV file successfully saved at T:\temp\ToolBoxLogs");
+            CustomMsgBox.Show(CustomMsgBox.MsgType.Done, "Conversion successful", @"CSV file successfully saved at .\Logs");
         }
         private void MobilePosAppKillMenuItem_Click(object sender, EventArgs e)
         {
@@ -1186,7 +1171,6 @@ namespace TP_MasterTool
                 userSettings.hideNotePad = true;
                 HideNotePad();
                 userSettings.windowSize = Size;
-
             }
         }
         private void stayOnTopMenuItem_Click(object sender, EventArgs e)

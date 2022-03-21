@@ -569,7 +569,7 @@ namespace TP_MasterTool.Forms
 
 
             log += AddToLog("Reading disc space info:");
-            string discInfo = CtrlFunctions.GetDiskSpaceInfo("c", connectionPara);
+            string discInfo = CtrlFunctions.GetDiskSpaceInfo("c", connectionPara, out _);
             log += AddToLog(discInfo);
             log += AddToLog(Environment.NewLine + ">>> Create solution task for ADV with note below and close L2 task <<<");
             log += AddToLog("");
