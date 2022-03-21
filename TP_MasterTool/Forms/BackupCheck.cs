@@ -148,11 +148,12 @@ namespace TP_MasterTool.Forms
         }
         private string Summary(bool fileCountError, bool uptodateError, bool duplicatesError)
         {
-            string output = " ";
             if (!fileCountError && !uptodateError && !duplicatesError)
             {
                 return " Everything looks ok";
             }
+
+            string output = " ";
             if (uptodateError)
             {
                 output += " Veritas didn't preform recent backup - check in log and preform disc check.";
@@ -170,7 +171,6 @@ namespace TP_MasterTool.Forms
             {
                 output += "There are more than one backup file per day - check if there aren't duplicated jobs in console";
             }
-
             return output;
         }
         private void RescanButton_Click(object sender, EventArgs e)
