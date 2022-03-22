@@ -156,19 +156,26 @@ namespace TP_MasterTool.Forms
                 }
                 else
                 {
-                    foreach (XElement node in nodes)
+                    try
                     {
-                        output += "ItemID: " + node.Element("Update").Element("Where").Element("szItemID").Value + Environment.NewLine;
-                        output += "SQL Error: " + node.Element("SQLError").Value + Environment.NewLine;
-                        breaker++;
-                        if (breaker >= 3)
+                        foreach (XElement node in nodes)
                         {
-                            break;
+                            output += "ItemID: " + node.Element("Update").Element("Where").Element("szItemID").Value + Environment.NewLine;
+                            output += "SQL Error: " + node.Element("SQLError").Value + Environment.NewLine;
+                            breaker++;
+                            if (breaker >= 3)
+                            {
+                                break;
+                            }
                         }
+                        output += tempXml.Root.Element("Trailer").Element("Statistic").Element("UpdateStatements").ToString() + Environment.NewLine;
+                    }
+                    catch
+                    {
+                        additionInfo = " - Other Invalid xml found - please check manually and include it in note to MMS team";
+                        output += "Error reading a file" + Environment.NewLine;
                     }
                 }
-
-                output += tempXml.Root.Element("Trailer").Element("Statistic").Element("UpdateStatements").ToString() + Environment.NewLine;
 
                 lock (logLock)
                 {

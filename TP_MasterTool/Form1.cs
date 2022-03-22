@@ -480,6 +480,7 @@ namespace TP_MasterTool
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "RCMD Error", "Unable to get last boot time - RCMD exited with error:" +
                             Environment.NewLine +
                             cmdOutput.exitCode.ToString() + ": " + cmdOutput.errorOutputText);
+                        ChangeStatusBar("Ready");
                         return;
                     }
                     CustomMsgBox.Show(CustomMsgBox.MsgType.Info, "Last Boot Time Info", cmdOutput.outputText);
