@@ -417,16 +417,14 @@ namespace TP_MasterTool
                 {
                     string[] drives = { "c", "d", "e", "f" };
                     string output = "";
-                    bool error = true;
                     foreach (string letter in drives)
                     {
                         if (System.IO.Directory.Exists(@"\\" + connectionPara.TAG + @"\" + letter + @"$"))
                         {
                             output += "Drive " + letter.ToUpper() + ":\\ Informations:" + "\n" + CtrlFunctions.GetDiskSpaceInfo(letter, connectionPara, out _) + "\n\n";
-                            error = false;
                         }
                     }
-                    if (error)
+                    if (output == "")
                     {
                         Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Disc Connection Error");
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Disc Connection Error", @"Couldn't establish connection to any disc. Please check if target machine is online or initialize it anew and try again.");

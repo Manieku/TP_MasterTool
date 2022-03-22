@@ -113,7 +113,7 @@ namespace TP_MasterTool.Forms
             }
 
             dataGridView1.Rows[rownr].Cells[1].Value = "Mapping drive";
-            if (!CtrlFunctions.MapEndpointDrive(ref connectionPara, out CtrlFunctions.CmdOutput cmdOutput))
+            if (!CtrlFunctions.MapEndpointDrive(ref connectionPara, out _))
             {
                 gridChange(rownr, "Error", Globals.errorColor);
                 lock (logLock)
