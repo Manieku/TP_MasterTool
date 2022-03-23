@@ -362,8 +362,7 @@ namespace TP_MasterTool
         }
         private void PingOverTimeMenuItem_Click(object sender, EventArgs e)
         {
-            PingConst pingConst = new PingConst();
-            pingConst.Show();
+            new PingConst().Show();
         }
 
         //------------SMARTY--------------------------
@@ -458,8 +457,7 @@ namespace TP_MasterTool
         //------------------Endpoint Scan--------------------
         private void ScanEndpointsMenuItem_Click(object sender, EventArgs e)
         {
-            EndpointsScan endpointsScan = new EndpointsScan();
-            endpointsScan.Show(this);
+            new EndpointsScan().Show(this);
         } //dont support IP MODE
 
         //------------------BootTime--------------------
@@ -492,8 +490,7 @@ namespace TP_MasterTool
         //------------------Backup Checker--------------------
         private void BackupCheckerMenuItem_Click(object sender, EventArgs e)
         {
-            BackupCheck backupCheck = new BackupCheck();
-            backupCheck.Show();
+            new BackupCheck().Show();
         } //dont support IP MODE
 
         //------------------EoD Checker--------------------
@@ -849,13 +846,11 @@ namespace TP_MasterTool
         }
         private void TPRaportsRegenZipMenuItem_Click(object sender, EventArgs e)
         {
-            TPReportsRegenZip tPReportsRegenZip = new TPReportsRegenZip();
-            tPReportsRegenZip.Show();
+            new TPReportsRegenZip().Show();
         }
         private void InvalidTransferMenuItem_Click(object sender, EventArgs e)
         {
-            InvTansactionTransfer invTansactionTransfer = new InvTansactionTransfer();
-            invTansactionTransfer.Show();
+            new InvTansactionTransfer().Show();
         }
         private void SignatorResetMenuItem_Click(object sender, EventArgs e)
         {
@@ -1047,8 +1042,7 @@ namespace TP_MasterTool
         //--------------------Tools-----------------------------
         private void ServiceManagerMenuItem_Click(object sender, EventArgs e)
         {
-            serviceMgr serviceMgr = new serviceMgr();
-            serviceMgr.Show(this);
+            new serviceMgr().Show(this);
         }
         private void TransactionsXMLToCSVMenuItem_Click(object sender, EventArgs e)
         {
@@ -1119,26 +1113,26 @@ namespace TP_MasterTool
         }
         private void MonitoringSlayerMenuItem_Click(object sender, EventArgs e)
         {
-            MonitoringAnalizer monitoringAnalizer = new MonitoringAnalizer();
-            monitoringAnalizer.Show();
+            new MonitoringAnalizer().Show();
         }
         private void updatePackageInvalidMenuItem_Click(object sender, EventArgs e)
         {
-            UpdatePackageInvalid updatePackageInvalid = new UpdatePackageInvalid();
-            updatePackageInvalid.Show();
+            new UpdatePackageInvalid().Show();
         }
         private void StocktakingMenuItem_Click(object sender, EventArgs e)
         {
-            Stocktaking stocktaking = new Stocktaking();
-            stocktaking.Show();
+            new Stocktaking().Show();
         }
 
         /**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**/
         //--------------------ADV-----------------------------
         private void WSUSButBETTERMenuItem_Click(object sender, EventArgs e)
         {
-            KBinstalation kbinstall = new KBinstalation();
-            kbinstall.Show();
+            new KBinstalation().Show();
+        }
+        private void randomCollectionOfRandomnessToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            new MassEmergancy().Show();
         }
 
         /**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**/
@@ -1196,13 +1190,11 @@ namespace TP_MasterTool
         }
         private void ChangeLogMenuItem_Click(object sender, EventArgs e)
         {
-            ChangeLog changeLog = new ChangeLog();
-            changeLog.Show(this);
+            new ChangeLog().Show(this);
         }
         private void ReportSuggestMenuItem_Click(object sender, EventArgs e)
         {
-            Report reportForm = new Report();
-            reportForm.Show(this);
+            new Report().Show(this);
         }
         /**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**/
 
@@ -1524,10 +1516,5 @@ namespace TP_MasterTool
         {
             userSettings.notePadLines = notepad.Text;
         } // Save notepad content after change
-
-        private void randomCollectionOfRandomnessToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            new MassEmergancy().Show();
-        }
     }
 }
