@@ -114,6 +114,13 @@ namespace TP_MasterTool
         }
         private void Test_Button_Click(object sender, EventArgs e)
         {
+            string[] lista = new string[]
+            {
+                "Test",
+                "GetMAC",
+                "yolo"
+            };
+            new MassFunctionForm(lista).Show();
             //string output = "";
             //foreach (string file in System.IO.Directory.GetFiles(@"\\" + connectionPara.TAG + @"\d$\TPDotnet\Server\HostData\Download\Data", "*", System.IO.SearchOption.AllDirectories))
             //{
@@ -1123,6 +1130,14 @@ namespace TP_MasterTool
         {
             new Stocktaking().Show();
         }
+        private void massFunctionsMenuItem_Click(object sender, EventArgs e)
+        {
+            string[] functionList = new string[]
+            {
+                "InvalidTransfer",
+            };
+            new MassFunctionForm(functionList).Show();
+        }
 
         /**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**/
         //--------------------ADV-----------------------------
@@ -1132,7 +1147,11 @@ namespace TP_MasterTool
         }
         private void randomCollectionOfRandomnessToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            new MassEmergancy().Show();
+            string[] functionList = new string[]
+            {
+                "GetMAC",
+            };
+            new MassFunctionForm(functionList).Show();
         }
 
         /**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**/
@@ -1320,7 +1339,7 @@ namespace TP_MasterTool
         }
         public void DisableUI()
         {
-            List<string> wyjatki = new List<string> { "Last Connected", "Ping's", "JPOSRFID Logs Secure", "TP.Reports Regen+Zip", "Invalid Transfer", "TransactionsXML to CSV", "MonitoringSlayer", "UpdatePackage Invalid Check", "Stocktaking", "WSUS but BETTER", "Random Collection of Randomness" };
+            List<string> wyjatki = new List<string> { "Last Connected", "Ping's", "JPOSRFID Logs Secure", "TP.Reports Regen+Zip", "Invalid Transfer", "TransactionsXML to CSV", "MonitoringSlayer", "UpdatePackage Invalid Check", "Stocktaking", "Mass Functions", "WSUS but BETTER", "Random Collection of Randomness" };
             foreach (ToolStripMenuItem menu in menuStrip1.Items)
             {
                 if (menu.Text == "Preferences") { break; }
@@ -1380,7 +1399,6 @@ namespace TP_MasterTool
             DisableUI();
             Main.SetTAG(tempTAG, SystemColors.Window);
 
-            Telemetry.LogOnMachineAction(tempTAG, Globals.Funkcje.Initialization, "");
 
             connectionPara = ConnectionPara.EstablishConnection(tempTAG);
             if (connectionPara == null)
@@ -1391,6 +1409,8 @@ namespace TP_MasterTool
                 Telemetry.LogOnMachineAction(tempTAG, Globals.Funkcje.Error, Main.GetIP());
                 return;
             }
+
+            Telemetry.LogOnMachineAction(tempTAG, Globals.Funkcje.Initialization, "");
 
             if (connectionPara.IP == "DNS ERROR")
             {
