@@ -65,5 +65,10 @@ namespace TP_MasterTool.Klasy
                 Logger.QuickLog(Globals.Funkcje.LogFunctionUsage, funkcja.ToString(), "", "TelemetryError", exp.ToString());
             }
         }
+        public static void LogCompleteTelemetryData(string host, Globals.Funkcje funkcja, string comment)
+        {
+            LogOnMachineAction(host, funkcja, comment);
+            LogFunctionUsage(funkcja);
+        }
     }
 }
