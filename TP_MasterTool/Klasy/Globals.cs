@@ -69,6 +69,7 @@ namespace TP_MasterTool
             ADVDismSfc,
             AdvRandomness,
             BulkFileMove,
+            EsfClientRestart,
             Stocktaking,
             DeleteLock,
             GetSqlInfo,

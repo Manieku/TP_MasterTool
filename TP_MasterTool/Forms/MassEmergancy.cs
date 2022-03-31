@@ -134,10 +134,6 @@ namespace TP_MasterTool.Forms
             }
 
             string selection = functionSelectList.SelectedItem.ToString();
-            if(selection == "EsfClient Restart")
-            {
-                EsfClientRestart(connectionPara, rownr);
-            }
             else if(selection == "EsfClient Reinit")
             {
                 EsfClientReinit(rownr, connectionPara);
@@ -176,25 +172,6 @@ namespace TP_MasterTool.Forms
             //DNFiskalRename(rownr, connectionPara);
         }
 
-        private void EsfClientRestart(ConnectionPara connectionPara, int rownr)
-        {
-            gridChange(rownr, "Restarting Client");
-            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c net stop esfclient && net start esfclient");
-            if (cmdOutput.exitCode != 0)
-            {
-                gridChange(rownr, "Error", Globals.errorColor);
-                lock (logLock)
-                {
-                    log[rownr] += " - " + Logger.LogTime() + "[ERROR] CMD exited with error code: " + cmdOutput.exitCode;
-                }
-                return;
-            }
-            gridChange(rownr, "Done", Color.LightGreen);
-            lock (logLock)
-            {
-                log[rownr] += " - " + Logger.LogTime() + "[SUCCESS] ESF Client Restarted";
-            }
-        }
         private void EsfClientReinit(int rownr, ConnectionPara connectionPara)
         {
             gridChange(rownr, "Running script");

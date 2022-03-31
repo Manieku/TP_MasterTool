@@ -255,5 +255,22 @@ namespace TP_MasterTool.Klasy
                 Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.BulkFileMove, source + " -> " + destination);
             }
         }
+        public static void EsfClientRestart(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
+        {
+            massFunctionForm.GridChange(rownr, "Restarting Client");
+            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c net stop esfclient && net start esfclient");
+            if (cmdOutput.exitCode != 0)
+            {
+                massFunctionForm.ErrorLog(rownr, "CMD exited with error code: " + cmdOutput.exitCode);
+                return;
+            }
+
+            massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
+            massFunctionForm.AddToLog(rownr, "[SUCCESS] - ESF Client Restarted");
+            lock (massFunctionForm.logLock)
+            {
+                Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.EsfClientRestart, "");
+            }
+        }
     }
 }
