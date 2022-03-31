@@ -121,30 +121,12 @@ namespace TP_MasterTool.Forms
             {
                 files = Directory.GetFiles(@"\\" + dataGridView1.Rows[rownr].Cells[0].Value.ToString() + @"\d$\TPDotnet\Server\Transactions\InValid", @"*_0_*.xml", SearchOption.AllDirectories);
             }
-            catch (DirectoryNotFoundException exp)
-            {
-                gridChange(rownr, "Error", Globals.errorColor);
-                lock (logLock)
-                {
-                    log[rownr] += " - [ERROR] Directory not found -> " + exp.Message;
-                }
-                return;
-            }
-            catch (UnauthorizedAccessException exp)
-            {
-                gridChange(rownr, "Error", Globals.errorColor);
-                lock (logLock)
-                {
-                    log[rownr] += " - " + Logger.LogTime() + "[ERROR] Problem with credentials (UnauthorizedAccess) -> " + exp.Message;
-                }
-                return;
-            }
             catch (Exception exp)
             {
                 gridChange(rownr, "Error", Globals.errorColor);
                 lock (logLock)
                 {
-                    log[rownr] += " - " + Logger.LogTime() + "[ERROR] Unknown error while searching files -> " + exp.Message;
+                    log[rownr] += " - " + Logger.LogTime() + "[ERROR] Error while searching files -> " + exp.Message;
                 }
                 return;
             }

@@ -607,30 +607,29 @@ namespace TP_MasterTool.Forms
             }
             gridChange(rownr, "Regenerating reports");
             log += AddToLog("Executing runeodreports.bat " + DateTime.Today.AddDays(offset - 1).ToString("yyyyMMdd") + " - " + DateTime.Today.AddDays(offset).ToString("yyyyMMdd"));
-            string regenResult = CtrlFunctions.RegenerateEoDReports(connectionPara, DateTime.Today.AddDays(offset - 1).ToString("yyyyMMdd"), DateTime.Today.AddDays(offset).ToString("yyyyMMdd"));
-            log += AddToLog("-> " + Logger.LogTime() + "- " + regenResult);
-            if (regenResult.StartsWith("[ERROR]"))
+            if(!CtrlFunctions.RegenerateEoDReports(connectionPara, DateTime.Today.AddDays(offset - 1).ToString("yyyyMMdd"), DateTime.Today.AddDays(offset).ToString("yyyyMMdd"), out string regenOutput))
             {
+                log += AddToLog("-> " + Logger.LogTime() + "- [ERROR] " + regenOutput);
                 gridChange(rownr, "Ticket needs manual investigation. See log", Globals.errorColor);
                 log += AddToLog(Environment.NewLine + ">>> Error while executing runeodreports.bat. Please try running it manually and check what and if error occurs <<<");
                 return;
             }
+            log += AddToLog("-> " + Logger.LogTime() + "- [SUCCESS] " + regenOutput);
 
             gridChange(rownr, "Zipping reports");
             log += AddToLog("Executing collect_tp_reports.ps1");
-            string zipResult = CtrlFunctions.ZipEoDReports(connectionPara);
-            log += AddToLog("-> " + Logger.LogTime() + "- " + zipResult);
-            if (zipResult.StartsWith("[ERROR]"))
+            if(!CtrlFunctions.ZipEoDReports(connectionPara, out string zipOutput))
             {
+                log += AddToLog("-> " + Logger.LogTime() + "- " + zipOutput);
                 gridChange(rownr, "Ticket needs manual investigation. See log", Globals.errorColor);
                 log += AddToLog(Environment.NewLine + ">>> Error while executing collect_tp_reports.ps1. Please try running it manually and check what and if error occurs <<<");
                 return;
             }
-
+            log += AddToLog("-> " + Logger.LogTime() + "- " + zipOutput);
             log += AddToLog(Environment.NewLine + ">>> Ticket can be close with note below <<<");
             log += AddToLog("");
             log += AddToLog(">> Notes for ticket:");
-            log += AddToLog(regenResult + " | " + zipResult);
+            log += AddToLog(regenOutput + " | " + zipOutput);
             log += AddToLog("Ready to be picked up after next successful run");
             gridChange(rownr, "Ticket ready to be close. See log.", Color.LightGreen);
         }

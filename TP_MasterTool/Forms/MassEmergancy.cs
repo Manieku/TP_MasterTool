@@ -33,7 +33,6 @@ namespace TP_MasterTool.Forms
             "Backup Jobs Check",
             "Backup Jobs Reset",
             "Delete Old Backup Files",
-            "Get MAC",
             @"Check F:\ Drive",
             "Download JavaPos Logs"
         };
@@ -162,10 +161,6 @@ namespace TP_MasterTool.Forms
             else if(selection == "Delete Old Backup Files")
             {
                 DeleteOldBackupFiles(rownr, connectionPara);
-            }
-            else if(selection == "Get MAC")
-            {
-                GetMac(rownr, connectionPara);
             }
             else if(selection == @"Check F:\ Drive")
             {
@@ -344,19 +339,6 @@ namespace TP_MasterTool.Forms
             catch
             {
                 log[rownr] += ",Error";
-            }
-            gridChange(rownr, "Done", Globals.successColor);
-        }
-        private void GetMac(int rownr, ConnectionPara connectionPara)
-        {
-            gridChange(rownr, "Stealing MAC");
-            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c powershell -command \"Get-WmiObject win32_networkadapterconfiguration | where {$_.ipaddress -like '" + connectionPara.IP + "*'} | select macaddress | ft -hidetableheaders\"");
-            string output = cmdOutput.outputText.Replace("\n", "").Replace("\r", "").ToUpper();
-
-
-            lock (logLock)
-            {
-                log[rownr] += "," + output;
             }
             gridChange(rownr, "Done", Globals.successColor);
         }

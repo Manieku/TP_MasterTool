@@ -122,6 +122,12 @@
     <Compile Include="Forms\MassEmergancy.Designer.cs">
       <DependentUpon>MassEmergancy.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\MassFunctionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MassFunctionForm.Designer.cs">
+      <DependentUpon>MassFunctionForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\MassJPOSLogs.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -200,6 +206,7 @@
     </Compile>
     <Compile Include="Klasy\Globals.cs" />
     <Compile Include="Klasy\Logger.cs" />
+    <Compile Include="Klasy\MassFunctions.cs" />
     <Compile Include="Klasy\Shutdown.cs" />
     <Compile Include="Klasy\StartUp.cs" />
     <Compile Include="Klasy\Telemetry.cs" />
@@ -233,6 +240,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\MassEmergancy.resx">
       <DependentUpon>MassEmergancy.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MassFunctionForm.resx">
+      <DependentUpon>MassFunctionForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\MassJPOSLogs.resx">
       <DependentUpon>MassJPOSLogs.cs</DependentUpon>

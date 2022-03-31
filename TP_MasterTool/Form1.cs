@@ -114,13 +114,6 @@ namespace TP_MasterTool
         }
         private void Test_Button_Click(object sender, EventArgs e)
         {
-            string[] lista = new string[]
-            {
-                "Test",
-                "GetMAC",
-                "yolo"
-            };
-            new MassFunctionForm(lista).Show();
             //string output = "";
             //foreach (string file in System.IO.Directory.GetFiles(@"\\" + connectionPara.TAG + @"\d$\TPDotnet\Server\HostData\Download\Data", "*", System.IO.SearchOption.AllDirectories))
             //{
@@ -139,8 +132,6 @@ namespace TP_MasterTool
         //--------------------/UI Controls/---------------------------
         private void GetMAC_button_Click(object sender, EventArgs e)
         {
-            Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.GetMAC, "");
-            Telemetry.LogFunctionUsage(Globals.Funkcje.GetMAC);
             textBox_MAC.Text = "Stealing MAC...";
             getMAC_button.Enabled = false;
             using (BackgroundWorker slave = new BackgroundWorker())
@@ -150,6 +141,7 @@ namespace TP_MasterTool
                     CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c powershell -command \"Get-WmiObject win32_networkadapterconfiguration | where {$_.ipaddress -like '" + connectionPara.IP + "*'} | select macaddress | ft -hidetableheaders\"");
                     textBox_MAC.Text = cmdOutput.outputText;
                     getMAC_button.Enabled = true;
+                    Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.GetMAC, cmdOutput.outputText.Replace("\n", "").Replace("\r", "").ToUpper());
                 };
                 slave.RunWorkerAsync();
             }
@@ -1135,6 +1127,8 @@ namespace TP_MasterTool
             string[] functionList = new string[]
             {
                 "InvalidTransfer",
+                "TpReportsRegenAndZip",
+                "UpdatePackageInvalid",
             };
             new MassFunctionForm(functionList).Show();
         }

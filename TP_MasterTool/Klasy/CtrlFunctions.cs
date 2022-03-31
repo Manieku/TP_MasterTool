@@ -10,6 +10,7 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Windows.Forms;
+using TP_MasterTool.Forms;
 using TP_MasterTool.Forms.CustomMessageBox;
 
 namespace TP_MasterTool.Klasy
@@ -373,13 +374,14 @@ namespace TP_MasterTool.Klasy
                 + ((TotalNumberOfBytes - TotalNumberOfFreeBytes) / (1024 * 1024 * 1024)).ToString() + "/" + (TotalNumberOfBytes / (1024 * 1024 * 1024)).ToString() + " GB | "
                 + Math.Round(procent, 2, MidpointRounding.AwayFromZero).ToString() + " % Used Space";
         }
-        public static string RegenerateEoDReports(ConnectionPara connectionPara, string startDate, string endDate)
+        public static bool RegenerateEoDReports(ConnectionPara connectionPara, string startDate, string endDate, out string regerOutput)
         {
             if (!System.IO.File.Exists(@"\\" + connectionPara.TAG + @"\c$\temp\runeodreports.bat"))
             {
                 if(!FileController.CopyFile(Globals.toolsPath + "runeodreports.bat", @"\\" + connectionPara.TAG + @"\c$\temp\runeodreports.bat", false, out Exception copyExp))
                 {
-                    return "[ERROR] Unable to copy script -> " + copyExp.Message;
+                    regerOutput = "Unable to copy script -> " + copyExp.Message;
+                    return false;
                 }
             }
 
@@ -394,17 +396,19 @@ namespace TP_MasterTool.Klasy
                 p.WaitForExit();
                 if (p.ExitCode != 0)
                 {
-                    return "[ERROR] Error with execution of runeodreports.bat";
+                    regerOutput = "Error with execution of runeodreports.bat";
+                    return false;
                 }
             }
             catch (Exception exp)
             {
-                return "[ERROR] RCMD encountered error -> " + exp.Message;
+                regerOutput = "RCMD encountered error -> " + exp.Message;
+                return false;
             }
-
-            return "[SUCCESS] EoD Reports Regenerated";
+            regerOutput = "EoD Reports Regenerated";
+            return true;
         }
-        public static string ZipEoDReports(ConnectionPara connectionPara)
+        public static bool ZipEoDReports(ConnectionPara connectionPara, out string output)
         {
             try
             {
@@ -418,15 +422,17 @@ namespace TP_MasterTool.Klasy
 
                 if (p.ExitCode != 0)
                 {
-                    return "[ERROR] Error with execute PowerShell script";
+                    output = "Error with execute PowerShell script";
+                    return false;
                 }
             }
             catch (Exception exp)
             {
-                return "[ERROR] RCMD encountered error -> " + exp.Message;
+                output = "RCMD encountered error: " + exp.Message;
+                return false;
             }
-
-            return "[SUCCESS] EoD Reports Zipped";
+            output = "EoD Reports Zipped";
+            return true;
         }
         public static bool AnalyseMiniDump(string minidumpPath, string logOutputPath, out string error)
         {
@@ -541,5 +547,6 @@ namespace TP_MasterTool.Klasy
 
             return true;
         }
+
     }
 }

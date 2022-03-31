@@ -119,40 +119,36 @@ namespace TP_MasterTool.Forms
             if (regenerateCheckbox.Checked)
             {
                 dataGridView1.Rows[rownr].Cells[1].Value = "Executing runeodreports.bat";
-                string regenResult = CtrlFunctions.RegenerateEoDReports(connectionPara, beforeEOD.Text, dayofEOD.Text);
-                Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.TPReportsRegenZip, "Regen");
-                if (regenResult.StartsWith("[ERROR]"))
+                if (!CtrlFunctions.RegenerateEoDReports(connectionPara, beforeEOD.Text, dayofEOD.Text, out string regenOutput))
                 {
                     gridChange(rownr, "Error", Globals.errorColor);
                     lock (logLock)
                     {
-                        log[rownr] += " - " + Logger.LogTime() + regenResult;
+                        log[rownr] += " - " + Logger.LogTime() + "[ERROR] " + regenOutput;
                     }
                     return;
                 }
                 lock (logLock)
                 {
-                    log[rownr] += " - " + Logger.LogTime() + regenResult;
+                    log[rownr] += " - " + Logger.LogTime() + "[SUCCESS] " + regenOutput;
                 }
             }
 
             if (ZipCheckbox.Checked)
             {
                 dataGridView1.Rows[rownr].Cells[1].Value = "Executing collect_tp_reports.ps1";
-                string zipResult = CtrlFunctions.ZipEoDReports(connectionPara);
-                Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.TPReportsRegenZip, "Zip");
-                if (zipResult.StartsWith("[ERROR]"))
+                if(!CtrlFunctions.ZipEoDReports(connectionPara, out string zipOutput))
                 {
                     gridChange(rownr, "Error", Globals.errorColor);
                     lock (logLock)
                     {
-                        log[rownr] += " - " + Logger.LogTime() + zipResult;
+                        log[rownr] += " - " + Logger.LogTime() + "[ERROR] " + zipOutput;
                     }
                     return;
                 }
                 lock (logLock)
                 {
-                    log[rownr] += " - " + Logger.LogTime() + zipResult;
+                    log[rownr] += " - " + Logger.LogTime() + "[SUCCESS] " + zipOutput;
                 }
             }
             gridChange(rownr, "Done", Color.LightGreen);
