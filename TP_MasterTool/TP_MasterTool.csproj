@@ -104,12 +104,6 @@
     <Compile Include="Forms\DropDownSelect.Designer.cs">
       <DependentUpon>DropDownSelect.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\InvTansactionTransfer.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\InvTansactionTransfer.Designer.cs">
-      <DependentUpon>InvTansactionTransfer.cs</DependentUpon>
-    </Compile>
     <Compile Include="Forms\KBinstalation.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -145,18 +139,6 @@
     </Compile>
     <Compile Include="Forms\Stocktaking.Designer.cs">
       <DependentUpon>Stocktaking.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\TPReportsRegenZip.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\TPReportsRegenZip.Designer.cs">
-      <DependentUpon>TPReportsRegenZip.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\UpdatePackageInvalid.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\UpdatePackageInvalid.Designer.cs">
-      <DependentUpon>UpdatePackageInvalid.cs</DependentUpon>
     </Compile>
     <Compile Include="Klasy\ConnectionPara.cs" />
     <Compile Include="Klasy\CtrlFunctions.cs" />
@@ -232,9 +214,6 @@
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\InvTansactionTransfer.resx">
-      <DependentUpon>InvTansactionTransfer.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Forms\KBinstalation.resx">
       <DependentUpon>KBinstalation.cs</DependentUpon>
     </EmbeddedResource>
@@ -261,12 +240,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Stocktaking.resx">
       <DependentUpon>Stocktaking.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\TPReportsRegenZip.resx">
-      <DependentUpon>TPReportsRegenZip.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\UpdatePackageInvalid.resx">
-      <DependentUpon>UpdatePackageInvalid.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

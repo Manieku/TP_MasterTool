@@ -127,10 +127,6 @@
             this.toolStripSeparator12 = new System.Windows.Forms.ToolStripSeparator();
             this.TSEWebserviceRestartMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator13 = new System.Windows.Forms.ToolStripSeparator();
-            this.tPRaportsRegenZipMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator14 = new System.Windows.Forms.ToolStripSeparator();
-            this.invalidTransferMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator22 = new System.Windows.Forms.ToolStripSeparator();
             this.signatorResetMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.aPCServiceFixMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -143,8 +139,8 @@
             this.TransactionsXMLToCSVMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MobilePosAppKillMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.monitoringSlayerMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.updatePackageInvalidMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.stocktakingMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.massFunctionsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ADVMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.WSUSButBETTERMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.randomCollectionOfRandomnessToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -183,7 +179,6 @@
             this.importNote = new System.Windows.Forms.Button();
             this.FiveMinTimer = new System.Windows.Forms.Timer(this.components);
             this.HourTimer = new System.Windows.Forms.Timer(this.components);
-            this.massFunctionsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.Basic_Info.SuspendLayout();
             this.StatusBar.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -361,28 +356,28 @@
             // rCMDMenuItem
             // 
             this.rCMDMenuItem.Name = "rCMDMenuItem";
-            this.rCMDMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.rCMDMenuItem.Size = new System.Drawing.Size(190, 26);
             this.rCMDMenuItem.Text = "RCMD";
             this.rCMDMenuItem.Click += new System.EventHandler(this.RCMDMenuItem_Click);
             // 
             // tracertMenuItem
             // 
             this.tracertMenuItem.Name = "tracertMenuItem";
-            this.tracertMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.tracertMenuItem.Size = new System.Drawing.Size(190, 26);
             this.tracertMenuItem.Text = "Tracert to TAG";
             this.tracertMenuItem.Click += new System.EventHandler(this.TracertMenuItem_Click);
             // 
             // rebootDeviceMenuItem
             // 
             this.rebootDeviceMenuItem.Name = "rebootDeviceMenuItem";
-            this.rebootDeviceMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.rebootDeviceMenuItem.Size = new System.Drawing.Size(190, 26);
             this.rebootDeviceMenuItem.Text = "Reboot Device";
             this.rebootDeviceMenuItem.Click += new System.EventHandler(this.RebootDeviceMenuItem_Click);
             // 
             // DNSRestoreMenuItem
             // 
             this.DNSRestoreMenuItem.Name = "DNSRestoreMenuItem";
-            this.DNSRestoreMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.DNSRestoreMenuItem.Size = new System.Drawing.Size(190, 26);
             this.DNSRestoreMenuItem.Text = "DNS Restore";
             this.DNSRestoreMenuItem.Click += new System.EventHandler(this.DNSRestoreMenuItem_Click);
             // 
@@ -414,7 +409,7 @@
             this.last4MenuItem,
             this.last5MenuItem});
             this.lastConnectedToolStripMenuItem.Name = "lastConnectedToolStripMenuItem";
-            this.lastConnectedToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.lastConnectedToolStripMenuItem.Size = new System.Drawing.Size(217, 26);
             this.lastConnectedToolStripMenuItem.Text = "Last Connected";
             // 
             // last1MenuItem
@@ -455,7 +450,7 @@
             // toolStripSeparator5
             // 
             this.toolStripSeparator5.Name = "toolStripSeparator5";
-            this.toolStripSeparator5.Size = new System.Drawing.Size(221, 6);
+            this.toolStripSeparator5.Size = new System.Drawing.Size(214, 6);
             // 
             // drivesToolStripMenuItem
             // 
@@ -465,7 +460,7 @@
             this.eDriveMenuItem,
             this.fDriveMenuItem});
             this.drivesToolStripMenuItem.Name = "drivesToolStripMenuItem";
-            this.drivesToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.drivesToolStripMenuItem.Size = new System.Drawing.Size(217, 26);
             this.drivesToolStripMenuItem.Text = "Drives";
             // 
             // cDriveMenuItem
@@ -503,31 +498,31 @@
             // toolStripSeparator6
             // 
             this.toolStripSeparator6.Name = "toolStripSeparator6";
-            this.toolStripSeparator6.Size = new System.Drawing.Size(221, 6);
+            this.toolStripSeparator6.Size = new System.Drawing.Size(214, 6);
             // 
             // APCMenuItem
             // 
             this.APCMenuItem.Name = "APCMenuItem";
-            this.APCMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.APCMenuItem.Size = new System.Drawing.Size(217, 26);
             this.APCMenuItem.Text = "APC";
             this.APCMenuItem.Click += new System.EventHandler(this.APCMenuItem_Click);
             // 
             // ServerRTMenuItem
             // 
             this.ServerRTMenuItem.Name = "ServerRTMenuItem";
-            this.ServerRTMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.ServerRTMenuItem.Size = new System.Drawing.Size(217, 26);
             this.ServerRTMenuItem.Text = "ServerRT (Italy)";
             this.ServerRTMenuItem.Click += new System.EventHandler(this.ServerRTMenuItem_Click);
             // 
             // toolStripSeparator7
             // 
             this.toolStripSeparator7.Name = "toolStripSeparator7";
-            this.toolStripSeparator7.Size = new System.Drawing.Size(221, 6);
+            this.toolStripSeparator7.Size = new System.Drawing.Size(214, 6);
             // 
             // miniLoggerMenuItem
             // 
             this.miniLoggerMenuItem.Name = "miniLoggerMenuItem";
-            this.miniLoggerMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.miniLoggerMenuItem.Size = new System.Drawing.Size(217, 26);
             this.miniLoggerMenuItem.Tag = "d$\\StoreApps\\pfm";
             this.miniLoggerMenuItem.Text = "MiniLogger";
             this.miniLoggerMenuItem.Click += new System.EventHandler(this.DriveMenuItem_Click);
@@ -535,7 +530,7 @@
             // toolStripSeparator8
             // 
             this.toolStripSeparator8.Name = "toolStripSeparator8";
-            this.toolStripSeparator8.Size = new System.Drawing.Size(221, 6);
+            this.toolStripSeparator8.Size = new System.Drawing.Size(214, 6);
             // 
             // transactionsToolStripMenuItem
             // 
@@ -543,7 +538,7 @@
             this.transactionPOSMenuItem,
             this.transactionSRVMenuItem});
             this.transactionsToolStripMenuItem.Name = "transactionsToolStripMenuItem";
-            this.transactionsToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.transactionsToolStripMenuItem.Size = new System.Drawing.Size(217, 26);
             this.transactionsToolStripMenuItem.Text = "Transactions";
             // 
             // transactionPOSMenuItem
@@ -569,7 +564,7 @@
             this.TPdMSOutputMenuItem,
             this.TPlocalReportsMenuItem});
             this.tpReportsMenuItem.Name = "tpReportsMenuItem";
-            this.tpReportsMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.tpReportsMenuItem.Size = new System.Drawing.Size(217, 26);
             this.tpReportsMenuItem.Text = "TP Reports";
             // 
             // collectTPReportsMenuItem
@@ -599,7 +594,7 @@
             // localStorageTillMenuItem
             // 
             this.localStorageTillMenuItem.Name = "localStorageTillMenuItem";
-            this.localStorageTillMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.localStorageTillMenuItem.Size = new System.Drawing.Size(217, 26);
             this.localStorageTillMenuItem.Text = "Local Storage (Till)";
             this.localStorageTillMenuItem.Click += new System.EventHandler(this.LocalStorageTillMenuItem_Click);
             // 
@@ -795,28 +790,28 @@
             // quickPingMenuItem
             // 
             this.quickPingMenuItem.Name = "quickPingMenuItem";
-            this.quickPingMenuItem.Size = new System.Drawing.Size(195, 26);
+            this.quickPingMenuItem.Size = new System.Drawing.Size(224, 26);
             this.quickPingMenuItem.Text = "Quick Ping";
             this.quickPingMenuItem.Click += new System.EventHandler(this.QuickPingTAGMenuItem_Click);
             // 
             // pingWithLoadMenuItem
             // 
             this.pingWithLoadMenuItem.Name = "pingWithLoadMenuItem";
-            this.pingWithLoadMenuItem.Size = new System.Drawing.Size(195, 26);
+            this.pingWithLoadMenuItem.Size = new System.Drawing.Size(224, 26);
             this.pingWithLoadMenuItem.Text = "Ping with Load";
             this.pingWithLoadMenuItem.Click += new System.EventHandler(this.PingWithLoad_TAGMenuItem_Click);
             // 
             // savePingToTxtMenuItem
             // 
             this.savePingToTxtMenuItem.Name = "savePingToTxtMenuItem";
-            this.savePingToTxtMenuItem.Size = new System.Drawing.Size(195, 26);
+            this.savePingToTxtMenuItem.Size = new System.Drawing.Size(224, 26);
             this.savePingToTxtMenuItem.Text = "Save Ping to txt";
             this.savePingToTxtMenuItem.Click += new System.EventHandler(this.SavePingToTxtMenuItem_Click);
             // 
             // pingOverTimeMenuItem
             // 
             this.pingOverTimeMenuItem.Name = "pingOverTimeMenuItem";
-            this.pingOverTimeMenuItem.Size = new System.Drawing.Size(195, 26);
+            this.pingOverTimeMenuItem.Size = new System.Drawing.Size(224, 26);
             this.pingOverTimeMenuItem.Text = "Ping over time";
             this.pingOverTimeMenuItem.Click += new System.EventHandler(this.PingOverTimeMenuItem_Click);
             // 
@@ -956,10 +951,6 @@
             this.toolStripSeparator12,
             this.TSEWebserviceRestartMenuItem,
             this.toolStripSeparator13,
-            this.tPRaportsRegenZipMenuItem,
-            this.toolStripSeparator14,
-            this.invalidTransferMenuItem,
-            this.toolStripSeparator22,
             this.signatorResetMenuItem,
             this.toolStripSeparator4,
             this.aPCServiceFixMenuItem,
@@ -1012,30 +1003,6 @@
             this.toolStripSeparator13.Name = "toolStripSeparator13";
             this.toolStripSeparator13.Size = new System.Drawing.Size(252, 6);
             // 
-            // tPRaportsRegenZipMenuItem
-            // 
-            this.tPRaportsRegenZipMenuItem.Name = "tPRaportsRegenZipMenuItem";
-            this.tPRaportsRegenZipMenuItem.Size = new System.Drawing.Size(255, 26);
-            this.tPRaportsRegenZipMenuItem.Text = "TP.Reports Regen+Zip";
-            this.tPRaportsRegenZipMenuItem.Click += new System.EventHandler(this.TPRaportsRegenZipMenuItem_Click);
-            // 
-            // toolStripSeparator14
-            // 
-            this.toolStripSeparator14.Name = "toolStripSeparator14";
-            this.toolStripSeparator14.Size = new System.Drawing.Size(252, 6);
-            // 
-            // invalidTransferMenuItem
-            // 
-            this.invalidTransferMenuItem.Name = "invalidTransferMenuItem";
-            this.invalidTransferMenuItem.Size = new System.Drawing.Size(255, 26);
-            this.invalidTransferMenuItem.Text = "Invalid Transfer";
-            this.invalidTransferMenuItem.Click += new System.EventHandler(this.InvalidTransferMenuItem_Click);
-            // 
-            // toolStripSeparator22
-            // 
-            this.toolStripSeparator22.Name = "toolStripSeparator22";
-            this.toolStripSeparator22.Size = new System.Drawing.Size(252, 6);
-            // 
             // signatorResetMenuItem
             // 
             this.signatorResetMenuItem.Name = "signatorResetMenuItem";
@@ -1086,7 +1053,6 @@
             this.TransactionsXMLToCSVMenuItem,
             this.MobilePosAppKillMenuItem,
             this.monitoringSlayerMenuItem,
-            this.updatePackageInvalidMenuItem,
             this.stocktakingMenuItem,
             this.massFunctionsMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
@@ -1097,44 +1063,44 @@
             // serviceManagerMenuItem
             // 
             this.serviceManagerMenuItem.Name = "serviceManagerMenuItem";
-            this.serviceManagerMenuItem.Size = new System.Drawing.Size(286, 26);
+            this.serviceManagerMenuItem.Size = new System.Drawing.Size(250, 26);
             this.serviceManagerMenuItem.Text = "Service Manager";
             this.serviceManagerMenuItem.Click += new System.EventHandler(this.ServiceManagerMenuItem_Click);
             // 
             // TransactionsXMLToCSVMenuItem
             // 
             this.TransactionsXMLToCSVMenuItem.Name = "TransactionsXMLToCSVMenuItem";
-            this.TransactionsXMLToCSVMenuItem.Size = new System.Drawing.Size(286, 26);
+            this.TransactionsXMLToCSVMenuItem.Size = new System.Drawing.Size(250, 26);
             this.TransactionsXMLToCSVMenuItem.Text = "TransactionsXML to CSV";
             this.TransactionsXMLToCSVMenuItem.Click += new System.EventHandler(this.TransactionsXMLToCSVMenuItem_Click);
             // 
             // MobilePosAppKillMenuItem
             // 
             this.MobilePosAppKillMenuItem.Name = "MobilePosAppKillMenuItem";
-            this.MobilePosAppKillMenuItem.Size = new System.Drawing.Size(286, 26);
+            this.MobilePosAppKillMenuItem.Size = new System.Drawing.Size(250, 26);
             this.MobilePosAppKillMenuItem.Text = "MobilePos App Kill";
             this.MobilePosAppKillMenuItem.Click += new System.EventHandler(this.MobilePosAppKillMenuItem_Click);
             // 
             // monitoringSlayerMenuItem
             // 
             this.monitoringSlayerMenuItem.Name = "monitoringSlayerMenuItem";
-            this.monitoringSlayerMenuItem.Size = new System.Drawing.Size(286, 26);
+            this.monitoringSlayerMenuItem.Size = new System.Drawing.Size(250, 26);
             this.monitoringSlayerMenuItem.Text = "MonitoringSlayer";
             this.monitoringSlayerMenuItem.Click += new System.EventHandler(this.MonitoringSlayerMenuItem_Click);
-            // 
-            // updatePackageInvalidMenuItem
-            // 
-            this.updatePackageInvalidMenuItem.Name = "updatePackageInvalidMenuItem";
-            this.updatePackageInvalidMenuItem.Size = new System.Drawing.Size(286, 26);
-            this.updatePackageInvalidMenuItem.Text = "UpdatePackage Invalid Check";
-            this.updatePackageInvalidMenuItem.Click += new System.EventHandler(this.updatePackageInvalidMenuItem_Click);
             // 
             // stocktakingMenuItem
             // 
             this.stocktakingMenuItem.Name = "stocktakingMenuItem";
-            this.stocktakingMenuItem.Size = new System.Drawing.Size(286, 26);
+            this.stocktakingMenuItem.Size = new System.Drawing.Size(250, 26);
             this.stocktakingMenuItem.Text = "Stocktaking";
             this.stocktakingMenuItem.Click += new System.EventHandler(this.StocktakingMenuItem_Click);
+            // 
+            // massFunctionsMenuItem
+            // 
+            this.massFunctionsMenuItem.Name = "massFunctionsMenuItem";
+            this.massFunctionsMenuItem.Size = new System.Drawing.Size(250, 26);
+            this.massFunctionsMenuItem.Text = "Mass Functions";
+            this.massFunctionsMenuItem.Click += new System.EventHandler(this.massFunctionsMenuItem_Click);
             // 
             // ADVMenuItem
             // 
@@ -1526,13 +1492,6 @@
             this.HourTimer.Interval = 3600000;
             this.HourTimer.Tick += new System.EventHandler(this.HourTimer_Tick);
             // 
-            // massFunctionsMenuItem
-            // 
-            this.massFunctionsMenuItem.Name = "massFunctionsMenuItem";
-            this.massFunctionsMenuItem.Size = new System.Drawing.Size(286, 26);
-            this.massFunctionsMenuItem.Text = "Mass Functions";
-            this.massFunctionsMenuItem.Click += new System.EventHandler(this.massFunctionsMenuItem_Click);
-            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -1652,9 +1611,6 @@
         private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem serviceManagerMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator13;
-        private System.Windows.Forms.ToolStripMenuItem tPRaportsRegenZipMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator14;
-        private System.Windows.Forms.ToolStripMenuItem invalidTransferMenuItem;
         private System.Windows.Forms.ToolStripMenuItem TPLogOpenFolderMenuItem;
         private System.Windows.Forms.ToolStripMenuItem secureLogsMenuItem;
         private System.Windows.Forms.ToolStripMenuItem localStorageTillMenuItem;
@@ -1695,7 +1651,6 @@
         private System.Windows.Forms.ToolStripMenuItem ServerRTMenuItem;
         private System.Windows.Forms.ToolStripMenuItem JPOSRFIDLogsSecureMenuItem;
         private System.Windows.Forms.ToolStripMenuItem MobilePosAppKillMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator22;
         private System.Windows.Forms.ToolStripMenuItem signatorResetMenuItem;
         private System.Windows.Forms.Timer HourTimer;
         private System.Windows.Forms.ToolStripMenuItem monitoringSlayerMenuItem;
@@ -1707,7 +1662,6 @@
         private System.Windows.Forms.ToolStripMenuItem veritasBackupJobResetMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator23;
         private System.Windows.Forms.ToolStripMenuItem dumpFileAnaliseMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem updatePackageInvalidMenuItem;
         private System.Windows.Forms.ToolStripMenuItem stocktakingMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator24;
         private System.Windows.Forms.ToolStripMenuItem backstoreCsvExportMenuItem;

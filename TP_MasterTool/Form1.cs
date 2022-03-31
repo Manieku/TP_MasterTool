@@ -843,14 +843,6 @@ namespace TP_MasterTool
             Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.TSEWebserviceRestart, "");
             Process.Start("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c ""cd C:\Program Files (x86)\DieboldNixdorf\TSE-Webservice\bin"" && dn_tsetool.bat restart && pause");
         }
-        private void TPRaportsRegenZipMenuItem_Click(object sender, EventArgs e)
-        {
-            new TPReportsRegenZip().Show();
-        }
-        private void InvalidTransferMenuItem_Click(object sender, EventArgs e)
-        {
-            new InvTansactionTransfer().Show();
-        }
         private void SignatorResetMenuItem_Click(object sender, EventArgs e)
         {
             ConnectionPara connectionPara = Main.interfejs.connectionPara;
@@ -1114,10 +1106,6 @@ namespace TP_MasterTool
         {
             new MonitoringAnalizer().Show();
         }
-        private void updatePackageInvalidMenuItem_Click(object sender, EventArgs e)
-        {
-            new UpdatePackageInvalid().Show();
-        }
         private void StocktakingMenuItem_Click(object sender, EventArgs e)
         {
             new Stocktaking().Show();
@@ -1128,9 +1116,7 @@ namespace TP_MasterTool
             {
                 "InvalidTransfer",
                 "TpReportsRegenAndZip",
-                "UpdatePackageInvalid",
-                "EsfClientRestart",
-                "EsfClientReinit",
+                "UpdatePackageInvalidCheck",
             };
             new MassFunctionForm(functionList).Show();
         }
@@ -1147,6 +1133,8 @@ namespace TP_MasterTool
             {
                 "GetMAC",
                 "BulkFileMove",
+                "EsfClientRestart",
+                "EsfClientReinit",
             };
             new MassFunctionForm(functionList).Show();
         }

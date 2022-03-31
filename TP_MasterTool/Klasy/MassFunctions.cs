@@ -32,7 +32,7 @@ namespace TP_MasterTool.Klasy
 
             return new List<string> { dayBefore, dayofEOD };
         }
-        public static List<string> GetInfo_UpdatePackageInvalid()
+        public static List<string> GetInfo_UpdatePackageInvalidCheck()
         {
             string date = Microsoft.VisualBasic.Interaction.InputBox("Provide the date to check for invalid packages (YYYYMMDD)", "Input data");
             if (date == "")
@@ -161,7 +161,7 @@ namespace TP_MasterTool.Klasy
             }
             massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
         }
-        public static void UpdatePackageInvalid(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
+        public static void UpdatePackageInvalidCheck(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
             massFunctionForm.GridChange(rownr, "Looking for files");
             if (!System.IO.Directory.Exists(@"\\" + connectionPara.TAG + @"\d$\TPDotnet\Server\UpdatePackages\InValid\" + addInfo[0]))
