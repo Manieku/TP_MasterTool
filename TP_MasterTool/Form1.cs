@@ -1144,6 +1144,7 @@ namespace TP_MasterTool
             string[] functionList = new string[]
             {
                 "GetMAC",
+                "BulkFileMove",
             };
             new MassFunctionForm(functionList).Show();
         }

@@ -41,6 +41,28 @@ namespace TP_MasterTool.Klasy
             }
             return new List<string> { date };
         }
+        public static List<string> GetInfo_BulkFileMove()
+        {
+            string source = Microsoft.VisualBasic.Interaction.InputBox(@"Provide path to source folder from which you want to move files (e.g. d$\TPDotnet\Log)", "Input data");
+            if (source == "")
+            {
+                return null;
+            }
+
+            string destination = Microsoft.VisualBasic.Interaction.InputBox(@"Provide path to source folder from which you want to move files (e.g. d$\WNI)", "Input data");
+            if (destination == "")
+            {
+                return null;
+            }
+
+            string filter = Microsoft.VisualBasic.Interaction.InputBox("What files should be moved aka search filter (* for all)", "Input data");
+            if (filter == "")
+            {
+                return null;
+            }
+
+            return new List<string> { source, destination, filter };
+        }
 
         //-------Mass Functions-------------
         public static void Test(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
@@ -193,6 +215,45 @@ namespace TP_MasterTool.Klasy
                 Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.UpdatePackageInvalid, "Found Invalid Items");
             }
             massFunctionForm.GridChange(rownr, "Found Invalid", Globals.errorColor);
+        }
+        public static void BulkFileMove(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
+        {
+            massFunctionForm.GridChange(rownr, "Looking for files");
+            string source = @"\\" + connectionPara.TAG + @"\" + addInfo[0];
+            string destination = @"\\" + connectionPara.TAG + @"\" + addInfo[1];
+            if (!Directory.Exists(source))
+            {
+                massFunctionForm.ErrorLog(rownr, "Source folder not found");
+                return;
+            }
+            if(!FileController.MakeFolder(destination, out Exception makeExp))
+            {
+                massFunctionForm.ErrorLog(rownr, "Unable to create destination folder: " + makeExp.Message);
+                return;
+            }
+            string[] files = Directory.GetFiles(source, addInfo[2]);
+            if(files.Length == 0)
+            {
+                massFunctionForm.ErrorLog(rownr, "No file matching the criteria is found");
+                return;
+            }
+            int licznik = 1;
+            foreach(string file in files)
+            {
+                massFunctionForm.GridChange(rownr, "Moving " + licznik + " out of " + files.Length + " files");
+                if(!FileController.MoveFile(file, destination + @"\" + Path.GetFileName(file), false, out Exception moveExp))
+                {
+                    massFunctionForm.ErrorLog(rownr, "Operation cancelled, Unable to move file: " + moveExp);
+                    return;
+                }
+                licznik++;
+            }
+            massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
+            massFunctionForm.AddToLog(rownr, "[SUCCESS] - " + files.Length + " files were moved");
+            lock(massFunctionForm.logLock)
+            {
+                Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.BulkFileMove, source + " -> " + destination);
+            }
         }
     }
 }
