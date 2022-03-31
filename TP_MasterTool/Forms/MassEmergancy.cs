@@ -134,11 +134,7 @@ namespace TP_MasterTool.Forms
             }
 
             string selection = functionSelectList.SelectedItem.ToString();
-            else if(selection == "EsfClient Reinit")
-            {
-                EsfClientReinit(rownr, connectionPara);
-            }
-            else if(selection == "TP Process Manager Restart")
+            if(selection == "TP Process Manager Restart")
             {
                 TpProcessManagerRestart(rownr, connectionPara);
             }
@@ -172,26 +168,6 @@ namespace TP_MasterTool.Forms
             //DNFiskalRename(rownr, connectionPara);
         }
 
-        private void EsfClientReinit(int rownr, ConnectionPara connectionPara)
-        {
-            gridChange(rownr, "Running script");
-            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c cd c:\service\agents\esfclient && reinit_esfclient.cmd");
-            if (cmdOutput.exitCode != 0)
-            {
-                gridChange(rownr, "Error", Globals.errorColor);
-                lock (logLock)
-                {
-                    log[rownr] += " - " + Logger.LogTime() + "[ERROR] CMD exited with error code: " + cmdOutput.exitCode;
-                }
-                return;
-            }
-            gridChange(rownr, "Done", Color.LightGreen);
-            lock (logLock)
-            {
-                log[rownr] += " - " + Logger.LogTime() + "[SUCCESS] ESF Client Reinitialized";
-            }
-
-        }
         private void TpProcessManagerRestart(int rownr, ConnectionPara connectionPara)
         {
             gridChange(rownr, "Restarting Process");

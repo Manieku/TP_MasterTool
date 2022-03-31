@@ -70,6 +70,7 @@ namespace TP_MasterTool
             AdvRandomness,
             BulkFileMove,
             EsfClientRestart,
+            EsfClientReinit,
             Stocktaking,
             DeleteLock,
             GetSqlInfo,

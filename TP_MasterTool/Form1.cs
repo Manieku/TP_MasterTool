@@ -1130,6 +1130,7 @@ namespace TP_MasterTool
                 "TpReportsRegenAndZip",
                 "UpdatePackageInvalid",
                 "EsfClientRestart",
+                "EsfClientReinit",
             };
             new MassFunctionForm(functionList).Show();
         }
