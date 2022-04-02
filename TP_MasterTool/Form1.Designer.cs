@@ -92,7 +92,6 @@
             this.toolStripSeparator19 = new System.Windows.Forms.ToolStripSeparator();
             this.s4FiscalSecureMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tSELogsSecureMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.JPOSRFIDLogsSecureMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pDCUDataErrorSecureMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.diagnosticsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -613,7 +612,6 @@
             this.toolStripSeparator19,
             this.s4FiscalSecureMenuItem,
             this.tSELogsSecureMenuItem,
-            this.JPOSRFIDLogsSecureMenuItem,
             this.pDCUDataErrorSecureMenuItem});
             this.LogsMenuItem.Name = "LogsMenuItem";
             this.LogsMenuItem.Overflow = System.Windows.Forms.ToolStripItemOverflow.AsNeeded;
@@ -632,14 +630,14 @@
             // WinSysLogsMenuItem
             // 
             this.WinSysLogsMenuItem.Name = "WinSysLogsMenuItem";
-            this.WinSysLogsMenuItem.Size = new System.Drawing.Size(169, 26);
+            this.WinSysLogsMenuItem.Size = new System.Drawing.Size(224, 26);
             this.WinSysLogsMenuItem.Text = "System";
             this.WinSysLogsMenuItem.Click += new System.EventHandler(this.WindowsLogsMenuItem_Click);
             // 
             // WinAppLogsMenuItem
             // 
             this.WinAppLogsMenuItem.Name = "WinAppLogsMenuItem";
-            this.WinAppLogsMenuItem.Size = new System.Drawing.Size(169, 26);
+            this.WinAppLogsMenuItem.Size = new System.Drawing.Size(224, 26);
             this.WinAppLogsMenuItem.Text = "Application";
             this.WinAppLogsMenuItem.Click += new System.EventHandler(this.WindowsLogsMenuItem_Click);
             // 
@@ -736,13 +734,6 @@
             this.tSELogsSecureMenuItem.Text = "TSE Logs Secure";
             this.tSELogsSecureMenuItem.Click += new System.EventHandler(this.TSELogsSecureMenuItem_Click);
             // 
-            // JPOSRFIDLogsSecureMenuItem
-            // 
-            this.JPOSRFIDLogsSecureMenuItem.Name = "JPOSRFIDLogsSecureMenuItem";
-            this.JPOSRFIDLogsSecureMenuItem.Size = new System.Drawing.Size(250, 26);
-            this.JPOSRFIDLogsSecureMenuItem.Text = "JPOSRFID Logs Secure";
-            this.JPOSRFIDLogsSecureMenuItem.Click += new System.EventHandler(this.JPOSRFIDLogsSecureMenuItem_Click);
-            // 
             // pDCUDataErrorSecureMenuItem
             // 
             this.pDCUDataErrorSecureMenuItem.Name = "pDCUDataErrorSecureMenuItem";
@@ -790,28 +781,28 @@
             // quickPingMenuItem
             // 
             this.quickPingMenuItem.Name = "quickPingMenuItem";
-            this.quickPingMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.quickPingMenuItem.Size = new System.Drawing.Size(195, 26);
             this.quickPingMenuItem.Text = "Quick Ping";
             this.quickPingMenuItem.Click += new System.EventHandler(this.QuickPingTAGMenuItem_Click);
             // 
             // pingWithLoadMenuItem
             // 
             this.pingWithLoadMenuItem.Name = "pingWithLoadMenuItem";
-            this.pingWithLoadMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.pingWithLoadMenuItem.Size = new System.Drawing.Size(195, 26);
             this.pingWithLoadMenuItem.Text = "Ping with Load";
             this.pingWithLoadMenuItem.Click += new System.EventHandler(this.PingWithLoad_TAGMenuItem_Click);
             // 
             // savePingToTxtMenuItem
             // 
             this.savePingToTxtMenuItem.Name = "savePingToTxtMenuItem";
-            this.savePingToTxtMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.savePingToTxtMenuItem.Size = new System.Drawing.Size(195, 26);
             this.savePingToTxtMenuItem.Text = "Save Ping to txt";
             this.savePingToTxtMenuItem.Click += new System.EventHandler(this.SavePingToTxtMenuItem_Click);
             // 
             // pingOverTimeMenuItem
             // 
             this.pingOverTimeMenuItem.Name = "pingOverTimeMenuItem";
-            this.pingOverTimeMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.pingOverTimeMenuItem.Size = new System.Drawing.Size(195, 26);
             this.pingOverTimeMenuItem.Text = "Ping over time";
             this.pingOverTimeMenuItem.Click += new System.EventHandler(this.PingOverTimeMenuItem_Click);
             // 
@@ -1649,7 +1640,6 @@
         private System.Windows.Forms.ToolStripMenuItem EoDCheckerMenuItem;
         private System.Windows.Forms.ToolStripMenuItem DNSRestoreMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ServerRTMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem JPOSRFIDLogsSecureMenuItem;
         private System.Windows.Forms.ToolStripMenuItem MobilePosAppKillMenuItem;
         private System.Windows.Forms.ToolStripMenuItem signatorResetMenuItem;
         private System.Windows.Forms.Timer HourTimer;

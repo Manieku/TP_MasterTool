@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using System.Xml.Linq;
@@ -289,10 +290,48 @@ namespace TP_MasterTool
         //-----------EPOS Logs-----------------
         private void SecureLogsMenuItem_Click(object sender, EventArgs e)
         {
-            FileController.ZipAndStealFolder("TPLogs", @"\\" + connectionPara.TAG + @"\d$\TPDotnet\Log", @"D:\TPDotnet\Log", connectionPara);
+            ConnectionPara connectionPara = Main.interfejs.connectionPara;
+            using (BackgroundWorker slave = new BackgroundWorker())
+            {
+                slave.DoWork += (s, args) =>
+                {
+                    string tixnr = Microsoft.VisualBasic.Interaction.InputBox("Provide ticket number:" + Environment.NewLine + "Window will disappear while scritp it's doing his magic in background. You are free to enjoy other Toolbox functions while waiting for result.");
+                    if (tixnr == "")
+                    {
+                        return;
+                    }
+                    if(!FileController.ZipAndStealFolder(tixnr, "TPLogs", @"\\" + connectionPara.TAG + @"\d$\TPDotnet\Log", @"D:\TPDotnet\Log", connectionPara, out string outputFilePath))
+                    {
+                        CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Secure Log Error", outputFilePath);
+                        return;
+                    }
+                    if (CustomMsgBox.Show(CustomMsgBox.MsgType.Decision, connectionPara.TAG + " - Logs secured", "Log files were successfully zipped and secured in WNI folder." + Environment.NewLine + "Do you want to download then on your drive?") == DialogResult.OK)
+                    {
+                        if (!System.IO.File.Exists(outputFilePath))
+                        {
+                            CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Download File Error", "ToolBox lost connection to host drive, please initialize it anew and copy logs manually from:" + Environment.NewLine + outputFilePath);
+                            return;
+                        }
+                        if (!FileController.CopyFile(outputFilePath, Globals.userTempLogsPath + Path.GetFileName(outputFilePath), true, out Exception copyExp))
+                        {
+                            if (copyExp != null)
+                            {
+                                Logger.QuickLog(Globals.Funkcje.ZipAndSteal, "TPLogs", connectionPara.TAG, "ErrorLog", copyExp.ToString());
+                                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Downloading Error", "ToolBox encountered error during downloading logs:" + Environment.NewLine + copyExp.Message);
+                            }
+                        }
+                    }
+                    Process.Start("explorer.exe", Path.GetDirectoryName(outputFilePath));
+
+                };
+                slave.RunWorkerAsync();
+            }
+
         }
         private void S4FiscalSecureMenuItem_Click(object sender, EventArgs e)
         {
+            ConnectionPara connectionPara = Main.interfejs.connectionPara;
+
             if (!System.IO.Directory.Exists(@"\\" + connectionPara.TAG + @"\c$\Program Files (x86)\Service Plus"))
             {
                 CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "No S4 folder found", "Can't find any S4 folder on target host");
@@ -309,25 +348,126 @@ namespace TP_MasterTool
                 CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "More than one S4 folder found", "Script found more than one S4 folder on target host. Please check manually");
                 return;
             }
-            FileController.ZipAndStealFolder("S4Fiscal", @"\\" + connectionPara.TAG + @"\c$\Program Files (x86)\Service Plus\" + System.IO.Path.GetFileNameWithoutExtension(directories[0]), @"C:\Program Files (x86)\Service Plus\" + System.IO.Path.GetFileNameWithoutExtension(directories[0]), connectionPara);
+
+            using (BackgroundWorker slave = new BackgroundWorker())
+            {
+                slave.DoWork += (s, args) =>
+                {
+                    string tixnr = Microsoft.VisualBasic.Interaction.InputBox("Provide ticket number:" + Environment.NewLine + "Window will disappear while scritp it's doing his magic in background. You are free to enjoy other Toolbox functions while waiting for result.");
+                    if (tixnr == "")
+                    {
+                        return;
+                    }
+                    if (!FileController.ZipAndStealFolder(tixnr, "S4Fiscal", @"\\" + connectionPara.TAG + @"\c$\Program Files (x86)\Service Plus\" + Path.GetFileNameWithoutExtension(directories[0]), @"C:\Program Files (x86)\Service Plus\" + System.IO.Path.GetFileNameWithoutExtension(directories[0]), connectionPara, out string outputFilePath))
+                    {
+                        CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Secure Log Error", outputFilePath);
+                        return;
+                    }
+                    if (CustomMsgBox.Show(CustomMsgBox.MsgType.Decision, connectionPara.TAG + " - Logs secured", "Log files were successfully zipped and secured in WNI folder." + Environment.NewLine + "Do you want to download then on your drive?") == DialogResult.OK)
+                    {
+                        if (!System.IO.File.Exists(outputFilePath))
+                        {
+                            CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Download File Error", "ToolBox lost connection to host drive, please initialize it anew and copy logs manually from:" + Environment.NewLine + outputFilePath);
+                            return;
+                        }
+                        if (!FileController.CopyFile(outputFilePath, Globals.userTempLogsPath + Path.GetFileName(outputFilePath), true, out Exception copyExp))
+                        {
+                            if (copyExp != null)
+                            {
+                                Logger.QuickLog(Globals.Funkcje.ZipAndSteal, "S4Fiscal", connectionPara.TAG, "ErrorLog", copyExp.ToString());
+                                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Downloading Error", "ToolBox encountered error during downloading logs:" + Environment.NewLine + copyExp.Message);
+                            }
+                        }
+                    }
+                    Process.Start("explorer.exe", Path.GetDirectoryName(outputFilePath));
+
+                };
+                slave.RunWorkerAsync();
+            }
         }
         private void TSELogsSecureMenuItem_Click(object sender, EventArgs e)
         {
-            FileController.ZipAndStealFolder("TSELogs", @"\\" + connectionPara.TAG + @"\c$\ProgramData\DieboldNixdorf\TSE-Webservice\log", @"C:\ProgramData\DieboldNixdorf\TSE-Webservice\log", connectionPara);
-        }
-        private void JPOSRFIDLogsSecureMenuItem_Click(object sender, EventArgs e)
-        {
-            MassJPOSLogs massJPOSLogs = new MassJPOSLogs();
-            massJPOSLogs.Show();
+            ConnectionPara connectionPara = Main.interfejs.connectionPara;
+            using (BackgroundWorker slave = new BackgroundWorker())
+            {
+                slave.DoWork += (s, args) =>
+                {
+                    string tixnr = Microsoft.VisualBasic.Interaction.InputBox("Provide ticket number:" + Environment.NewLine + "Window will disappear while scritp it's doing his magic in background. You are free to enjoy other Toolbox functions while waiting for result.");
+                    if (tixnr == "")
+                    {
+                        return;
+                    }
+                    if (!FileController.ZipAndStealFolder(tixnr, "TSELogs", @"\\" + connectionPara.TAG + @"\c$\ProgramData\DieboldNixdorf\TSE-Webservice\log", @"C:\ProgramData\DieboldNixdorf\TSE-Webservice\log", connectionPara, out string outputFilePath))
+                    {
+                        CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Secure Log Error", outputFilePath);
+                        return;
+                    }
+                    if (CustomMsgBox.Show(CustomMsgBox.MsgType.Decision, connectionPara.TAG + " - Logs secured", "Log files were successfully zipped and secured in WNI folder." + Environment.NewLine + "Do you want to download then on your drive?") == DialogResult.OK)
+                    {
+                        if (!System.IO.File.Exists(outputFilePath))
+                        {
+                            CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Download File Error", "ToolBox lost connection to host drive, please initialize it anew and copy logs manually from:" + Environment.NewLine + outputFilePath);
+                            return;
+                        }
+                        if (!FileController.CopyFile(outputFilePath, Globals.userTempLogsPath + Path.GetFileName(outputFilePath), true, out Exception copyExp))
+                        {
+                            if (copyExp != null)
+                            {
+                                Logger.QuickLog(Globals.Funkcje.ZipAndSteal, "TSELogs", connectionPara.TAG, "ErrorLog", copyExp.ToString());
+                                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Downloading Error", "ToolBox encountered error during downloading logs:" + Environment.NewLine + copyExp.Message);
+                            }
+                        }
+                    }
+                    Process.Start("explorer.exe", Path.GetDirectoryName(outputFilePath));
+
+                };
+                slave.RunWorkerAsync();
+            }
         }
         private void pDCUDataErrorSecureMenuItem_Click(object sender, EventArgs e)
         {
-            if (System.IO.Directory.GetFiles(@"\\" + connectionPara.TAG + @"\d$\StoreApps\CarsData\Cars\pdcudata\error").Length == 0)
+            ConnectionPara connectionPara = Main.interfejs.connectionPara;
+            using (BackgroundWorker slave = new BackgroundWorker())
             {
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "PDCU Data Secure Error", "No error files found in folder");
-                return;
+                slave.DoWork += (s, args) =>
+                {
+                    if (Directory.GetFiles(@"\\" + connectionPara.TAG + @"\d$\StoreApps\CarsData\Cars\pdcudata\error").Length == 0)
+                    {
+                        CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "PDCU Data Secure Error", "No error files found in folder");
+                        return;
+                    }
+
+                    string tixnr = Microsoft.VisualBasic.Interaction.InputBox("Provide ticket number:" + Environment.NewLine + "Window will disappear while scritp it's doing his magic in background. You are free to enjoy other Toolbox functions while waiting for result.");
+                    if (tixnr == "")
+                    {
+                        return;
+                    }
+                    if (!FileController.ZipAndStealFolder(tixnr, "PdcuError", @"\\" + connectionPara.TAG + @"\d$\StoreApps\CarsData\Cars\pdcudata\error", @"D:\StoreApps\CarsData\Cars\pdcudata\error", connectionPara, out string outputFilePath))
+                    {
+                        CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Secure Log Error", outputFilePath);
+                        return;
+                    }
+                    if (CustomMsgBox.Show(CustomMsgBox.MsgType.Decision, connectionPara.TAG + " - Logs secured", "Log files were successfully zipped and secured in WNI folder." + Environment.NewLine + "Do you want to download then on your drive?") == DialogResult.OK)
+                    {
+                        if (!System.IO.File.Exists(outputFilePath))
+                        {
+                            CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Download File Error", "ToolBox lost connection to host drive, please initialize it anew and copy logs manually from:" + Environment.NewLine + outputFilePath);
+                            return;
+                        }
+                        if (!FileController.CopyFile(outputFilePath, Globals.userTempLogsPath + Path.GetFileName(outputFilePath), true, out Exception copyExp))
+                        {
+                            if (copyExp != null)
+                            {
+                                Logger.QuickLog(Globals.Funkcje.ZipAndSteal, "PdcuError", connectionPara.TAG, "ErrorLog", copyExp.ToString());
+                                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Downloading Error", "ToolBox encountered error during downloading logs:" + Environment.NewLine + copyExp.Message);
+                            }
+                        }
+                    }
+                    Process.Start("explorer.exe", Path.GetDirectoryName(outputFilePath));
+
+                };
+                slave.RunWorkerAsync();
             }
-            FileController.ZipAndStealFolder("PdcuError", @"\\" + connectionPara.TAG + @"\d$\StoreApps\CarsData\Cars\pdcudata\error", @"D:\StoreApps\CarsData\Cars\pdcudata\error", connectionPara);
         }
 
         /**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**/
@@ -1117,6 +1257,7 @@ namespace TP_MasterTool
                 "InvalidTransfer",
                 "TpReportsRegenAndZip",
                 "UpdatePackageInvalidCheck",
+                "MassJposLogsDownload",
             };
             new MassFunctionForm(functionList).Show();
         }

@@ -63,6 +63,16 @@ namespace TP_MasterTool.Klasy
 
             return new List<string> { source, destination, filter };
         }
+        public static List<string> GetInfo_MassJposLogsDownload()
+        {
+            string tixnr = Microsoft.VisualBasic.Interaction.InputBox("Provide ticket number:", "Input data");
+            if (tixnr == "")
+            {
+                return null;
+            }
+            return new List<string> { tixnr };
+        }
+
 
         //-------Mass Functions-------------
         public static void Test(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
@@ -287,6 +297,61 @@ namespace TP_MasterTool.Klasy
             {
                 Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.EsfClientReinit, "");
             }
+        }
+        public static void MassJposLogsDownload(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
+        {
+            massFunctionForm.GridChange(rownr, "Looking for files");
+            string[] files = Directory.GetFiles(@"\\" + connectionPara.TAG + @"\d$\TPDotnet\DeviceService", "JPOSRFIDScannerLogs*");
+            if (files.Length == 0)
+            {
+                massFunctionForm.ErrorLog(rownr, "No JPOS logs found");
+                return;
+            }
+
+            if (Directory.Exists(@"\\" + connectionPara.TAG + @"\d$\TPDotnet\DeviceService\JPOSLogs"))
+            {
+                massFunctionForm.GridChange(rownr, "Deleting old zip");
+                try
+                {
+                    Directory.Delete(@"\\" + connectionPara.TAG + @"\d$\TPDotnet\DeviceService\JPOSLogs", true);
+                }
+                catch (Exception exp)
+                {
+                    massFunctionForm.ErrorLog(rownr, @"Can't delete folder with old logs, Please delete D:\TPDotnet\DeviceService\JPOSLogs manually and try again: " + exp.Message);
+                    return;
+                }
+            }
+
+            massFunctionForm.GridChange(rownr, "Gathering Logs");
+            System.Threading.Thread.Sleep(150);
+            if(!FileController.MakeFolder(@"\\" + connectionPara.TAG + @"\d$\TPDotnet\DeviceService\JPOSLogs", out Exception makeExp))
+            {
+                massFunctionForm.ErrorLog(rownr, "Unable to create folder for logs: " + makeExp.Message);
+                return;
+            }
+
+            foreach (string file in files)
+            {
+                if (!FileController.CopyFile(file, @"\\" + connectionPara.TAG + @"\d$\TPDotnet\DeviceService\JPOSLogs\" + Path.GetFileName(file), false, out Exception copyExp))
+                {
+                    massFunctionForm.ErrorLog(rownr, "Unable to copy " + file + ": " + copyExp.Message);
+                    return;
+                }
+            }
+            massFunctionForm.GridChange(rownr, "Securing Logs");
+            if(!FileController.ZipAndStealFolder(addInfo[0], "JposLogs", @"\\" + connectionPara.TAG + @"\d$\TPDotnet\DeviceService\JPOSLogs", @"D:\TPDotnet\DeviceService\JPOSLogs", connectionPara, out string outputFilePath))
+            {
+                massFunctionForm.ErrorLog(rownr, outputFilePath);
+                return;
+            }
+            massFunctionForm.GridChange(rownr, "Downloading Logs");
+            if (!FileController.CopyFile(outputFilePath, Globals.userTempLogsPath + Path.GetFileName(outputFilePath), false, out Exception copyExp2))
+            {
+                massFunctionForm.ErrorLog(rownr, "Unable to copy log: " + copyExp2.Message);
+                return;
+            }
+            massFunctionForm.AddToLog(rownr, "[SUCCESS] - JposLogs Downloaded");
+            massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
         }
     }
 }

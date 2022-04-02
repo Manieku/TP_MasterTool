@@ -204,78 +204,31 @@ namespace TP_MasterTool
             return true;
         }
         //--------COMPLEX--------------
-        public static bool ZipAndStealFolder(string prefix, string remotePath, string absolutePath, ConnectionPara connectionPara)
+        public static bool ZipAndStealFolder(string tixnr, string prefix, string remotePath, string absolutePath, ConnectionPara connectionPara, out string outputFilePath)
         {
-            bool successState = false;
+            outputFilePath = "";
             Logger myLog = new Logger(Globals.Funkcje.ZipAndSteal, prefix + " " + remotePath + " " + absolutePath, connectionPara.TAG);
-            Telemetry.LogFunctionUsage(Globals.Funkcje.ZipAndSteal);
-            Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.ZipAndSteal, remotePath);
-            using (BackgroundWorker slave = new BackgroundWorker())
+            if (!System.IO.Directory.Exists(remotePath))
             {
-                slave.DoWork += (s, args) =>
-                {
-                    myLog.Add("Background slave started");
-                    if (!System.IO.Directory.Exists(remotePath))
-                    {
-                        Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Folder not found");
-                        CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Folder not found", "Can't find " + prefix + " folder on targeted host");
-                        myLog.Add("Can't find " + prefix + " folder on targeted host");
-                        myLog.SaveLog("ErrorLog");
-                        return;
-                    }
-
-                    string tixnr = Microsoft.VisualBasic.Interaction.InputBox("Provide ticket number:" + Environment.NewLine + "Window will disappear while scritp it's doing his magic in background. You are free to enjoy other Toolbox functions while waiting for result.");
-                    if (tixnr == "")
-                    {
-                        Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Wrong ticket number");
-                        CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Wrong ticket number", "Please provide valid ticket number");
-                        return;
-                    }
-                    string outputFolderName = prefix + " - " + tixnr + "(" + connectionPara.TAG + ") " + Logger.Datownik();
-
-                    CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c Xcopy /i /e /h /y """ + absolutePath + @""" ""D:\WNI\4GSS\" + tixnr + @"\Log"" && powershell -command ""Compress-Archive 'D:\WNI\4GSS\" + tixnr + @"\Log' 'D:\WNI\4GSS\" + tixnr + @"\" + outputFolderName + @".zip'"" && rmdir /s /q ""D:\WNI\4GSS\" + tixnr + @"\Log""");
-                    if (cmdOutput.exitCode != 0)
-                    {
-                        Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "RCMD Encounter Problem");
-                        CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "RCMD Encounter Problem", "While executing cmd encounter error and exited with code: " + cmdOutput.exitCode.ToString() + Environment.NewLine +
-                            "Error message: " + cmdOutput.errorOutputText);
-                        myLog.Add("Psexec exited with error: " + cmdOutput.errorOutputText);
-                        myLog.SaveLog("ErrorLog");
-                        return;
-                    }
-
-                    string grabFromPath = @"\\" + connectionPara.TAG + @"\d$\WNI\4GSS\" + tixnr;
-                    if (CustomMsgBox.Show(CustomMsgBox.MsgType.Decision, connectionPara.TAG + " - Logs secured", "Log files were successfully zipped and secured in WNI folder." + Environment.NewLine + "Do you want to download then on your drive?") == DialogResult.OK)
-                    {
-                        if (!System.IO.File.Exists(grabFromPath + @"\" + outputFolderName + @".zip"))
-                        {
-                            if (!CtrlFunctions.MapEndpointDrive(ref connectionPara, out cmdOutput))
-                            {
-                                Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Unable to map disc second time: " + cmdOutput.errorOutputText);
-                                myLog.Add("Unable to map disc second time");
-                                myLog.SaveLog("ErrorLog");
-                                return;
-                            }
-                        }
-                        myLog.Add("Copying: " + grabFromPath + @"\" + outputFolderName + @".zip");
-                        if (!FileController.CopyFile(grabFromPath + @"\" + outputFolderName + @".zip", Globals.userTempLogsPath + outputFolderName + @".zip", true, out Exception copyExp))
-                        {
-                            if (copyExp != null)
-                            {
-                                myLog.Add("Failed:" + Environment.NewLine + copyExp.ToString());
-                                myLog.SaveLog("ErrorLog");
-                                Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Error during copying");
-                                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Downloading Error", "ToolBox encountered error during downloading logs:" + Environment.NewLine + copyExp.Message);
-                            }
-                        }
-                    }
-                    Process.Start("explorer.exe", grabFromPath);
-                    successState = true;
-                };
-                slave.RunWorkerAsync();
-
+                outputFilePath = "Can't find " + prefix + " folder on targeted host";
+                return false;
             }
-            return successState;
+
+            string outputFolderName = prefix + " - " + tixnr + "(" + connectionPara.TAG + ") " + Logger.Datownik();
+
+            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c Xcopy /i /e /h /y """ + absolutePath + @""" ""D:\WNI\4GSS\" + tixnr + @"\Log"" && powershell -command ""Compress-Archive 'D:\WNI\4GSS\" + tixnr + @"\Log' 'D:\WNI\4GSS\" + tixnr + @"\" + outputFolderName + @".zip'"" && rmdir /s /q ""D:\WNI\4GSS\" + tixnr + @"\Log""");
+            if (cmdOutput.exitCode != 0)
+            {
+                outputFilePath = "While executing cmd encounter error and exited with code: " + cmdOutput.exitCode.ToString() + Environment.NewLine + "Error message: " + cmdOutput.errorOutputText;
+                myLog.Add("Psexec exited with error: " + cmdOutput.errorOutputText);
+                myLog.SaveLog("ErrorLog");
+                return false;
+            }
+
+            outputFilePath = @"\\" + connectionPara.TAG + @"\d$\WNI\4GSS\" + tixnr + @"\" + outputFolderName + @".zip";
+            Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.ZipAndSteal, prefix);
+            return true;
         }
+
     }
 }
