@@ -560,7 +560,7 @@ namespace TP_MasterTool.Forms
                     gridChange(rownr, "Ticket ready to be close. See log.", Color.LightGreen);
                     return;
                 }
-                RunCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c C:\temp\WsusWorkaround.cmd", false);
+                CtrlFunctions.RunHiddenCmdWitoutOutput("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c C:\temp\WsusWorkaround.cmd", false);
                 log += AddToLog("Workaround applied");
                 log += AddToLog(Environment.NewLine + ">>> Ticket should auto close in few minutes, if not please check c drive space and close it manually. In case c drive is still critical create task for ADV <<<");
                 gridChange(rownr, "Ticket ready to be close. See log.", Color.LightGreen);
@@ -1024,20 +1024,6 @@ namespace TP_MasterTool.Forms
             catch
             {
                 return null;
-            }
-        }
-        private void RunCmd(string exe, string command, bool wait4Exit)
-        {
-            Process p = new Process();
-            p.StartInfo.FileName = exe;
-            p.StartInfo.Arguments = command;
-            p.StartInfo.UseShellExecute = false;
-            p.StartInfo.CreateNoWindow = true;
-            p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            p.Start();
-            if (wait4Exit)
-            {
-                p.WaitForExit();
             }
         }
     }

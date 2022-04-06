@@ -46,7 +46,7 @@ namespace TP_MasterTool
             MassJPOSLogs,
             MassEmergancy,
             InvTansactionTransfer,
-            TPReportsRegenZip,
+            TpReportsRegenAndZip,
             SignatorReset,
             ApcServiceFix,
             BackstoreCsvExport,

@@ -68,6 +68,22 @@ namespace TP_MasterTool.Klasy
 
             return new CmdOutput(p.ExitCode, temp, temp2);
         }
+        public static int RunHiddenCmdWitoutOutput(string exe, string command, bool wait4Exit)
+        {
+            Process p = new Process();
+            p.StartInfo.FileName = exe;
+            p.StartInfo.Arguments = command;
+            p.StartInfo.UseShellExecute = false;
+            p.StartInfo.CreateNoWindow = true;
+            p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            p.Start();
+            if (wait4Exit)
+            {
+                p.WaitForExit();
+                return p.ExitCode;
+            }
+            return 0;
+        }
         public static void OpenFolder(string host, string path)
         {
             Main.ChangeStatusBar("Working...");
@@ -376,25 +392,10 @@ namespace TP_MasterTool.Klasy
                     return false;
                 }
             }
-
-            try
+            if(RunHiddenCmdWitoutOutput("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd" +
+                @" /c cd C:\temp && runeodreports.bat " + startDate + " " + endDate, true) != 0)
             {
-                Process p = new Process();
-                p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                p.StartInfo.FileName = "psexec.exe";
-                p.StartInfo.Arguments = @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd" +
-                @" /c cd C:\temp && runeodreports.bat " + startDate + " " + endDate;
-                p.Start();
-                p.WaitForExit();
-                if (p.ExitCode != 0)
-                {
-                    regerOutput = "Error with execution of runeodreports.bat";
-                    return false;
-                }
-            }
-            catch (Exception exp)
-            {
-                regerOutput = "RCMD encountered error -> " + exp.Message;
+                regerOutput = "Error with execution of runeodreports.bat";
                 return false;
             }
             regerOutput = "EoD Reports Regenerated";
@@ -402,25 +403,10 @@ namespace TP_MasterTool.Klasy
         }
         public static bool ZipEoDReports(ConnectionPara connectionPara, out string output)
         {
-            try
+            if(RunHiddenCmdWitoutOutput("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd" +
+                @" /c cd C:\service\qem\collect_tp_reports && powershell -ExecutionPolicy Bypass -File collect_tp_reports.ps1", true) != 0)
             {
-                Process p = new Process();
-                p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                p.StartInfo.FileName = "psexec.exe";
-                p.StartInfo.Arguments = @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd" +
-                @" /c cd C:\service\qem\collect_tp_reports && powershell -ExecutionPolicy Bypass -File collect_tp_reports.ps1";
-                p.Start();
-                p.WaitForExit();
-
-                if (p.ExitCode != 0)
-                {
-                    output = "Error with execute PowerShell script";
-                    return false;
-                }
-            }
-            catch (Exception exp)
-            {
-                output = "RCMD encountered error: " + exp.Message;
+                output = "Error with execute PowerShell script";
                 return false;
             }
             output = "EoD Reports Zipped";
