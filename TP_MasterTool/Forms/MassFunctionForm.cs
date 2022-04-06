@@ -69,6 +69,10 @@ namespace TP_MasterTool.Forms
             }
 
             //here you enter your function to execution
+            lock (logLock)
+            {
+                Telemetry.LogCompleteTelemetryData(connectionPara.TAG, (Globals.Funkcje)Enum.Parse(typeof(Globals.Funkcje), functionName), "");
+            }
             Type type = Type.GetType("TP_MasterTool.Klasy.MassFunctions");
             MethodInfo methodInfo = type.GetMethod(functionName);
             if(methodInfo == null)
@@ -161,6 +165,16 @@ namespace TP_MasterTool.Forms
                 log[rownr] += " - " + Logger.LogTime() + @"- [ERROR] - " + errorMsg;
             }
         }
+        public void ErrorLog(int rownr, string host, string errorMsg)
+        {
+            GridChange(rownr, "Error", Globals.errorColor);
+            lock (logLock)
+            {
+                log[rownr] += " - " + Logger.LogTime() + @"- [ERROR] - " + errorMsg;
+                Telemetry.LogOnMachineAction(host, Globals.Funkcje.Error, errorMsg);
+            }
+        }
+
         public void AddToLog(int rownr, string logThis)
         {
             lock (logLock)

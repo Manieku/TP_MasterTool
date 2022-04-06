@@ -281,17 +281,12 @@ namespace TP_MasterTool.Klasy
                 }
             }
 
-            if (!System.IO.File.Exists(@"\\" + connectionPara.TAG + @"\c$\SMART\DiskInfo64.exe"))
+            if (!FileController.CopyFolder(Globals.toolsPath + @"CrystalDiskInfo", @"\\" + connectionPara.TAG + @"\c$\SMART", false, out Exception copyExp))
             {
-                myLog.Add("SMART files not Found" + Environment.NewLine + "Copying CrystalDiskInfo Folder");
-                if (!FileController.CopyFolder(Globals.toolsPath + @"CrystalDiskInfo", @"\\" + connectionPara.TAG + @"\c$\SMART", false, out Exception copyExp))
-                {
-                    myLog.Add(copyExp.ToString());
-                    myLog.SaveLog("ErrorLog");
-                    errorMsg = @"ToolBox wasn't able to copy CrystalDiskInfo into targeted host. Please initialize it anew and try again";
-                    DeleteLock(@"\\" + connectionPara.TAG + @"\c$\SMART\smart.lock");
-                    return false;
-                }
+                myLog.Add(copyExp.ToString());
+                myLog.SaveLog("ErrorLog");
+                errorMsg = @"ToolBox wasn't able to copy CrystalDiskInfo into targeted host. Please initialize it anew and try again";
+                return false;
             }
 
             myLog.Add("Starting RCMD");
@@ -301,12 +296,9 @@ namespace TP_MasterTool.Klasy
                 myLog.Add("RCMD encountered error: " + cmdOutput.errorOutputText);
                 myLog.SaveLog("ErrorLog");
                 errorMsg = @"ToolBox encountered error while executing remote command. Please contact dev team for more info";
-                DeleteLock(@"\\" + connectionPara.TAG + @"\c$\SMART\smart.lock");
                 return false;
             }
 
-            myLog.Add("Releasing Lock");
-            DeleteLock(@"\\" + connectionPara.TAG + @"\c$\SMART\smart.lock");
             return true;
         }
         public static void GetWinLogs(string type, ConnectionPara connectionPara)

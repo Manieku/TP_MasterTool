@@ -12,10 +12,6 @@ namespace TP_MasterTool.Klasy
     static class MassFunctions
     {
         //-------GetInfo-------------------
-        public static List<string> GetInfo_Test()
-        {
-            return new List<string> { "placki", "cycki" };
-        }
         public static List<string> GetInfo_TpReportsRegenAndZip()
         {
             string dayBefore = Microsoft.VisualBasic.Interaction.InputBox("Provide <date-before-eod-run> according to USU 53669" + Environment.NewLine + "Dates must be given in yyyyMMdd format: 4-digits year, 2-digits month(01-12), 2-digits day (01-31)", "Input data", DateTime.Today.AddDays(-1).ToString("yyyyMMdd"));
@@ -49,7 +45,7 @@ namespace TP_MasterTool.Klasy
                 return null;
             }
 
-            string destination = Microsoft.VisualBasic.Interaction.InputBox(@"Provide path to source folder from which you want to move files (e.g. d$\WNI)", "Input data");
+            string destination = Microsoft.VisualBasic.Interaction.InputBox(@"Provide path to destination folder to which you want to move files to (e.g. d$\WNI)", "Input data");
             if (destination == "")
             {
                 return null;
@@ -75,29 +71,17 @@ namespace TP_MasterTool.Klasy
 
 
         //-------Mass Functions-------------
-        public static void Test(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
-        {
-            massFunctionForm.GridChange(rownr, "outside test");
-            lock (massFunctionForm.logLock)
-            {
-                massFunctionForm.log[rownr] += addInfo[0] + " - " + addInfo[1];
-            }
-        }
         public static void GetMAC(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
             massFunctionForm.GridChange(rownr, "Stealing MAC");
             CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c powershell -command \"Get-WmiObject win32_networkadapterconfiguration | where {$_.ipaddress -like '" + connectionPara.IP + "*'} | select macaddress | ft -hidetableheaders\"");
             if(cmdOutput.exitCode != 0)
             {
-                massFunctionForm.ErrorLog(rownr, "Failed to steal MAC");
+                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "Failed to steal MAC");
+                return;
             }
             string output = cmdOutput.outputText.Replace("\n", "").Replace("\r", "").ToUpper();
             massFunctionForm.AddToLog(rownr, "[SUCCESS] - " + output);
-
-            lock(massFunctionForm.logLock)
-            {
-                Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.GetMAC, output);
-            }
             massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
         }
         public static void InvalidTransfer(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
@@ -109,7 +93,7 @@ namespace TP_MasterTool.Klasy
             }
             catch (Exception exp)
             {
-                massFunctionForm.ErrorLog(rownr, "Error while searching files: " + exp.Message);
+                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "Error while searching files: " + exp.Message);
                 return;
             }
 
@@ -122,7 +106,7 @@ namespace TP_MasterTool.Klasy
 
             if(!FileController.MakeFolder(@"\\" + connectionPara.TAG + @"\d$\WNI\Invalid_Transfer", out Exception makeExp))
             {
-                massFunctionForm.ErrorLog(rownr, @"Unable to create folder \d$\WNI\Invalid_Transfer: " + makeExp.Message);
+                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, @"Unable to create folder \d$\WNI\Invalid_Transfer: " + makeExp.Message);
                 return;
             }
 
@@ -132,7 +116,7 @@ namespace TP_MasterTool.Klasy
                 if(!FileController.MoveFile(file, @"\\" + connectionPara.TAG + @"\d$\WNI\Invalid_Transfer\" + Path.GetFileName(file), false, out Exception moveExp))
                 {
                     error = true;
-                    massFunctionForm.ErrorLog(rownr, "Unable to move file: " + file + ": " + moveExp.Message);
+                    massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "Unable to move file: " + file + ": " + moveExp.Message);
                     continue;
                 }
             }
@@ -142,17 +126,13 @@ namespace TP_MasterTool.Klasy
             }
             massFunctionForm.GridChange(rownr, "Success", Globals.successColor);
             massFunctionForm.AddToLog(rownr, "[SUCCESS] - " + files.Length + " invalid transactions was moved");
-            lock (massFunctionForm.logLock)
-            {
-                Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.InvTansactionTransfer, "Successful");
-            }
         }
         public static void TpReportsRegenAndZip(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
             massFunctionForm.GridChange(rownr, "Executing runeodreports.bat");
             if (!CtrlFunctions.RegenerateEoDReports(connectionPara, addInfo[0], addInfo[1], out string regenOutput))
             {
-                massFunctionForm.ErrorLog(rownr, regenOutput);
+                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, regenOutput);
                 return;
             }
             massFunctionForm.AddToLog(rownr, "[SUCCESS] - " + regenOutput);
@@ -160,15 +140,10 @@ namespace TP_MasterTool.Klasy
             massFunctionForm.GridChange(rownr, "Executing collect_tp_reports.ps1");
             if (!CtrlFunctions.ZipEoDReports(connectionPara, out string zipOutput))
             {
-                massFunctionForm.ErrorLog(rownr, zipOutput);
+                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, zipOutput);
                 return;
             }
             massFunctionForm.AddToLog(rownr, "[SUCCESS] " + zipOutput);
-
-            lock (massFunctionForm.logLock)
-            {
-                Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.TPReportsRegenZip, "");
-            }
             massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
         }
         public static void UpdatePackageInvalidCheck(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
@@ -194,6 +169,7 @@ namespace TP_MasterTool.Klasy
             var nodes = tempXml.Root.Elements("Transaction");
             if (nodes.Count() == 0)
             {
+                Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.UpdatePackageInvalid, "Found Invalid Items");
                 massFunctionForm.ErrorLog(rownr, "Other Invalid xml found - please check manually and include it in note to MMS team");
                 return;
             }
@@ -214,15 +190,16 @@ namespace TP_MasterTool.Klasy
             }
             catch
             {
+                Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.UpdatePackageInvalid, "Found Invalid Items");
                 massFunctionForm.ErrorLog(rownr, "Other Invalid xml found - please check manually and include it in note to MMS team");
                 return;
             }
 
+            massFunctionForm.AddToLog(rownr, "[AFFECTED] - Found Invalid Items");
             lock (massFunctionForm.logLock)
             {
-                massFunctionForm.AddToLog(rownr, "[AFFECTED] - Found Invalid Items");
                 massFunctionForm.log = massFunctionForm.log.Concat(output.Split(new string[] { Environment.NewLine }, StringSplitOptions.None)).ToArray();
-                Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.UpdatePackageInvalid, "Found Invalid Items");
+                Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.UpdatePackageInvalid, "Found Invalid Items");
             }
             massFunctionForm.GridChange(rownr, "Found Invalid", Globals.errorColor);
         }
@@ -231,20 +208,21 @@ namespace TP_MasterTool.Klasy
             massFunctionForm.GridChange(rownr, "Looking for files");
             string source = @"\\" + connectionPara.TAG + @"\" + addInfo[0];
             string destination = @"\\" + connectionPara.TAG + @"\" + addInfo[1];
+            Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.BulkFileMove, source + " -> " + destination);
             if (!Directory.Exists(source))
             {
-                massFunctionForm.ErrorLog(rownr, "Source folder not found");
+                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "Source folder not found");
                 return;
             }
             if(!FileController.MakeFolder(destination, out Exception makeExp))
             {
-                massFunctionForm.ErrorLog(rownr, "Unable to create destination folder: " + makeExp.Message);
+                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "Unable to create destination folder: " + makeExp.Message);
                 return;
             }
             string[] files = Directory.GetFiles(source, addInfo[2]);
             if(files.Length == 0)
             {
-                massFunctionForm.ErrorLog(rownr, "No file matching the criteria is found");
+                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "No file matching the criteria is found");
                 return;
             }
             int licznik = 1;
@@ -253,17 +231,13 @@ namespace TP_MasterTool.Klasy
                 massFunctionForm.GridChange(rownr, "Moving " + licznik + " out of " + files.Length + " files");
                 if(!FileController.MoveFile(file, destination + @"\" + Path.GetFileName(file), false, out Exception moveExp))
                 {
-                    massFunctionForm.ErrorLog(rownr, "Operation cancelled, Unable to move file: " + moveExp);
+                    massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "Operation cancelled, Unable to move file: " + moveExp);
                     return;
                 }
                 licznik++;
             }
             massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
             massFunctionForm.AddToLog(rownr, "[SUCCESS] - " + files.Length + " files were moved");
-            lock(massFunctionForm.logLock)
-            {
-                Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.BulkFileMove, source + " -> " + destination);
-            }
         }
         public static void EsfClientRestart(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
@@ -271,16 +245,12 @@ namespace TP_MasterTool.Klasy
             CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c net stop esfclient && net start esfclient");
             if (cmdOutput.exitCode != 0)
             {
-                massFunctionForm.ErrorLog(rownr, "CMD exited with error code: " + cmdOutput.exitCode);
+                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "CMD exited with error code: " + cmdOutput.exitCode);
                 return;
             }
 
             massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
             massFunctionForm.AddToLog(rownr, "[SUCCESS] - ESF Client Restarted");
-            lock (massFunctionForm.logLock)
-            {
-                Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.EsfClientRestart, "");
-            }
         }
         public static void EsfClientReinit(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
@@ -288,15 +258,11 @@ namespace TP_MasterTool.Klasy
             CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c cd c:\service\agents\esfclient && reinit_esfclient.cmd");
             if (cmdOutput.exitCode != 0)
             { 
-                massFunctionForm.ErrorLog(rownr, "CMD exited with error code: " + cmdOutput.exitCode);
+                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "CMD exited with error code: " + cmdOutput.exitCode);
                 return;
             }
             massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
             massFunctionForm.AddToLog(rownr, "[SUCCESS] - ESF Client Reinitialized");
-            lock (massFunctionForm.logLock)
-            {
-                Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.EsfClientReinit, "");
-            }
         }
         public static void MassJposLogsDownload(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
@@ -304,7 +270,7 @@ namespace TP_MasterTool.Klasy
             string[] files = Directory.GetFiles(@"\\" + connectionPara.TAG + @"\d$\TPDotnet\DeviceService", "JPOSRFIDScannerLogs*");
             if (files.Length == 0)
             {
-                massFunctionForm.ErrorLog(rownr, "No JPOS logs found");
+                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "No JPOS logs found");
                 return;
             }
 
@@ -317,7 +283,7 @@ namespace TP_MasterTool.Klasy
                 }
                 catch (Exception exp)
                 {
-                    massFunctionForm.ErrorLog(rownr, @"Can't delete folder with old logs, Please delete D:\TPDotnet\DeviceService\JPOSLogs manually and try again: " + exp.Message);
+                    massFunctionForm.ErrorLog(rownr, connectionPara.TAG, @"Can't delete folder with old logs, Please delete D:\TPDotnet\DeviceService\JPOSLogs manually and try again: " + exp.Message);
                     return;
                 }
             }
@@ -326,7 +292,7 @@ namespace TP_MasterTool.Klasy
             System.Threading.Thread.Sleep(150);
             if(!FileController.MakeFolder(@"\\" + connectionPara.TAG + @"\d$\TPDotnet\DeviceService\JPOSLogs", out Exception makeExp))
             {
-                massFunctionForm.ErrorLog(rownr, "Unable to create folder for logs: " + makeExp.Message);
+                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "Unable to create folder for logs: " + makeExp.Message);
                 return;
             }
 
@@ -334,24 +300,158 @@ namespace TP_MasterTool.Klasy
             {
                 if (!FileController.CopyFile(file, @"\\" + connectionPara.TAG + @"\d$\TPDotnet\DeviceService\JPOSLogs\" + Path.GetFileName(file), false, out Exception copyExp))
                 {
-                    massFunctionForm.ErrorLog(rownr, "Unable to copy " + file + ": " + copyExp.Message);
+                    massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "Unable to copy " + file + ": " + copyExp.Message);
                     return;
                 }
             }
             massFunctionForm.GridChange(rownr, "Securing Logs");
             if(!FileController.ZipAndStealFolder(addInfo[0], "JposLogs", @"\\" + connectionPara.TAG + @"\d$\TPDotnet\DeviceService\JPOSLogs", @"D:\TPDotnet\DeviceService\JPOSLogs", connectionPara, out string outputFilePath))
             {
-                massFunctionForm.ErrorLog(rownr, outputFilePath);
+                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, outputFilePath);
                 return;
             }
             massFunctionForm.GridChange(rownr, "Downloading Logs");
             if (!FileController.CopyFile(outputFilePath, Globals.userTempLogsPath + Path.GetFileName(outputFilePath), false, out Exception copyExp2))
             {
-                massFunctionForm.ErrorLog(rownr, "Unable to copy log: " + copyExp2.Message);
+                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "Unable to copy log: " + copyExp2.Message);
                 return;
             }
             massFunctionForm.AddToLog(rownr, "[SUCCESS] - JposLogs Downloaded");
             massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
+        }
+        public static void TpProcessManagerRestart(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
+        {
+            massFunctionForm.GridChange(rownr, "Restarting Process");
+            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c net stop ""TPDotnet Process Manager"" && net start ""TPDotnet Process Manager""");
+            if (cmdOutput.exitCode != 0)
+            {
+                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "CMD exited with error code: " + cmdOutput.exitCode);
+                return;
+            }
+            massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
+            massFunctionForm.AddToLog(rownr, "[SUCCESS] - TP Process Manager Restarted");
+
+        }
+        public static void JposLogsCheck(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
+        {
+            massFunctionForm.GridChange(rownr, "Looking for logs");
+            if (Directory.GetFiles(@"\\" + connectionPara.TAG + @"\d$\TPDotnet\DeviceService", "JPOSRFIDScannerLogs*").Length == 0)
+            {
+                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "No logs found");
+                return;
+            }
+            massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
+            massFunctionForm.AddToLog(rownr, "[SUCCESS] - Logs are present");
+        }
+        public static void BackupJobsCheck(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
+        {
+            massFunctionForm.GridChange(rownr, "Looking for files");
+            string[] cFiles;
+            string[] dFiles;
+            try
+            {
+                cFiles = Directory.GetFiles(@"\\" + connectionPara.TAG + @"\f$\Backup\TPBackup", connectionPara.TAG + "_C*.v2i");
+                dFiles = Directory.GetFiles(@"\\" + connectionPara.TAG + @"\f$\Backup\TPBackup", connectionPara.TAG + "_D*.v2i");
+            }
+            catch (Exception exp)
+            {
+                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "Error while gathering backup files: " + exp.Message);
+                return;
+            }
+            if(cFiles.Length != 2 && dFiles.Length != 2)
+            {
+                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, cFiles.Length + " - " + dFiles.Length);
+                return;
+            }
+            massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
+            massFunctionForm.AddToLog(rownr, "[SUCCESS] - " + cFiles.Length + " - " + dFiles.Length);
+        }
+        public static void BackupJobsReset(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
+        {
+            massFunctionForm.GridChange(rownr, "Resetting Jobs");
+            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c powershell -ep Bypass c:\service\tools\backup\RemoveImageJob.ps1 && powershell -ep Bypass c:\service\tools\backup\AddImageJob.ps1");
+            if (cmdOutput.exitCode != 0)
+            {
+                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "CMD Exited with error code: " + cmdOutput.exitCode);
+                return;
+            }
+            massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
+            massFunctionForm.AddToLog(rownr, "[SUCCESS] - Veritas jobs has been reset");
+        }
+        public static void DeleteOldBackupFiles(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
+        {
+            foreach(string drive in new string[] { "_C*.v2i" , "_D*.v2i" })
+            {
+                massFunctionForm.GridChange(rownr, "Looking for old backup files");
+                try
+                {
+                    string[] files = Directory.GetFiles(@"\\" + connectionPara.TAG + @"\f$\Backup\TPBackup", connectionPara.TAG + drive);
+                    massFunctionForm.GridChange(rownr, "Deleting files");
+                    foreach (string file in files)
+                    {
+                        if (File.GetCreationTime(file).Day < DateTime.Today.AddDays(-1).Day)
+                        {
+                            string msg = file + " > " + File.GetCreationTime(file);
+                            File.Delete(file);
+                            massFunctionForm.AddToLog(rownr, msg + " (Deleted) | ");
+                            Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.DeleteOldBackupFiles, msg + " Deleted");
+                        }
+                    }
+                }
+                catch (Exception exp)
+                {
+                    massFunctionForm.ErrorLog(rownr, connectionPara.TAG, exp.Message);
+                    return;
+                }
+            }
+            massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
+        }
+        public static void IsBackupDriveAccessible(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
+        {
+            if (!Directory.Exists(@"\\" + connectionPara.TAG + @"\f$\Backup"))
+            {
+                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "Unable to access Backup Drive");
+                return;
+            }
+            massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
+            massFunctionForm.AddToLog(rownr, "[SUCCESS] - Backup Drive Available");
+        }
+        public static void DownloadJavaPosLogs(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
+        {
+            string[] files;
+            massFunctionForm.GridChange(rownr, "Looking for files");
+            try
+            {
+                files = Directory.GetFiles(@"\\" + connectionPara.TAG + @"\c$\ProgramData\javapos\wn\log", "javapos.log*");
+            }
+            catch(Exception exp)
+            {
+                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "Failed to get files: " + exp.Message);
+                return;
+            }
+            if (files.Length == 0)
+            {
+                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "No logs found");
+                return;
+            }
+            if(!FileController.MakeFolder(@".\Logs\JavaPosLogs\" + connectionPara.TAG, out Exception makeExp))
+            {
+                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, @"Unable to create folder in .\Logs: " + makeExp.Message);
+                return;
+            }
+            int i = 1;
+            foreach (string file in files)
+            {
+                massFunctionForm.GridChange(rownr, "Copying " + i + " of " + files.Length + " files");
+                if(!FileController.CopyFile(file, @".\Logs\JavaPosLogs\" + connectionPara.TAG + @"\" + Path.GetFileName(file), false, out Exception copyExp))
+                {
+                    massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "Error during copy: " + copyExp.Message);
+                    return;
+                }
+                i++;
+            }
+            massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
+            massFunctionForm.AddToLog(rownr, "[SUCCESS] - All logs were copied");
         }
     }
 }

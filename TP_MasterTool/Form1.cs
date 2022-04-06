@@ -115,6 +115,9 @@ namespace TP_MasterTool
         }
         private void Test_Button_Click(object sender, EventArgs e)
         {
+
+            DateTime dateTime = DateTime.Parse("10.02.2022");
+            MessageBox.Show(dateTime.ToString());
             //string output = "";
             //foreach (string file in System.IO.Directory.GetFiles(@"\\" + connectionPara.TAG + @"\d$\TPDotnet\Server\HostData\Download\Data", "*", System.IO.SearchOption.AllDirectories))
             //{
@@ -507,7 +510,6 @@ namespace TP_MasterTool
         //------------SMARTY--------------------------
         private void GetSMARTMenuItem_Click(object sender, EventArgs e)
         {
-
             using (BackgroundWorker slave = new BackgroundWorker())
             {
                 ConnectionPara connectionPara = Main.interfejs.connectionPara;
@@ -518,7 +520,7 @@ namespace TP_MasterTool
                     ChangeStatusBar("Reading SMART values");
                     if (!CtrlFunctions.Smarty(connectionPara, out string errorMsg))
                     {
-                        Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.GetSMART, errorMsg);
+                        Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, errorMsg);
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "SMART Function Error", errorMsg);
                     }
                     else
@@ -527,18 +529,24 @@ namespace TP_MasterTool
                         {
                             Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.GetSMART, "Retrieving result error");
                             Logger.QuickLog(Globals.Funkcje.GetSMART, @"\\" + connectionPara.TAG + @"\c$\SMART\DiskInfo.txt | " + @".\Logs\SMART\SMART - " + connectionPara.TAG + ".txt", connectionPara.TAG, "WarningLog", "ToolBox wasn't able to copy command output back from targeted host." + Environment.NewLine + moveExp.ToString());
-                            ChangeStatusBar("Ready");
-                            sMARTToolStripMenuItem.Enabled = true;
                             CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Retrieving result error", @"ToolBox wasn't able to copy command output back from targeted host. You can check it manually at \\" + connectionPara.TAG + @"\C$\SMART\DiskInfo.txt");
-                            return;
                         }
-                        CustomMsgBox.Show(CustomMsgBox.MsgType.Done, "SMART Values Saved", @"Disc SMART values successfully saved at .\Logs\SMART\SMART - " + connectionPara.TAG + ".txt");
-                        Process.Start(@".\Logs\SMART\SMART - " + connectionPara.TAG + ".txt");
+                        else
+                        {
+                            CustomMsgBox.Show(CustomMsgBox.MsgType.Done, "SMART Values Saved", @"Disc SMART values successfully saved at .\Logs\SMART\SMART - " + connectionPara.TAG + ".txt");
+                            Process.Start(@".\Logs\SMART\SMART - " + connectionPara.TAG + ".txt");
+                        }
                     }
+
+                    if(!CtrlFunctions.MapEndpointDrive(ref connectionPara, out CtrlFunctions.CmdOutput cmdOutput))
+                    {
+                        Logger.QuickLog(Globals.Funkcje.DeleteLock, @"\\" + connectionPara.TAG + @"\c$\SMART\smart.lock", connectionPara.TAG, "CriticalLog", "Error Deleting lock: Unable to map drive before delete");
+                    }
+                    CtrlFunctions.DeleteLock(@"\\" + connectionPara.TAG + @"\c$\SMART\smart.lock");
+
                     ChangeStatusBar("Ready");
                     Telemetry.LogFunctionUsage(Globals.Funkcje.GetSMART);
                     sMARTToolStripMenuItem.Enabled = true;
-
                 };
                 slave.RunWorkerAsync();
             }
@@ -1131,7 +1139,7 @@ namespace TP_MasterTool
                 {
                     ChangeStatusBar("Reseting Veritas Jobs");
                     ConnectionPara connectionPara = Main.interfejs.connectionPara;
-                    Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.VeritasJobReset, "");
+                    Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.BackupJobsReset, "");
                     CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c powershell -ep Bypass c:\service\tools\backup\RemoveImageJob.ps1 && powershell -ep Bypass c:\service\tools\backup\AddImageJob.ps1");
                     ChangeStatusBar("Ready");
                     if (cmdOutput.exitCode != 0)
@@ -1142,7 +1150,7 @@ namespace TP_MasterTool
                         return;
                     }
                     CustomMsgBox.Show(CustomMsgBox.MsgType.Done, "Backup Jobs Reset Successful", "Veritas Backup Jobs has been reset to proper values");
-                    Telemetry.LogFunctionUsage(Globals.Funkcje.VeritasJobReset);
+                    Telemetry.LogFunctionUsage(Globals.Funkcje.BackupJobsReset);
                 };
                 slave.RunWorkerAsync();
             }
@@ -1258,6 +1266,7 @@ namespace TP_MasterTool
                 "TpReportsRegenAndZip",
                 "UpdatePackageInvalidCheck",
                 "MassJposLogsDownload",
+                "TpProcessManagerRestart",
             };
             new MassFunctionForm(functionList).Show();
         }
@@ -1276,6 +1285,12 @@ namespace TP_MasterTool
                 "BulkFileMove",
                 "EsfClientRestart",
                 "EsfClientReinit",
+                "JposLogsCheck",
+                "BackupJobsCheck",
+                "BackupJobsReset",
+                "DeleteOldBackupFiles",
+                "IsBackupDriveAccessible",
+                "DownloadJavaPosLogs",
             };
             new MassFunctionForm(functionList).Show();
         }

@@ -49,7 +49,6 @@ namespace TP_MasterTool
             TPReportsRegenZip,
             SignatorReset,
             ApcServiceFix,
-            VeritasJobReset,
             BackstoreCsvExport,
             UnhandledException,
             LogOnMachineAction,
@@ -71,12 +70,19 @@ namespace TP_MasterTool
             BulkFileMove,
             EsfClientRestart,
             EsfClientReinit,
+            TpProcessManagerRestart,
+            JposLogsCheck,
+            BackupJobsCheck,
+            BackupJobsReset,
+            DeleteOldBackupFiles,
+            IsBackupDriveAccessible,
+            DownloadJavaPosLogs,
             Stocktaking,
             DeleteLock,
             GetSqlInfo,
             DecryptToString,
             Blank,
-            Error
+            Error,
         }
 
         public static Color errorColor = Color.FromArgb(255, 150, 150);
