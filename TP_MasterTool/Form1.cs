@@ -1291,6 +1291,7 @@ namespace TP_MasterTool
                 "DeleteOldBackupFiles",
                 "IsBackupDriveAccessible",
                 "DownloadJavaPosLogs",
+                "CheckForKB",
             };
             new MassFunctionForm(functionList).Show();
         }

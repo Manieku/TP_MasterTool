@@ -77,6 +77,7 @@ namespace TP_MasterTool
             DeleteOldBackupFiles,
             IsBackupDriveAccessible,
             DownloadJavaPosLogs,
+            CheckForKB,
             Stocktaking,
             DeleteLock,
             GetSqlInfo,

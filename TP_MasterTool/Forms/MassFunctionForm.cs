@@ -174,7 +174,6 @@ namespace TP_MasterTool.Forms
                 Telemetry.LogOnMachineAction(host, Globals.Funkcje.Error, errorMsg);
             }
         }
-
         public void AddToLog(int rownr, string logThis)
         {
             lock (logLock)

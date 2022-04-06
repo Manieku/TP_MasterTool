@@ -116,11 +116,7 @@ namespace TP_MasterTool.Forms
                 return;
             }
 
-            if (kbCheckRadio.Checked)
-            {
-                KbCheck(rownr, connectionPara, KBCheckTextBox.Text);
-            }
-            else if (copyExecuteRadio.Checked)
+            if (copyExecuteRadio.Checked)
             {
                 DeployAndExecute(rownr, connectionPara, copyExecuteTextBox.Text.Split(','), waitCheckBox.Checked);
             }
@@ -135,26 +131,6 @@ namespace TP_MasterTool.Forms
 
         }
 
-        private void KbCheck(int rownr, ConnectionPara connectionPara, string kbId)
-        {
-            dataGridView1.Rows[rownr].Cells[1].Value = "Checking for KB";
-            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c powershell -command \"Get-HotFix -Id " + kbId + "\"");
-            if (cmdOutput.exitCode != 0)
-            {
-                gridChange(rownr, "Error", Globals.errorColor);
-                lock (logLock)
-                {
-                    log[rownr] += "," + Logger.LogTime() + ",[ERROR],Not installed";
-                }
-                return;
-            }
-            gridChange(rownr, "Done", Color.LightGreen);
-            lock (logLock)
-            {
-                log[rownr] += "," + Logger.LogTime() + ",[SUCCESS],Installed";
-                Telemetry.LogFunctionUsage(Globals.Funkcje.ADVKbCheck);
-            }
-        }
         private void DismAndSFC(int rownr, ConnectionPara connectionPara)
         {
             dataGridView1.Rows[rownr].Cells[1].Value = "Executing commands";

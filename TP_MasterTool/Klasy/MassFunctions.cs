@@ -68,6 +68,15 @@ namespace TP_MasterTool.Klasy
             }
             return new List<string> { tixnr };
         }
+        public static List<string> GetInfo_CheckForKB()
+        {
+            string kb = Microsoft.VisualBasic.Interaction.InputBox("Provide ticket number:", "Input data");
+            if (kb == "")
+            {
+                return null;
+            }
+            return new List<string> { kb };
+        }
 
 
         //-------Mass Functions-------------
@@ -83,6 +92,7 @@ namespace TP_MasterTool.Klasy
             string output = cmdOutput.outputText.Replace("\n", "").Replace("\r", "").ToUpper();
             massFunctionForm.AddToLog(rownr, "[SUCCESS] - " + output);
             massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
+            Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.GetMAC, output);
         }
         public static void InvalidTransfer(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
@@ -170,7 +180,7 @@ namespace TP_MasterTool.Klasy
             if (nodes.Count() == 0)
             {
                 Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.UpdatePackageInvalid, "Found Invalid Items");
-                massFunctionForm.ErrorLog(rownr, "Other Invalid xml found - please check manually and include it in note to MMS team");
+                massFunctionForm.ErrorLog(rownr, "Other Invalid xml found, please check manually and include it in note to MMS team");
                 return;
             }
             try
@@ -191,7 +201,7 @@ namespace TP_MasterTool.Klasy
             catch
             {
                 Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.UpdatePackageInvalid, "Found Invalid Items");
-                massFunctionForm.ErrorLog(rownr, "Other Invalid xml found - please check manually and include it in note to MMS team");
+                massFunctionForm.ErrorLog(rownr, "Other Invalid xml found, please check manually and include it in note to MMS team");
                 return;
             }
 
@@ -208,7 +218,7 @@ namespace TP_MasterTool.Klasy
             massFunctionForm.GridChange(rownr, "Looking for files");
             string source = @"\\" + connectionPara.TAG + @"\" + addInfo[0];
             string destination = @"\\" + connectionPara.TAG + @"\" + addInfo[1];
-            Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.BulkFileMove, source + " -> " + destination);
+            Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.BulkFileMove, source + " -> " + destination + " filter: " + addInfo[2]);
             if (!Directory.Exists(source))
             {
                 massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "Source folder not found");
@@ -365,6 +375,7 @@ namespace TP_MasterTool.Klasy
             }
             massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
             massFunctionForm.AddToLog(rownr, "[SUCCESS] - " + cFiles.Length + " - " + dFiles.Length);
+            Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.BackupJobsCheck, cFiles.Length + " - " + dFiles.Length);
         }
         public static void BackupJobsReset(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
@@ -452,6 +463,19 @@ namespace TP_MasterTool.Klasy
             }
             massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
             massFunctionForm.AddToLog(rownr, "[SUCCESS] - All logs were copied");
+        }
+        public static void CheckForKB(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
+        {
+            massFunctionForm.GridChange(rownr, "Searching KB");
+            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c powershell -command \"Get-HotFix -Id " + addInfo[0] + "\"");
+            if (cmdOutput.exitCode != 0)
+            {
+                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, addInfo[0] + " Not Installed");
+                return;
+            }
+            massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
+            massFunctionForm.AddToLog(rownr, "[SUCCESS] - " + addInfo[0] + " Installed");
+            Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.CheckForKB, addInfo[0] + " Installed");
         }
     }
 }
