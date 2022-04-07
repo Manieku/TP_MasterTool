@@ -141,7 +141,6 @@
             this.stocktakingMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.massFunctionsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ADVMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.WSUSButBETTERMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.randomCollectionOfRandomnessToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.preferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.layoutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -630,14 +629,14 @@
             // WinSysLogsMenuItem
             // 
             this.WinSysLogsMenuItem.Name = "WinSysLogsMenuItem";
-            this.WinSysLogsMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.WinSysLogsMenuItem.Size = new System.Drawing.Size(169, 26);
             this.WinSysLogsMenuItem.Text = "System";
             this.WinSysLogsMenuItem.Click += new System.EventHandler(this.WindowsLogsMenuItem_Click);
             // 
             // WinAppLogsMenuItem
             // 
             this.WinAppLogsMenuItem.Name = "WinAppLogsMenuItem";
-            this.WinAppLogsMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.WinAppLogsMenuItem.Size = new System.Drawing.Size(169, 26);
             this.WinAppLogsMenuItem.Text = "Application";
             this.WinAppLogsMenuItem.Click += new System.EventHandler(this.WindowsLogsMenuItem_Click);
             // 
@@ -1096,19 +1095,11 @@
             // ADVMenuItem
             // 
             this.ADVMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.WSUSButBETTERMenuItem,
             this.randomCollectionOfRandomnessToolStripMenuItem});
             this.ADVMenuItem.Name = "ADVMenuItem";
             this.ADVMenuItem.Size = new System.Drawing.Size(53, 24);
             this.ADVMenuItem.Text = "ADV";
             this.ADVMenuItem.Visible = false;
-            // 
-            // WSUSButBETTERMenuItem
-            // 
-            this.WSUSButBETTERMenuItem.Name = "WSUSButBETTERMenuItem";
-            this.WSUSButBETTERMenuItem.Size = new System.Drawing.Size(325, 26);
-            this.WSUSButBETTERMenuItem.Text = "WSUS but BETTER";
-            this.WSUSButBETTERMenuItem.Click += new System.EventHandler(this.WSUSButBETTERMenuItem_Click);
             // 
             // randomCollectionOfRandomnessToolStripMenuItem
             // 
@@ -1646,7 +1637,6 @@
         private System.Windows.Forms.ToolStripMenuItem monitoringSlayerMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
         private System.Windows.Forms.ToolStripMenuItem aPCServiceFixMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem WSUSButBETTERMenuItem;
         public System.Windows.Forms.ToolStripMenuItem ADVMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator17;
         private System.Windows.Forms.ToolStripMenuItem veritasBackupJobResetMenuItem;

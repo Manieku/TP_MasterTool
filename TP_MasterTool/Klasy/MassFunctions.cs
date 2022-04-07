@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using System.Xml.Linq;
 using TP_MasterTool.Forms;
 
@@ -77,7 +78,26 @@ namespace TP_MasterTool.Klasy
             }
             return new List<string> { kb };
         }
+        public static List<string> GetInfo_DeployAndExecute()
+        {
+            string file = Microsoft.VisualBasic.Interaction.InputBox(@"Provide file name you want to deply and execute from D:\C&A BLF\Rzemyk Mariusz\ToolBox Files\Tools", "Input data");
+            if (file == "")
+            {
+                return null;
+            }
+            string waitForExit;
+            using (DropDownSelect dropDownSelect = new DropDownSelect("Should ToolBox wait for cmd exit?", new string[] { "True", "False" }))
+            {
+                var result = dropDownSelect.ShowDialog();
+                if (result != DialogResult.OK)
+                {
+                    return null;
+                }
+                waitForExit = dropDownSelect.ReturnValue1;            //values preserved after close
+            }
 
+            return new List<string> { file, waitForExit };
+        }
 
         //-------Mass Functions-------------
         public static void GetMAC(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
@@ -476,6 +496,31 @@ namespace TP_MasterTool.Klasy
             massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
             massFunctionForm.AddToLog(rownr, "[SUCCESS] - " + addInfo[0] + " Installed");
             Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.CheckForKB, addInfo[0] + " Installed");
+        }
+        public static void DeployAndExecute(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
+        {
+            massFunctionForm.GridChange(rownr, "Copying file");
+            if (!FileController.CopyFile(Globals.toolsPath + addInfo[0], @"\\" + connectionPara.TAG + @"\c$\temp\" + addInfo[0], false, out Exception copyExp))
+            {
+                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "Unable to copy " + addInfo[0] + " : " + copyExp.Message);
+                return;
+            }
+            massFunctionForm.GridChange(rownr, "Executing cmd");
+            int exitCode = CtrlFunctions.RunHiddenCmdWitoutOutput("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c C:\temp\" + addInfo[0], Boolean.Parse(addInfo[1]));
+            if (exitCode != 0)
+            {
+                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "Script exited with error code: " + exitCode);
+            }
+            Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.DeployAndExecute, addInfo[0] + " Exetuted");
+            massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
+            massFunctionForm.AddToLog(rownr, "[SUCCESS] - " + addInfo[0] + " Exetuted");
+        }
+        public static void DismAndSFC(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
+        {
+            massFunctionForm.GridChange(rownr, "Starting commands");
+            CtrlFunctions.RunHiddenCmdWitoutOutput("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c Dism /Online /Cleanup-Image /RestoreHealth && sfc /scannow", false);
+            massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
+            massFunctionForm.AddToLog(rownr, "[SUCCESS] - Commands started");
         }
     }
 }

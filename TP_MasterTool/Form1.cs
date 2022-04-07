@@ -1273,10 +1273,6 @@ namespace TP_MasterTool
 
         /**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**/
         //--------------------ADV-----------------------------
-        private void WSUSButBETTERMenuItem_Click(object sender, EventArgs e)
-        {
-            new KBinstalation().Show();
-        }
         private void randomCollectionOfRandomnessToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string[] functionList = new string[]
@@ -1292,6 +1288,8 @@ namespace TP_MasterTool
                 "IsBackupDriveAccessible",
                 "DownloadJavaPosLogs",
                 "CheckForKB",
+                "DeployAndExecute",
+                "DismAndSFC",
             };
             new MassFunctionForm(functionList).Show();
         }
