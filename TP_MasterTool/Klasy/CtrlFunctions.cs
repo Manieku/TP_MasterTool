@@ -10,7 +10,6 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Windows.Forms;
-using TP_MasterTool.Forms;
 using TP_MasterTool.Forms.CustomMessageBox;
 
 namespace TP_MasterTool.Klasy
@@ -271,6 +270,33 @@ namespace TP_MasterTool.Klasy
                     }
                 }
             }
+        }
+        public static bool CheckCsvExportResult(string host, out string errorMsg)
+        {
+            errorMsg = "";
+            string[] log;
+            try
+            {
+                log = System.IO.File.ReadAllLines(@"\\" + host + @"\d$\TPDotnet\Log\" + host + "-CA.DE.BS.CSVExport.log");
+            }
+            catch (Exception exp)
+            {
+                errorMsg = "Unable to read CsvExport Log: " + exp.Message;
+                return false;
+            }
+            for (int i = log.Length - 1; i >= 0; i--)
+            {
+                if (log[i].StartsWith("=============="))
+                {
+                    break;
+                }
+                else if(log[i].StartsWith("Exception"))
+                {
+                    errorMsg = log[i];
+                    return false;
+                }
+            }
+            return true;
         }
 
         /**//**//**//**//**//**//**//**//**//* FRONT-END FUNCTIONS *//**//**//**//**//**//**//**//**//**//**/

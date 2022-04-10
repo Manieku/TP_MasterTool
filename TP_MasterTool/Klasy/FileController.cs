@@ -1,6 +1,4 @@
 ﻿using System;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.Windows.Forms;
 using TP_MasterTool.Forms.CustomMessageBox;
 using TP_MasterTool.Klasy;
@@ -73,6 +71,21 @@ namespace TP_MasterTool
                 }
             }
             return "";
+        }
+        public static string OpenFolderBrowserDialog()
+        {
+            using (FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog())
+            {
+                folderBrowserDialog.RootFolder = Environment.SpecialFolder.Desktop;
+                folderBrowserDialog.SelectedPath = System.IO.Path.GetFullPath(@".\Logs");
+
+                if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
+                {
+                    return folderBrowserDialog.SelectedPath;
+                }
+            }
+            return "";
+
         }
         public static void SaveTxtDialog(string text, ref Logger myLog)
         {
@@ -229,6 +242,5 @@ namespace TP_MasterTool
             Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.ZipAndSteal, prefix);
             return true;
         }
-
     }
 }

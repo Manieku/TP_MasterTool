@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using TP_MasterTool.Forms;
@@ -97,6 +95,15 @@ namespace TP_MasterTool.Klasy
             }
 
             return new List<string> { file, waitForExit };
+        }
+        public static List<string> GetInfo_MassCsvExport()
+        {
+            string folder = FileController.OpenFolderBrowserDialog();
+            if(folder == "")
+            {
+                return null;
+            }
+            return new List<string> { folder };
         }
 
         //-------Mass Functions-------------
