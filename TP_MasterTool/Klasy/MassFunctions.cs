@@ -96,9 +96,9 @@ namespace TP_MasterTool.Klasy
 
             return new List<string> { file, waitForExit };
         }
-        public static List<string> GetInfo_MassCsvExport()
+        public static List<string> GetInfo_BackstoreCsvExport()
         {
-            string folder = FileController.OpenFolderBrowserDialog();
+            string folder = FileController.OpenFolderBrowserDialog("Select folder with input data");
             if(folder == "")
             {
                 return null;

@@ -72,10 +72,11 @@ namespace TP_MasterTool
             }
             return "";
         }
-        public static string OpenFolderBrowserDialog()
+        public static string OpenFolderBrowserDialog(string description)
         {
             using (FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog())
             {
+                folderBrowserDialog.Description = description;
                 folderBrowserDialog.RootFolder = Environment.SpecialFolder.Desktop;
                 folderBrowserDialog.SelectedPath = System.IO.Path.GetFullPath(@".\Logs");
 

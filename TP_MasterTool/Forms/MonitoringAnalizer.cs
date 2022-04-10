@@ -772,9 +772,9 @@ namespace TP_MasterTool.Forms
             else if (activityName == "DSFinVKExport")
             {
                 log += AddToLog(Environment.NewLine + "Exporting CSV Files:");
-                if (!CtrlFunctions.BackstoreCsvExport(connectionPara))
+                if (!CtrlFunctions.CsvExportForYesterday(connectionPara, out string errorMsg))
                 {
-                    log += AddToLog("-> Failed");
+                    log += AddToLog("-> Failed: " + errorMsg);
                     log += AddToLog("Restarting TPDotnet Process Manager:");
                     cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c net stop ""TPDotnet Process Manager"" && net start ""TPDotnet Process Manager""");
                     if (cmdOutput.exitCode != 0)
@@ -787,14 +787,13 @@ namespace TP_MasterTool.Forms
                     log += AddToLog("-> Done");
                     System.Threading.Thread.Sleep(30000);
                     log += AddToLog("Retrying CSV Export:");
-                    if (!CtrlFunctions.BackstoreCsvExport(connectionPara))
+                    if (!CtrlFunctions.CsvExportForYesterday(connectionPara, out errorMsg))
                     {
-                        log += AddToLog("-> Failed");
+                        log += AddToLog("-> Failed: " + errorMsg);
                         log += AddToLog(Environment.NewLine + ">>> CSV Export failed even after TPDotnet service restart, please pass ticket to GSS accordingly to USU 56402 <<<");
                         gridChange(rownr, "Ticket needs manual investigation. See log", Globals.errorColor);
                         return;
                     }
-
                 }
                 log += AddToLog("-> Done" + Environment.NewLine);
                 log += AddToLog(" >>> CSV fiscal files exported successfully, please relate PT 85872171, document ticket and close it.<<<");

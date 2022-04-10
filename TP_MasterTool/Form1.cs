@@ -1159,10 +1159,10 @@ namespace TP_MasterTool
                 slave.DoWork += (s, args) =>
                 {
                     Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.BackstoreCsvExport, "");
-                    if (CtrlFunctions.BackstoreCsvExport(connectionPara))
+                    if (!CtrlFunctions.CsvExportForYesterday(connectionPara, out string errorMsg))
                     {
-                        Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.BackstoreCsvExport, "Failed");
-                        CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "CSV Export Result", "CSV Files export failed.");
+                        Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, errorMsg);
+                        CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "CSV Export Result", "CSV Files export failed: " + Environment.NewLine + errorMsg);
                         return;
                     }
                     Telemetry.LogFunctionUsage(Globals.Funkcje.BackstoreCsvExport);
@@ -1287,6 +1287,7 @@ namespace TP_MasterTool
                 "CheckForKB",
                 "DeployAndExecute",
                 "DismAndSFC",
+                "BackstoreCsvExport",
             };
             new MassFunctionForm(functionList).Show();
         }

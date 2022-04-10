@@ -488,36 +488,10 @@ namespace TP_MasterTool.Klasy
             }
             return true;
         }
-        public static bool BackstoreCsvExport(ConnectionPara connectionPara)
+        public static bool CsvExportForYesterday(ConnectionPara connectionPara, out string errorMsg)
         {
             RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c D:\TPDotnet\bin\CA.DE.BS.CSVExport.exe");
-            int starter = 0;
-            try
-            {
-                string[] log = System.IO.File.ReadAllLines(@"\\" + connectionPara.TAG + @"\d$\TPDotnet\Log\" + connectionPara.TAG + "-CA.DE.BS.CSVExport.log");
-                for (int i = log.Length - 1; i >= 0; i--)
-                {
-                    if (log[i].StartsWith("=============="))
-                    {
-                        starter = i;
-                        break;
-                    }
-                }
-                string[] output = new string[log.Length - starter];
-                Array.Copy(log, starter, output, 0, log.Length - starter);
-                foreach (string line in output)
-                {
-                    if (line.StartsWith("Exception"))
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
+            return CheckCsvExportResult(connectionPara.TAG, out errorMsg);
         }
         public static bool SqlGetInfo(string tag, string database, string sqlQuery, out string output)
         {
