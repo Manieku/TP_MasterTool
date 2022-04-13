@@ -1262,7 +1262,7 @@ namespace TP_MasterTool
                 "InvalidTransfer",
                 "TpReportsRegenAndZip",
                 "UpdatePackageInvalidCheck",
-                "MassJposLogsDownload",
+                "JposLogsDownload",
                 "TpProcessManagerRestart",
             };
             new MassFunctionForm(functionList).Show();

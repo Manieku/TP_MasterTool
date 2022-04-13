@@ -58,7 +58,7 @@ namespace TP_MasterTool.Klasy
 
             return new List<string> { source, destination, filter };
         }
-        public static List<string> GetInfo_MassJposLogsDownload()
+        public static List<string> GetInfo_JposLogsDownload()
         {
             string tixnr = Microsoft.VisualBasic.Interaction.InputBox("Provide ticket number:", "Input data");
             if (tixnr == "")
@@ -301,7 +301,7 @@ namespace TP_MasterTool.Klasy
             massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
             massFunctionForm.AddToLog(rownr, "[SUCCESS] - ESF Client Reinitialized");
         }
-        public static void MassJposLogsDownload(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
+        public static void JposLogsDownload(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
             massFunctionForm.GridChange(rownr, "Looking for files");
             string[] files = Directory.GetFiles(@"\\" + connectionPara.TAG + @"\d$\TPDotnet\DeviceService", "JPOSRFIDScannerLogs*");
@@ -573,6 +573,10 @@ namespace TP_MasterTool.Klasy
                 else
                 {
                     output = " - [SUCCESS] - CSV Export successful";
+                }
+                lock(massFunctionForm.logLock)
+                {
+                    Telemetry.LogFunctionUsage(Globals.Funkcje.BackstoreCsvExport);
                 }
                 inputDates[i] += output;
             }
