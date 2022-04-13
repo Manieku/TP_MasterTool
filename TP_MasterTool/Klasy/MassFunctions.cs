@@ -529,5 +529,70 @@ namespace TP_MasterTool.Klasy
             massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
             massFunctionForm.AddToLog(rownr, "[SUCCESS] - Commands started");
         }
+        public static void BackstoreCsvExport(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
+        {
+            massFunctionForm.GridChange(rownr, "Reading input file");
+            string inputFile = addInfo[0] + @"\" + connectionPara.TAG + ".txt";
+            string[] inputDates;
+            try
+            {
+                inputDates = File.ReadAllLines(inputFile);
+            }
+            catch(Exception exp)
+            {
+                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "Unable to read input file: " + exp.Message);
+                return;
+            }
+            if(inputDates.Length == 0)
+            {
+                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "No data found in input file");
+                return;
+            }
+
+            massFunctionForm.GridChange(rownr, "Installing modded CA.DE.BS.CSVExport.exe");
+            if(!FileController.MoveFile(@"\\" + connectionPara.TAG + @"\d$\TPDotnet\bin\CA.DE.BS.CSVExport.exe", @"\\" + connectionPara.TAG + @"\d$\TPDotnet\bin\CA.DE.BS.CSVExport_backup.exe", false, out Exception moveExp))
+            {
+                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "Unable to rename CA.DE.BS.CSVExport.exe: " + moveExp.Message + " - Please check if CA.DE.BS.CSVExport.exe is ok");
+                return;
+            }
+            if(!FileController.CopyFile(Globals.toolsPath + "CA.DE.BS.CSVExport.exe", @"\\" + connectionPara.TAG + @"\d$\TPDotnet\bin\CA.DE.BS.CSVExport.exe", false, out Exception copyExp))
+            {
+                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "Unable to copy modded CA.DE.BS.CSVExport.exe on to the host: " + copyExp.Message + " - Please rename original CA.DE.BS.CSVExport.exe");
+                return;
+            }
+            bool wasError = false;
+            for(int i = 0; i < inputDates.Length; i++)
+            {
+                massFunctionForm.GridChange(rownr, "Exporting CSV for " + (i + 1) + " out of " + inputDates.Length + " dates");
+                string output = "";
+                if(!CtrlFunctions.CsvExport(connectionPara, " " + inputDates[i].Trim() + " 49" + connectionPara.storeNr + @" D:\TPDotnet\Server\Reports\fiscal_files\", out string errorMsg))
+                {
+                    output = " - [ERROR] - CSV Export Failed: " + errorMsg;
+                    wasError = true;
+                }
+                else
+                {
+                    output = " - [SUCCESS] - CSV Export successful";
+                }
+                inputDates[i] += output;
+            }
+            if(!FileController.SaveTxtToFile(inputFile, String.Join(Environment.NewLine, inputDates), out Exception saveExp))
+            {
+                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "Unable to save result: " + saveExp.Message);
+            }
+            massFunctionForm.GridChange(rownr, "Restoring original CA.DE.BS.CSVExport.exe");
+            if(!FileController.MoveFile(@"\\" + connectionPara.TAG + @"\d$\TPDotnet\bin\CA.DE.BS.CSVExport_backup.exe", @"\\" + connectionPara.TAG + @"\d$\TPDotnet\bin\CA.DE.BS.CSVExport.exe", false, out moveExp))
+            {
+                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "Unable to restore CA.DE.BS.CSVExport.exe: " + moveExp.Message + " - Please restore CA.DE.BS.CSVExport.exe manually");
+                return;
+            }
+            if(wasError)
+            {
+                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "CSV Export for some dates wasn't successful");
+                return;
+            }
+            massFunctionForm.AddToLog(rownr, "[SUCCESS] - All CSV Export was successful");
+            massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
+        }
     }
 }

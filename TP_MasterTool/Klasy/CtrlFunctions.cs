@@ -488,9 +488,9 @@ namespace TP_MasterTool.Klasy
             }
             return true;
         }
-        public static bool CsvExportForYesterday(ConnectionPara connectionPara, out string errorMsg)
+        public static bool CsvExport(ConnectionPara connectionPara, string arguments, out string errorMsg)
         {
-            RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c D:\TPDotnet\bin\CA.DE.BS.CSVExport.exe");
+            RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c D:\TPDotnet\bin\CA.DE.BS.CSVExport.exe" + arguments);
             return CheckCsvExportResult(connectionPara.TAG, out errorMsg);
         }
         public static bool SqlGetInfo(string tag, string database, string sqlQuery, out string output)

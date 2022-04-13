@@ -124,7 +124,7 @@ namespace TP_MasterTool
             saveExp = null;
             try
             {
-                System.IO.File.AppendAllText(filePath, text);
+                System.IO.File.WriteAllText(filePath, text);
             }
             catch (Exception exp)
             {

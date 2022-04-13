@@ -46,13 +46,13 @@ namespace TP_MasterTool
             "SQl Queries",
             //Fixes//
             //Tools//
-            "Service Manager"
+            //"Service Manager" // not working for now
         };
         readonly List<string> tpsMenuItems = new List<string>
         {
             //RemoteCMD's//
             //Quick Access//
-            "APC",
+            //"APC", // not working for now
             "MiniLogger",
             "TP Reports",
             //Logs//
@@ -1159,7 +1159,7 @@ namespace TP_MasterTool
                 slave.DoWork += (s, args) =>
                 {
                     Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.BackstoreCsvExport, "");
-                    if (!CtrlFunctions.CsvExportForYesterday(connectionPara, out string errorMsg))
+                    if (!CtrlFunctions.CsvExport(connectionPara, "", out string errorMsg))
                     {
                         Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, errorMsg);
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "CSV Export Result", "CSV Files export failed: " + Environment.NewLine + errorMsg);
@@ -1477,7 +1477,16 @@ namespace TP_MasterTool
         }
         public void DisableUI()
         {
-            List<string> wyjatki = new List<string> { "Last Connected", "Ping's", "JPOSRFID Logs Secure", "TP.Reports Regen+Zip", "Invalid Transfer", "TransactionsXML to CSV", "MonitoringSlayer", "UpdatePackage Invalid Check", "Stocktaking", "Mass Functions", "WSUS but BETTER", "Random Collection of Randomness" };
+            List<string> wyjatki = new List<string> 
+            { 
+                "Last Connected",
+                "Ping's",
+                "TransactionsXML to CSV",
+                "MonitoringSlayer",
+                "Stocktaking",
+                "Mass Functions",
+                "Random Collection of Randomness"
+            };
             foreach (ToolStripMenuItem menu in menuStrip1.Items)
             {
                 if (menu.Text == "Preferences") { break; }
@@ -1490,6 +1499,8 @@ namespace TP_MasterTool
                     }
                 }
             }
+            Main.interfejs.SubnetStatusGroup.Enabled = false;
+            Main.interfejs.Rescan_Button.Enabled = false;
         }
         private void EnableUI()
         {
@@ -1510,6 +1521,8 @@ namespace TP_MasterTool
             {
                 SetEnableMenuItems(ipNotSupported, false);
             }
+            Main.interfejs.SubnetStatusGroup.Enabled = true;
+            Main.interfejs.Rescan_Button.Enabled = true;
         }
         private void SetEnableMenuItems(List<string> itemList, bool state)
         {

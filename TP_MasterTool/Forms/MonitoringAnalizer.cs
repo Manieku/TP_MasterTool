@@ -772,7 +772,7 @@ namespace TP_MasterTool.Forms
             else if (activityName == "DSFinVKExport")
             {
                 log += AddToLog(Environment.NewLine + "Exporting CSV Files:");
-                if (!CtrlFunctions.CsvExportForYesterday(connectionPara, out string errorMsg))
+                if (!CtrlFunctions.CsvExport(connectionPara, "", out string errorMsg))
                 {
                     log += AddToLog("-> Failed: " + errorMsg);
                     log += AddToLog("Restarting TPDotnet Process Manager:");
@@ -787,7 +787,7 @@ namespace TP_MasterTool.Forms
                     log += AddToLog("-> Done");
                     System.Threading.Thread.Sleep(30000);
                     log += AddToLog("Retrying CSV Export:");
-                    if (!CtrlFunctions.CsvExportForYesterday(connectionPara, out errorMsg))
+                    if (!CtrlFunctions.CsvExport(connectionPara, "", out errorMsg))
                     {
                         log += AddToLog("-> Failed: " + errorMsg);
                         log += AddToLog(Environment.NewLine + ">>> CSV Export failed even after TPDotnet service restart, please pass ticket to GSS accordingly to USU 56402 <<<");
