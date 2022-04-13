@@ -206,7 +206,7 @@ namespace TP_MasterTool.Klasy
             var nodes = tempXml.Root.Elements("Transaction");
             if (nodes.Count() == 0)
             {
-                Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.UpdatePackageInvalid, "Found Invalid Items");
+                Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.UpdatePackageInvalidCheck, "Found Invalid Items");
                 massFunctionForm.ErrorLog(rownr, "Other Invalid xml found, please check manually and include it in note to MMS team");
                 return;
             }
@@ -227,7 +227,7 @@ namespace TP_MasterTool.Klasy
             }
             catch
             {
-                Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.UpdatePackageInvalid, "Found Invalid Items");
+                Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.UpdatePackageInvalidCheck, "Found Invalid Items");
                 massFunctionForm.ErrorLog(rownr, "Other Invalid xml found, please check manually and include it in note to MMS team");
                 return;
             }
@@ -236,7 +236,7 @@ namespace TP_MasterTool.Klasy
             lock (massFunctionForm.logLock)
             {
                 massFunctionForm.log = massFunctionForm.log.Concat(output.Split(new string[] { Environment.NewLine }, StringSplitOptions.None)).ToArray();
-                Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.UpdatePackageInvalid, "Found Invalid Items");
+                Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.UpdatePackageInvalidCheck, "Found Invalid Items");
             }
             massFunctionForm.GridChange(rownr, "Found Invalid", Globals.errorColor);
         }
