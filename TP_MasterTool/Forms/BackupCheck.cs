@@ -128,7 +128,7 @@ namespace TP_MasterTool.Forms
                     yesterday = true;
                 }
             }
-            if (!today && !yesterday)
+            if (!today || !yesterday)
             {
                 uptodateError = true;
             }
