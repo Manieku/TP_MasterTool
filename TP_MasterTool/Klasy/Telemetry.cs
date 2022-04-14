@@ -5,23 +5,6 @@ namespace TP_MasterTool.Klasy
 {
     class Telemetry
     {
-        public static void LogOnMachineAction(string host, Globals.Funkcje funkcja, string comments)
-        {
-            string filePath = Globals.machineLogPath + host + ".csv";
-            try
-            {
-                if (!System.IO.File.Exists(filePath))
-                {
-                    System.IO.File.AppendAllText(filePath, @"TimeStamp,User,Function,Comments" + Environment.NewLine);
-                }
-                System.IO.File.AppendAllText(filePath, string.Join(",", DateTime.Now.ToString("G"), Logger.EnvironmentVariables.activeUser, funkcja, comments) + Environment.NewLine);
-            }
-            catch (Exception exp)
-            {
-                Logger.QuickLog(Globals.Funkcje.LogOnMachineAction, funkcja.ToString(), host, "TelemetryError", exp.ToString());
-            }
-
-        }
         public static void CreateFunctionUsageXml(ref Logger myLog)
         {
             myLog.Add("CreateFunctionUsageXml");
@@ -37,6 +20,40 @@ namespace TP_MasterTool.Klasy
                 myLog.Add("Error during saving xml file");
                 myLog.Add(exp.ToString());
             }
+        }
+        public static void LogMachineAction(string host, Globals.Funkcje funkcja, string comments)
+        {
+            string filePath = Globals.machineLogPath + host + ".csv";
+            try
+            {
+                if (!System.IO.File.Exists(filePath))
+                {
+                    System.IO.File.AppendAllText(filePath, @"TimeStamp,User,Function,Comments" + Environment.NewLine);
+                }
+                System.IO.File.AppendAllText(filePath, string.Join(",", DateTime.Now.ToString("G"), Logger.EnvironmentVariables.activeUser, funkcja, comments) + Environment.NewLine);
+            }
+            catch (Exception exp)
+            {
+                Logger.QuickLog(Globals.Funkcje.LogMachineAction, funkcja.ToString(), host, "TelemetryError", exp.ToString());
+            }
+
+        }
+        public static void LogUserAction(string host, Globals.Funkcje funkcja, string comments)
+        {
+            string filePath = Globals.telemetryLogPath + Logger.EnvironmentVariables.activeUser + ".csv";
+            try
+            {
+                if (!System.IO.File.Exists(filePath))
+                {
+                    System.IO.File.AppendAllText(filePath, @"TimeStamp,Host,Function,Comments" + Environment.NewLine);
+                }
+                System.IO.File.AppendAllText(filePath, string.Join(",", DateTime.Now.ToString("G"), host, funkcja, comments) + Environment.NewLine);
+            }
+            catch (Exception exp)
+            {
+                Logger.QuickLog(Globals.Funkcje.LogUserAction, funkcja.ToString(), host, "TelemetryError", exp.ToString());
+            }
+
         }
         public static void LogFunctionUsage(Globals.Funkcje funkcja)
         {
@@ -67,7 +84,8 @@ namespace TP_MasterTool.Klasy
         }
         public static void LogCompleteTelemetryData(string host, Globals.Funkcje funkcja, string comment)
         {
-            LogOnMachineAction(host, funkcja, comment);
+            LogMachineAction(host, funkcja, comment);
+            LogUserAction(host, funkcja, comment);
             LogFunctionUsage(funkcja);
         }
     }

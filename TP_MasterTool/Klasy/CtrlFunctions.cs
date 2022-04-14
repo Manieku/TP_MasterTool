@@ -90,7 +90,7 @@ namespace TP_MasterTool.Klasy
             if (!Directory.Exists(@"\\" + host + @"\" + path))
             {
                 CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Folder Not Found", @"Folder couldn't be found. Please check if target machine is online or initialize it anew and try again.");
-                Telemetry.LogOnMachineAction(host, Globals.Funkcje.OpenFolder, "Error");
+                Telemetry.LogMachineAction(host, Globals.Funkcje.OpenFolder, "Error");
                 Main.ChangeStatusBar("Ready");
                 return;
             }
@@ -357,7 +357,7 @@ namespace TP_MasterTool.Klasy
                         {
                             myLog.Add("Failed:" + Environment.NewLine + copyExp.ToString());
                             myLog.SaveLog("ErrorLog");
-                            Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Error during copying");
+                            Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Error during copying");
                             CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Downloading Error", "ToolBox encountered error during downloading logs:" + Environment.NewLine + copyExp.Message);
                         }
                         return;
@@ -376,7 +376,7 @@ namespace TP_MasterTool.Klasy
                         myLog.Add("Error trying open log file - " + @".\Logs\Windows\" + fileName);
                         myLog.Add(exp.ToString());
                         myLog.SaveLog("ErrorLog");
-                        Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Log file open error");
+                        Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Log file open error");
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Log file open error", @"System encouter a problem while trying to open log file: " + Environment.NewLine + exp.Message);
                     }
                 };

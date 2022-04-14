@@ -45,7 +45,7 @@ namespace TP_MasterTool.Forms
                     }
                     catch (Exception exp)
                     {
-                        Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Error reading log file");
+                        Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Error reading log file");
                         VeritasLogTextBox.Text = "Error reading log file" + Environment.NewLine + exp.Message;
                     }
                     rescanButton.Enabled = true;
@@ -95,7 +95,7 @@ namespace TP_MasterTool.Forms
             }
             catch (Exception exp)
             {
-                Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Error reading files: " + filter);
+                Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Error reading files: " + filter);
                 myLog.Add("Error reading files");
                 myLog.Add(exp.ToString());
                 myLog.wasError = true;

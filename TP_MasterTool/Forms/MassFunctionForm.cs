@@ -171,7 +171,7 @@ namespace TP_MasterTool.Forms
             lock (logLock)
             {
                 log[rownr] += " - " + Logger.LogTime() + @"- [ERROR] - " + errorMsg;
-                Telemetry.LogOnMachineAction(host, Globals.Funkcje.Error, errorMsg);
+                Telemetry.LogMachineAction(host, Globals.Funkcje.Error, errorMsg);
             }
         }
         public void AddToLog(int rownr, string logThis)

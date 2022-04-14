@@ -119,7 +119,7 @@ namespace TP_MasterTool.Klasy
             string output = cmdOutput.outputText.Replace("\n", "").Replace("\r", "").ToUpper();
             massFunctionForm.AddToLog(rownr, "[SUCCESS] - " + output);
             massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
-            Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.GetMAC, output);
+            Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.GetMAC, output);
         }
         public static void InvalidTransfer(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
@@ -206,7 +206,7 @@ namespace TP_MasterTool.Klasy
             var nodes = tempXml.Root.Elements("Transaction");
             if (nodes.Count() == 0)
             {
-                Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.UpdatePackageInvalidCheck, "Found Invalid Items");
+                Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.UpdatePackageInvalidCheck, "Found Invalid Items");
                 massFunctionForm.ErrorLog(rownr, "Other Invalid xml found, please check manually and include it in note to MMS team");
                 return;
             }
@@ -227,7 +227,7 @@ namespace TP_MasterTool.Klasy
             }
             catch
             {
-                Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.UpdatePackageInvalidCheck, "Found Invalid Items");
+                Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.UpdatePackageInvalidCheck, "Found Invalid Items");
                 massFunctionForm.ErrorLog(rownr, "Other Invalid xml found, please check manually and include it in note to MMS team");
                 return;
             }
@@ -236,7 +236,7 @@ namespace TP_MasterTool.Klasy
             lock (massFunctionForm.logLock)
             {
                 massFunctionForm.log = massFunctionForm.log.Concat(output.Split(new string[] { Environment.NewLine }, StringSplitOptions.None)).ToArray();
-                Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.UpdatePackageInvalidCheck, "Found Invalid Items");
+                Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.UpdatePackageInvalidCheck, "Found Invalid Items");
             }
             massFunctionForm.GridChange(rownr, "Found Invalid", Globals.errorColor);
         }
@@ -245,7 +245,7 @@ namespace TP_MasterTool.Klasy
             massFunctionForm.GridChange(rownr, "Looking for files");
             string source = @"\\" + connectionPara.TAG + @"\" + addInfo[0];
             string destination = @"\\" + connectionPara.TAG + @"\" + addInfo[1];
-            Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.BulkFileMove, source + " -> " + destination + " filter: " + addInfo[2]);
+            Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.BulkFileMove, source + " -> " + destination + " filter: " + addInfo[2]);
             if (!Directory.Exists(source))
             {
                 massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "Source folder not found");
@@ -402,7 +402,7 @@ namespace TP_MasterTool.Klasy
             }
             massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
             massFunctionForm.AddToLog(rownr, "[SUCCESS] - " + cFiles.Length + " - " + dFiles.Length);
-            Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.BackupJobsCheck, cFiles.Length + " - " + dFiles.Length);
+            Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.BackupJobsCheck, cFiles.Length + " - " + dFiles.Length);
         }
         public static void BackupJobsReset(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
@@ -432,7 +432,7 @@ namespace TP_MasterTool.Klasy
                             string msg = file + " > " + File.GetCreationTime(file);
                             File.Delete(file);
                             massFunctionForm.AddToLog(rownr, msg + " (Deleted) | ");
-                            Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.DeleteOldBackupFiles, msg + " Deleted");
+                            Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.DeleteOldBackupFiles, msg + " Deleted");
                         }
                     }
                 }
@@ -502,7 +502,7 @@ namespace TP_MasterTool.Klasy
             }
             massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
             massFunctionForm.AddToLog(rownr, "[SUCCESS] - " + addInfo[0] + " Installed");
-            Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.CheckForKB, addInfo[0] + " Installed");
+            Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.CheckForKB, addInfo[0] + " Installed");
         }
         public static void DeployAndExecute(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
@@ -518,7 +518,7 @@ namespace TP_MasterTool.Klasy
             {
                 massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "Script exited with error code: " + exitCode);
             }
-            Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.DeployAndExecute, addInfo[0] + " Exetuted");
+            Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.DeployAndExecute, addInfo[0] + " Exetuted");
             massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
             massFunctionForm.AddToLog(rownr, "[SUCCESS] - " + addInfo[0] + " Exetuted");
         }

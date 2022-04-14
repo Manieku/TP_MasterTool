@@ -123,12 +123,12 @@ namespace TP_MasterTool
                     }
                     else if (outParams["ReturnValue"].ToString() == "5")
                     {
-                        Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.ServiceManager, "Service is already stopped");
+                        Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.ServiceManager, "Service is already stopped");
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Info, "", "Service is already stopped");
                     }
                     else
                     {
-                        Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.ServiceManager, "Unknown Error: " + outParams["ReturnValue"].ToString());
+                        Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.ServiceManager, "Unknown Error: " + outParams["ReturnValue"].ToString());
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Unknown error", "Toolbox encountered unknown error while trying to stop service.(" + outParams["ReturnValue"].ToString() + ")");
                         myLog.Add("Unknown Error: " + outParams["ReturnValue"].ToString());
                         myLog.Add("https://docs.microsoft.com/en-us/windows/win32/cimwin32prov/stopservice-method-in-class-win32-service");
@@ -168,17 +168,17 @@ namespace TP_MasterTool
                     }
                     else if (outParams["ReturnValue"].ToString() == "10")
                     {
-                        Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.ServiceManager, "Service is already running");
+                        Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.ServiceManager, "Service is already running");
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Info, "", "Service is already running");
                     }
                     else if (outParams["ReturnValue"].ToString() == "14")
                     {
-                        Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.ServiceManager, "Unable to start the service: The service has been disabled from the system.");
+                        Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.ServiceManager, "Unable to start the service: The service has been disabled from the system.");
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Info, "", "Unable to start the service: The service has been disabled from the system.");
                     }
                     else
                     {
-                        Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.ServiceManager, "Unknown Error: " + outParams["ReturnValue"].ToString());
+                        Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.ServiceManager, "Unknown Error: " + outParams["ReturnValue"].ToString());
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Unknown error", "Toolbox encountered unknown error while trying to start service.(" + outParams["ReturnValue"].ToString() + ")");
                         myLog.Add("Unknown Error: " + outParams["ReturnValue"].ToString());
                         myLog.Add("https://docs.microsoft.com/en-us/windows/win32/cimwin32prov/startservice-method-in-class-win32-service");

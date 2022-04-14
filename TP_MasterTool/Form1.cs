@@ -202,7 +202,7 @@ namespace TP_MasterTool
             if (cmdOutput.exitCode != 0)
             {
                 CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Command Execution Error", "RCMD encounter a error during execution:" + Environment.NewLine + cmdOutput.errorOutputText);
-                Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "CMD Failed to restart host");
+                Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "CMD Failed to restart host");
                 Logger.QuickLog(Globals.Funkcje.RemoteRestart, "", connectionPara.TAG, "ErrorLog", cmdOutput.errorOutputText);
                 return;
             }
@@ -225,7 +225,7 @@ namespace TP_MasterTool
                     ChangeStatusBar("Ready");
                     if (cmdOutput.exitCode != 0)
                     {
-                        Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "RCMD exited with code: " + cmdOutput.exitCode);
+                        Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "RCMD exited with code: " + cmdOutput.exitCode);
                         Logger.QuickLog(Globals.Funkcje.DNSRestore, "", connectionPara.TAG, "ErrorLog", "RCMD exited with code: " + cmdOutput.exitCode + "\n" + cmdOutput.errorOutputText);
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Execution Error", "RCMD exited with error while executing commands:\n" + cmdOutput.errorOutputText);
                         return;
@@ -511,14 +511,14 @@ namespace TP_MasterTool
                     ChangeStatusBar("Reading SMART values");
                     if (!CtrlFunctions.Smarty(connectionPara, out string errorMsg))
                     {
-                        Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, errorMsg);
+                        Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, errorMsg);
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "SMART Function Error", errorMsg);
                     }
                     else
                     {
                         if (!FileController.MoveFile(@"\\" + connectionPara.TAG + @"\c$\SMART\DiskInfo.txt", @".\Logs\SMART\SMART - " + connectionPara.TAG + ".txt", false, out Exception moveExp))
                         {
-                            Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.GetSMART, "Retrieving result error");
+                            Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.GetSMART, "Retrieving result error");
                             Logger.QuickLog(Globals.Funkcje.GetSMART, @"\\" + connectionPara.TAG + @"\c$\SMART\DiskInfo.txt | " + @".\Logs\SMART\SMART - " + connectionPara.TAG + ".txt", connectionPara.TAG, "WarningLog", "ToolBox wasn't able to copy command output back from targeted host." + Environment.NewLine + moveExp.ToString());
                             CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Retrieving result error", @"ToolBox wasn't able to copy command output back from targeted host. You can check it manually at \\" + connectionPara.TAG + @"\C$\SMART\DiskInfo.txt");
                         }
@@ -561,7 +561,7 @@ namespace TP_MasterTool
                     }
                     if (output == "")
                     {
-                        Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Disc Connection Error");
+                        Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Disc Connection Error");
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Disc Connection Error", @"Couldn't establish connection to any disc. Please check if target machine is online or initialize it anew and try again.");
                         return;
                     }
@@ -581,7 +581,7 @@ namespace TP_MasterTool
             if (!FileController.CopyFile(Globals.toolsPath + "windirstat.exe", @"\\" + connectionPara.TAG + @"\c$\temp\windirstat.exe", false, out Exception copyExp))
             {
                 Logger.QuickLog(Globals.Funkcje.WinDirStatInstall, "Copying exe to host", connectionPara.TAG, "ErrorLog", copyExp.ToString());
-                Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Copying windirstat failed");
+                Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Copying windirstat failed");
                 CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Copying Error", "ToolBox encountered error while trying to copy winDirStat:" + Environment.NewLine + copyExp.Message);
             }
             ChangeStatusBar("Ready");
@@ -605,7 +605,7 @@ namespace TP_MasterTool
                     CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c systeminfo | find /i \"Boot Time\"");
                     if (cmdOutput.exitCode != 0)
                     {
-                        Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "RCMD Error");
+                        Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "RCMD Error");
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "RCMD Error", "Unable to get last boot time - RCMD exited with error:" +
                             Environment.NewLine + cmdOutput.errorOutputText);
                         ChangeStatusBar("Ready");
@@ -679,7 +679,7 @@ namespace TP_MasterTool
                 myLog.Add("Error reading log file");
                 myLog.Add(exp.ToString());
                 myLog.SaveLog("ErrorLog");
-                Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Error reading log file");
+                Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Error reading log file");
                 CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Error reading log file", "ToolBox wasn't able to read log file:" + Environment.NewLine + exp.Message);
                 return;
             }
@@ -765,7 +765,7 @@ namespace TP_MasterTool
             if (output == "") { output = "No data found in database"; }
             CustomMsgBox.Show(CustomMsgBox.MsgType.Done, "Sql Query result", output);
             Telemetry.LogFunctionUsage(Globals.Funkcje.GetSqlInfo);
-            Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.GetSqlInfo, (sender as ToolStripMenuItem).Text);
+            Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.GetSqlInfo, (sender as ToolStripMenuItem).Text);
         }
         private void showLastSignOffFromYesterdayMenuItem_Click(object sender, EventArgs e)
         {
@@ -778,7 +778,7 @@ namespace TP_MasterTool
             if (output == "") { output = "No data found in database"; }
             CustomMsgBox.Show(CustomMsgBox.MsgType.Done, "Sql Query result", output);
             Telemetry.LogFunctionUsage(Globals.Funkcje.GetSqlInfo);
-            Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.GetSqlInfo, (sender as ToolStripMenuItem).Text);
+            Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.GetSqlInfo, (sender as ToolStripMenuItem).Text);
         }
 
         /**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**/
@@ -794,7 +794,7 @@ namespace TP_MasterTool
             colonFixLog.Add("Killing MobilePOS");
             if (!CtrlFunctions.KillMobilePos(connectionPara, out string errorMsg))
             {
-                Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "MobilePOS Kill Failed");
+                Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "MobilePOS Kill Failed");
                 CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "MobilePOS Kill Failed", errorMsg);
                 colonFixLog.Add(errorMsg);
                 colonFixLog.SaveLog("ErrorLog");
@@ -808,7 +808,7 @@ namespace TP_MasterTool
             {
                 colonFixLog.wasError = true;
                 colonFixLog.Add(copyExp.ToString());
-                Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "localstorage file copy error");
+                Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "localstorage file copy error");
                 CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Localstorage copy error", "ToolBox encountered error while copying localstorage file:" + Environment.NewLine + copyExp.Message);
             }
             colonFixLog.Add("Copying ActOperatorID");
@@ -816,7 +816,7 @@ namespace TP_MasterTool
             {
                 colonFixLog.wasError = true;
                 colonFixLog.Add(copyExp.ToString());
-                Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "ActOperatorID file copy error");
+                Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "ActOperatorID file copy error");
                 CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "ActOperatorID copy error", "ToolBox encountered error while copying ActOperatorID file:" + Environment.NewLine + copyExp.Message);
             }
             if(colonFixLog.wasError)
@@ -828,7 +828,7 @@ namespace TP_MasterTool
             ChangeStatusBar("Waiting for confirmation");
             if (CustomMsgBox.Show(CustomMsgBox.MsgType.Info, "Waiting for file repair and confirmation", "Please repair database file and press OK to copy file back to the till.") != DialogResult.OK)
             {
-                Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Canceled by user");
+                Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Canceled by user");
                 ChangeStatusBar("Ready");
                 return;
             }
@@ -838,7 +838,7 @@ namespace TP_MasterTool
             {
                 colonFixLog.Add(moveExp.ToString());
                 colonFixLog.SaveLog("ErrorLog");
-                Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, @"Copying localstorage file back error");
+                Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, @"Copying localstorage file back error");
                 ChangeStatusBar("Ready");
                 CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Copying localstorage file back error", "ToolBox encountered error trying to copy localstorage file back to till:" + Environment.NewLine + moveExp.Message);
                 return;
@@ -872,7 +872,7 @@ namespace TP_MasterTool
                     myLog.Add("Killing MobilePOS");
                     if (!CtrlFunctions.KillMobilePos(connectionPara, out string errorMsg))
                     {
-                        Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "MobilePOS app kill failed");
+                        Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "MobilePOS app kill failed");
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "MobilePOS Kill Failed", errorMsg);
                         myLog.Add(errorMsg);
                         myLog.SaveLog("ErrorLog");
@@ -884,7 +884,7 @@ namespace TP_MasterTool
                     myLog.Add("Clearing Cache");
                     if(!FileController.ClearFolder(@"\\" + connectionPara.TAG + @"\c$\Users\" + connectionPara.country + connectionPara.storeNr + connectionPara.storeType + @".AL\AppData\Local\Diebold_Nixdorf\mobile_cache\Local Storage", false, out string errorList))
                     {
-                        Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Unable to delete files");
+                        Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Unable to delete files");
                         myLog.Add(errorList);
                         myLog.SaveLog("ErrorLog");
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Clearing Folder Error", "ToolBox was unable to delete files in folder:" + Environment.NewLine + errorList);
@@ -913,7 +913,7 @@ namespace TP_MasterTool
                     ChangeStatusBar("Killing MobilePOS");
                     if (!CtrlFunctions.KillMobilePos(connectionPara, out string errorMsg))
                     {
-                        Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "MobilePOS app kill failed");
+                        Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "MobilePOS app kill failed");
                         myLog.Add(errorMsg);
                         myLog.SaveLog("ErrorLog");
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "MobilePOS Kill Failed", errorMsg);
@@ -931,7 +931,7 @@ namespace TP_MasterTool
                     myLog.Add("Creating folder: " + outputFolderName);
                     if (!FileController.MakeFolder(outputFolderName, out Exception makeExp))
                     {
-                        Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Creating folder error");
+                        Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Creating folder error");
                         myLog.Add(makeExp.ToString());
                         myLog.SaveLog("ErrorLog");
                         ChangeStatusBar("Ready");
@@ -945,7 +945,7 @@ namespace TP_MasterTool
                         {
                             myLog.Add(moveExp.Message);
                             myLog.wasError = true;
-                            Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, moveExp.Message);
+                            Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, moveExp.Message);
                             CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Move File Error", "ToolBox was unable to move " + file + Environment.NewLine + moveExp.Message);
                         }
                     }
@@ -979,7 +979,7 @@ namespace TP_MasterTool
                     {
                         myLog.Add(errorMsg);
                         myLog.SaveLog("ErrorLog");
-                        Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "MobilePOS app kill failed");
+                        Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "MobilePOS app kill failed");
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "MobilePOS Kill Failed", errorMsg);
                         return;
                     }
@@ -990,7 +990,7 @@ namespace TP_MasterTool
                     CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c cd c:\Program Files (x86)\signator && signatorhelper -closecashbox cashboxid=" + cashBoxID + " reason=7 && net stop signator");
                     if (cmdOutput.exitCode != 0)
                     {
-                        Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Unable to Reset Signator or stop service");
+                        Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Unable to Reset Signator or stop service");
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Unable to reset Signator or stop service", "PSEXEC encountered some problems trying to Unable to reset Signator or stop it service and exited with error:" + Environment.NewLine + cmdOutput.errorOutputText);
                         ChangeStatusBar("Ready");
                         myLog.Add("Resetting Signator Error: " + cmdOutput.exitCode);
@@ -1012,7 +1012,7 @@ namespace TP_MasterTool
                         }
                         catch (Exception exp)
                         {
-                            Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Unable to delete old signator backup folder");
+                            Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Unable to delete old signator backup folder");
                             CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Unable to delete old signator backup folder", "Toolbox was unable to delete old signator backup folder. Error:" + Environment.NewLine + exp.Message);
                             ChangeStatusBar("Ready");
                             myLog.Add("Unable to delete backup folder");
@@ -1030,7 +1030,7 @@ namespace TP_MasterTool
                     }
                     catch (Exception exp)
                     {
-                        Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Unable to create signator backup folder");
+                        Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Unable to create signator backup folder");
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Unable to create signator backup folder", "Toolbox was unable to create signator backup folder. Error:" + Environment.NewLine + exp.Message);
                         ChangeStatusBar("Ready");
                         myLog.Add(exp.ToString());
@@ -1044,7 +1044,7 @@ namespace TP_MasterTool
                     cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c net start signator");
                     if (cmdOutput.exitCode != 0)
                     {
-                        Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Unable to start Signator service");
+                        Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Unable to start Signator service");
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Unable to start Signator service", "PSEXEC encountered some problems trying to start Signator service and exited with error:" + Environment.NewLine + cmdOutput.errorOutputText);
                         ChangeStatusBar("Ready");
                         myLog.Add("Unable to start service: " + cmdOutput.exitCode);
@@ -1073,7 +1073,7 @@ namespace TP_MasterTool
                     myLog.Add("Copying config file");
                     if (!FileController.CopyFile(Globals.toolsPath + "m11.cfg", @"\\" + connectionPara.TAG + @"\c$\Program Files (x86)\APC\PowerChute Business Edition\agent\m11.cfg", false, out Exception copyExp))
                     {
-                        Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Copying config file error");
+                        Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Copying config file error");
                         myLog.Add(copyExp.ToString());
                         myLog.SaveLog("ErrorLog");
                         Main.ChangeStatusBar("Ready");
@@ -1086,7 +1086,7 @@ namespace TP_MasterTool
                     CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c net start apcpbeagent");
                     if (cmdOutput.exitCode != 0)
                     {
-                        Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Unable to start APC Agent");
+                        Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Unable to start APC Agent");
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Unable to start APC Agent", "Error occured while starting APC Agent Service:" + Environment.NewLine + cmdOutput.errorOutputText);
                         myLog.Add("Cmd error: " + cmdOutput.exitCode + Environment.NewLine + cmdOutput.errorOutputText);
                         myLog.SaveLog("ErrorLog");
@@ -1108,14 +1108,14 @@ namespace TP_MasterTool
                 {
                     ChangeStatusBar("Reseting Veritas Jobs");
                     ConnectionPara connectionPara = Main.interfejs.connectionPara;
-                    Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.BackupJobsReset, "");
+                    Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.BackupJobsReset, "");
                     CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c powershell -ep Bypass c:\service\tools\backup\RemoveImageJob.ps1 && powershell -ep Bypass c:\service\tools\backup\AddImageJob.ps1");
                     ChangeStatusBar("Ready");
                     if (cmdOutput.exitCode != 0)
                     {
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Commands Execution Failed", "CMD exited with error code: " + cmdOutput.exitCode + Environment.NewLine + "Error log will be shown on next popup");
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Backup Job Reset Error Log", cmdOutput.outputText);
-                        Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "CMD exited with error code: " + cmdOutput.exitCode);
+                        Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "CMD exited with error code: " + cmdOutput.exitCode);
                         return;
                     }
                     CustomMsgBox.Show(CustomMsgBox.MsgType.Done, "Backup Jobs Reset Successful", "Veritas Backup Jobs has been reset to proper values");
@@ -1133,7 +1133,7 @@ namespace TP_MasterTool
                     Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.BackstoreCsvExport, "");
                     if (!CtrlFunctions.CsvExport(connectionPara, "", out string errorMsg))
                     {
-                        Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, errorMsg);
+                        Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, errorMsg);
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "CSV Export Result", "CSV Files export failed: " + Environment.NewLine + errorMsg);
                         return;
                     }
@@ -1207,7 +1207,7 @@ namespace TP_MasterTool
                     {
                         myLog.Add(errorMsg);
                         myLog.SaveLog("ErrorLog");
-                        Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "MobilePOS app kill failed");
+                        Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "MobilePOS app kill failed");
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "MobilePOS Kill Failed", errorMsg);
                         return;
                     }
@@ -1529,12 +1529,13 @@ namespace TP_MasterTool
                 return;
             }
 
-            Telemetry.LogOnMachineAction(tempTAG, Globals.Funkcje.Initialization, "");
+            Telemetry.LogMachineAction(tempTAG, Globals.Funkcje.Initialization, "");
+            Telemetry.LogUserAction(tempTAG, Globals.Funkcje.Initialization, "");
 
             if (connectionPara.IP == "DNS ERROR")
             {
                 Main.SetIP("DNS ERROR", Globals.errorColor);
-                Telemetry.LogOnMachineAction(tempTAG, Globals.Funkcje.Error, Main.GetIP());
+                Telemetry.LogMachineAction(tempTAG, Globals.Funkcje.Error, Main.GetIP());
                 if (CustomMsgBox.Show(CustomMsgBox.MsgType.Decision, connectionPara.TAG + " - DNS Error", "Would you like to connect to this host via IP?") != DialogResult.OK)
                 {
                     Main.ChangeStatusBar("Ready");
@@ -1566,7 +1567,7 @@ namespace TP_MasterTool
             {
                 Main.SetTAG(connectionPara.TAG, Globals.errorColor);
                 CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Connection Error", "Unable to map host drive through net use:" + Environment.NewLine + cmdOutput.errorOutputText);
-                Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Unable to map host drive");
+                Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Unable to map host drive");
                 Main.ChangeStatusBar("Ready");
                 return;
             }

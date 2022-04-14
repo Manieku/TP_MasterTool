@@ -41,7 +41,7 @@ namespace TP_MasterTool
         private void startPing()
         {
             Telemetry.LogFunctionUsage(Globals.Funkcje.ConstantPing);
-            Telemetry.LogOnMachineAction(host, Globals.Funkcje.ConstantPing, "Start");
+            Telemetry.LogMachineAction(host, Globals.Funkcje.ConstantPing, "Start");
             hit = 0;
             miss = 0;
             total = 0;
@@ -56,7 +56,7 @@ namespace TP_MasterTool
         }
         private void stopPing()
         {
-            Telemetry.LogOnMachineAction(host, Globals.Funkcje.ConstantPing, "Stop");
+            Telemetry.LogMachineAction(host, Globals.Funkcje.ConstantPing, "Stop");
             timer.Stop();
             this.Text = host;
             if (backgroundWorker1.IsBusy)
