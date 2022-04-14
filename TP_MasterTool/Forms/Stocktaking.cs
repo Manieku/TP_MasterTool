@@ -113,7 +113,7 @@ namespace TP_MasterTool.Forms
 
             lock (logLock)
             {
-                Telemetry.LogFunctionUsage(Globals.Funkcje.Stocktaking);
+                Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.Stocktaking, "");
             }
         }
 

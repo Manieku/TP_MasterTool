@@ -139,41 +139,49 @@ namespace TP_MasterTool.Forms
             {
                 output += AddToLog("Found procedure in database -> Host_Offline_1h");
                 HostOffline1h(rownr, connectionPara, ref output);
+                Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.MonitoringSlayer, "System Connection lost since 1 hour");
             }
             else if ((string)dataGridView1.Rows[rownr].Cells[2].Value == dataGridView1.Rows[rownr].Cells[1].Value + ";[Canda OmniPOS] System-TS_ERR_BUILD_ARCHIVE_FAILURE")
             {
                 output += AddToLog("Found procedure in database -> Archive_Build_Failure");
                 ArchiveBuildFailure(rownr, ref output);
+                Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.MonitoringSlayer, "System-TS_ERR_BUILD_ARCHIVE_FAILURE");
             }
             //else if ((string)dataGridView1.Rows[rownr].Cells[2].Value == dataGridView1.Rows[rownr].Cells[1].Value + ";[Canda OmniPOS] The service TPDotnet Process Manager is down")
             //{
             //    output += AddToLog("Found procedure in database -> TPDotnet_Process_Manager_Down");
             //    TPDotnetProcessManagerDown(rownr, connectionPara, ref output);
+            //    Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.MonitoringSlayer, "The service TPDotnet Process Manager is down");
             //}
             else if (dataGridView1.Rows[rownr].Cells[2].Value.ToString().StartsWith(dataGridView1.Rows[rownr].Cells[1].Value + ";[Canda OmniPOS] Minilogger no. ") && dataGridView1.Rows[rownr].Cells[2].Value.ToString().Contains(" is Offline"))
             {
                 output += AddToLog("Found procedure in database -> CUC_Offline");
                 CUCOffline(rownr, dataGridView1.Rows[rownr].Cells[2].Value.ToString().Substring(44, 1), connectionPara, ref output);
+                Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.MonitoringSlayer, "Minilogger no. " + dataGridView1.Rows[rownr].Cells[2].Value.ToString().Substring(44, 1) + " is Offline");
             }
             else if ((string)dataGridView1.Rows[rownr].Cells[2].Value == dataGridView1.Rows[rownr].Cells[1].Value + @";[Canda OmniPOS] Msg from InfoDaemon drive C:\ state has been changed to critical")
             {
                 output += AddToLog("Found procedure in database -> C_Drive_Critical");
                 CDriveCritical(rownr, connectionPara, ref output);
+                Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.MonitoringSlayer, @"Msg from InfoDaemon drive C:\ state has been changed to critical");
             }
             else if ((string)dataGridView1.Rows[rownr].Cells[2].Value == dataGridView1.Rows[rownr].Cells[1].Value + @";[Canda OmniPOS] *TPNAPP* Central Collection Process for TP.Report failed")
             {
                 output += AddToLog("Found procedure in database -> CollectionFailed");
                 CollectionFailed(rownr, connectionPara, ref output);
+                Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.MonitoringSlayer, "*TPNAPP* Central Collection Process for TP.Report failed");
             }
             else if (dataGridView1.Rows[rownr].Cells[2].Value.ToString().StartsWith(dataGridView1.Rows[rownr].Cells[1].Value + ";[Canda OmniPOS] Missing TA") && dataGridView1.Rows[rownr].Cells[2].Value.ToString().EndsWith("found on " + dataGridView1.Rows[rownr].Cells[1].Value + " (Source: TX Collector)"))
             {
                 output += AddToLog("Found procedure in database -> MissingTA");
                 MissingTA(rownr, connectionPara, ref output);
+                Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.MonitoringSlayer, "Missing TA");
             }
             else if (dataGridView1.Rows[rownr].Cells[2].Value.ToString().StartsWith(dataGridView1.Rows[rownr].Cells[1].Value + ";[Canda OmniPOS] *TPNAPP* MANUALEOD Failure at"))
             {
                 output += AddToLog("Found procedure in database -> EoD_Failed");
                 EoDFailed(rownr, connectionPara, ref output);
+                Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.MonitoringSlayer, "*TPNAPP* MANUALEOD Failure");
             }
             //else if (dataGridView1.Rows[rownr].Cells[2].Value.ToString().StartsWith(dataGridView1.Rows[rownr].Cells[1].Value + ";[Canda OmniPOS] *TPNAPP* MANUALEOD Aborted at"))
             //{
@@ -203,10 +211,6 @@ namespace TP_MasterTool.Forms
             {
                 CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "File Save Error", "ToolBox encountered error while trying to save file " + thisLogPath + Environment.NewLine + saveExp.Message);
                 return;
-            }
-            lock (logLock)
-            {
-                Telemetry.LogFunctionUsage(Globals.Funkcje.MonitoringSlayer);
             }
             return;
         }

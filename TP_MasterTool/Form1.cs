@@ -155,11 +155,13 @@ namespace TP_MasterTool
         private void SaveNote_Click(object sender, EventArgs e)
         {
             Telemetry.LogFunctionUsage(Globals.Funkcje.SaveNote);
+            Telemetry.LogUserAction("MainForm", Globals.Funkcje.SaveNote, "");
             FileController.SaveTxtDialog(string.Join(Environment.NewLine, notepad.Lines), ref myLog);
         }
         private void ImportNote_Click(object sender, EventArgs e)
         {
-            Telemetry.LogFunctionUsage(Globals.Funkcje.ImportNote);
+            Telemetry.LogUserAction("MainForm", Globals.Funkcje.SaveNote, "");
+            Telemetry.LogFunctionUsage(Globals.Funkcje.SaveNote);
             try
             {
                 notepad.Lines = System.IO.File.ReadAllLines(FileController.OpenFileDialog("Text files (*.txt)|*.txt"));
@@ -172,12 +174,12 @@ namespace TP_MasterTool
         //--------------------/PING BUTTONS/---------------------------
         private void PingButton_Click(object sender, EventArgs e)
         {
-            Telemetry.LogFunctionUsage(Globals.Funkcje.PingButton);
+            Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.PingButton, (sender as Button).Text);
             Process.Start("cmd.exe", "/c ping " + String.Join(".", connectionPara.IPbytes[0], connectionPara.IPbytes[1], connectionPara.IPbytes[2], (sender as Button).Tag.ToString()) + " && pause");
         }
         private void PRNPingButton_Click(object sender, EventArgs e)
         {
-            Telemetry.LogFunctionUsage(Globals.Funkcje.PingButton);
+            Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.PingButton, (sender as Button).Text);
             int de = 1;
             if (connectionPara.country == "DE") { de = 0; }
             Process.Start("cmd.exe", "/c ping " + String.Join(".", connectionPara.IPbytes[0], connectionPara.IPbytes[1], (connectionPara.IPbytes[2] + de).ToString(), (sender as Button).Tag.ToString()) + " && pause");
@@ -467,17 +469,20 @@ namespace TP_MasterTool
         /**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**/
         private void QuickPingTAGMenuItem_Click(object sender, EventArgs e)
         {
+            Telemetry.LogUserAction(GetTAG(), Globals.Funkcje.DiagnosticPing, GetTAG());
             Telemetry.LogFunctionUsage(Globals.Funkcje.DiagnosticPing);
             Process.Start("cmd.exe", "/c ping " + GetTAG() + @" && pause");
         }
         private void PingWithLoad_TAGMenuItem_Click(object sender, EventArgs e)
         {
+            Telemetry.LogUserAction(GetTAG(), Globals.Funkcje.DiagnosticPing, GetTAG());
             Telemetry.LogFunctionUsage(Globals.Funkcje.DiagnosticPing);
             Process.Start("cmd.exe", "/c ping " + GetTAG() + @" -t -l 2048");
         }
         private void SavePingToTxtMenuItem_Click(object sender, EventArgs e)
         {
             ChangeStatusBar("Working...");
+            Telemetry.LogUserAction(GetTAG(), Globals.Funkcje.SavePingToTxt, GetTAG());
             Telemetry.LogFunctionUsage(Globals.Funkcje.SavePingToTxt);
 
             CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("cmd.exe", "/c ping " + GetTAG());
@@ -757,6 +762,7 @@ namespace TP_MasterTool
         }
         private void missingTxMenuItem_Click(object sender, EventArgs e)
         {
+            Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.GetSqlInfo, (sender as ToolStripMenuItem).Text);
             if (!CtrlFunctions.SqlGetInfo(connectionPara.TAG, "TPCentralDB", "select lTaNmbr, lWorkstationNmbr, szDate, szTime from TxMissings", out string output))
             {
                 CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "SQL Query Error", output);
@@ -764,11 +770,10 @@ namespace TP_MasterTool
             }
             if (output == "") { output = "No data found in database"; }
             CustomMsgBox.Show(CustomMsgBox.MsgType.Done, "Sql Query result", output);
-            Telemetry.LogFunctionUsage(Globals.Funkcje.GetSqlInfo);
-            Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.GetSqlInfo, (sender as ToolStripMenuItem).Text);
         }
         private void showLastSignOffFromYesterdayMenuItem_Click(object sender, EventArgs e)
         {
+            Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.GetSqlInfo, (sender as ToolStripMenuItem).Text);
             string data = DateTime.Now.AddDays(-1).ToString("yyyyMMdd");
             if (!CtrlFunctions.SqlGetInfo(String.Join(".", connectionPara.IPbytes[0], connectionPara.IPbytes[1], connectionPara.IPbytes[2], "180"), "TPCentralDB", "select top 1 lWorkstationNmbr, szType, szDate, szTime, bIsDeclaration from TxSignOnOff where lWorkstationNmbr=" + connectionPara.deviceNr.TrimStart('0') + " and szDate=" + data + " and szType='SIGN_OFF' Order By szTime DESC", out string output))
             {
@@ -777,8 +782,6 @@ namespace TP_MasterTool
             }
             if (output == "") { output = "No data found in database"; }
             CustomMsgBox.Show(CustomMsgBox.MsgType.Done, "Sql Query result", output);
-            Telemetry.LogFunctionUsage(Globals.Funkcje.GetSqlInfo);
-            Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.GetSqlInfo, (sender as ToolStripMenuItem).Text);
         }
 
         /**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**/
@@ -1108,7 +1111,7 @@ namespace TP_MasterTool
                 {
                     ChangeStatusBar("Reseting Veritas Jobs");
                     ConnectionPara connectionPara = Main.interfejs.connectionPara;
-                    Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.BackupJobsReset, "");
+                    Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.BackupJobsReset, "");
                     CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c powershell -ep Bypass c:\service\tools\backup\RemoveImageJob.ps1 && powershell -ep Bypass c:\service\tools\backup\AddImageJob.ps1");
                     ChangeStatusBar("Ready");
                     if (cmdOutput.exitCode != 0)
@@ -1119,7 +1122,6 @@ namespace TP_MasterTool
                         return;
                     }
                     CustomMsgBox.Show(CustomMsgBox.MsgType.Done, "Backup Jobs Reset Successful", "Veritas Backup Jobs has been reset to proper values");
-                    Telemetry.LogFunctionUsage(Globals.Funkcje.BackupJobsReset);
                 };
                 slave.RunWorkerAsync();
             }
@@ -1154,6 +1156,7 @@ namespace TP_MasterTool
         {
             Logger myLog = new Logger(Globals.Funkcje.TransactionsXMLToCSV, "none", "none");
             Telemetry.LogFunctionUsage(Globals.Funkcje.TransactionsXMLToCSV);
+            Telemetry.LogUserAction("MainForm", Globals.Funkcje.TransactionsXMLToCSV, "");
             string filePath = FileController.OpenFileDialog("XML files (*.xml)|*.xml");
             if (filePath == "")
             {
@@ -1270,6 +1273,7 @@ namespace TP_MasterTool
             if (!optionButton.Checked)
             {
                 Telemetry.LogFunctionUsage(Globals.Funkcje.ChangeLayout);
+                Telemetry.LogUserAction("MainForm", Globals.Funkcje.ChangeLayout, optionButton.Tag.ToString());
                 userSettings.skin = optionButton.Tag.ToString();
                 userSettings.hideNotePad = false;
                 ApplyLayout(optionButton.Tag.ToString());
@@ -1279,6 +1283,7 @@ namespace TP_MasterTool
         private void ShowNotepadMenuItem_Click(object sender, EventArgs e)
         {
             Telemetry.LogFunctionUsage(Globals.Funkcje.ToggleNotePad);
+            Telemetry.LogUserAction("MainForm", Globals.Funkcje.ToggleNotePad, "");
             showNotepadMenuItem.Checked = !showNotepadMenuItem.Checked;
             if (showNotepadMenuItem.Checked)
             {
