@@ -1526,7 +1526,6 @@ namespace TP_MasterTool
                 Main.ChangeStatusBar("Ready");
                 Main.SetIP("Invalid TAG", Globals.errorColor);
                 Main.SetTAG(tempTAG, Globals.errorColor);
-                Telemetry.LogOnMachineAction(tempTAG, Globals.Funkcje.Error, Main.GetIP());
                 return;
             }
 
