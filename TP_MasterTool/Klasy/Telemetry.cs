@@ -18,7 +18,7 @@ namespace TP_MasterTool.Klasy
             }
             catch (Exception exp)
             {
-                Logger.QuickLog(Globals.Funkcje.LogOnMachineAction, "None", host, "TelemetryError", exp.ToString());
+                Logger.QuickLog(Globals.Funkcje.LogOnMachineAction, funkcja.ToString(), host, "TelemetryError", exp.ToString());
             }
 
         }

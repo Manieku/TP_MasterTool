@@ -26,8 +26,7 @@ namespace TP_MasterTool.Forms
         }
         private void CheckBackups()
         {
-            Telemetry.LogFunctionUsage(Globals.Funkcje.BackupCheck);
-            Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.BackupCheck, "");
+            Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.BackupCheck, "");
             myLog = new Logger(Globals.Funkcje.BackupCheck, "None", connectionPara.TAG);
             using (BackgroundWorker slave = new BackgroundWorker())
             {

@@ -86,8 +86,8 @@ namespace TP_MasterTool.Klasy
         public static void OpenFolder(string host, string path)
         {
             Main.ChangeStatusBar("Working...");
-            Telemetry.LogOnMachineAction(host, Globals.Funkcje.OpenFolder, path);
-            if (!System.IO.Directory.Exists(@"\\" + host + @"\" + path))
+            Telemetry.LogCompleteTelemetryData(host, Globals.Funkcje.OpenFolder, path);
+            if (!Directory.Exists(@"\\" + host + @"\" + path))
             {
                 CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Folder Not Found", @"Folder couldn't be found. Please check if target machine is online or initialize it anew and try again.");
                 Telemetry.LogOnMachineAction(host, Globals.Funkcje.OpenFolder, "Error");
@@ -95,9 +95,7 @@ namespace TP_MasterTool.Klasy
                 return;
             }
             Process.Start("explorer.exe", @"\\" + host + @"\" + path);
-            Telemetry.LogFunctionUsage(Globals.Funkcje.OpenFolder);
             Main.ChangeStatusBar("Ready");
-
         }
         public static Color PingIP(string ip)
         {
@@ -345,8 +343,7 @@ namespace TP_MasterTool.Klasy
         }
         public static void GetWinLogs(string type, ConnectionPara connectionPara)
         {
-            Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.GetWinLogs, type);
-            Telemetry.LogFunctionUsage(Globals.Funkcje.GetWinLogs);
+            Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.GetWinLogs, type);
             Logger myLog = new Logger(Globals.Funkcje.GetWinLogs, type, connectionPara.TAG);
             using (BackgroundWorker slave = new BackgroundWorker())
             {
@@ -525,6 +522,5 @@ namespace TP_MasterTool.Klasy
 
             return true;
         }
-
     }
 }

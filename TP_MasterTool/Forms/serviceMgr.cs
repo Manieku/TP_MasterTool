@@ -36,8 +36,7 @@ namespace TP_MasterTool
         private void ServiceManager_Shown(object sender, EventArgs e)
         {
             connectionPara = Main.interfejs.connectionPara;
-            Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.ServiceManager, "");
-            Telemetry.LogFunctionUsage(Globals.Funkcje.ServiceManager);
+            Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.ServiceManager, "");
             myLog = new Logger(Globals.Funkcje.ServiceManager, "none", connectionPara.TAG);
             rescanSlave.RunWorkerAsync();
             this.Text = connectionPara.TAG + " - Service Manager";
@@ -116,8 +115,7 @@ namespace TP_MasterTool
             {
                 try
                 {
-                    Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.ServiceManager, "Stop Service: " + dataGridView1.CurrentRow.Cells[0].Value.ToString());
-                    Telemetry.LogFunctionUsage(Globals.Funkcje.ServiceManager);
+                    Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.ServiceManager, "Stop Service: " + dataGridView1.CurrentRow.Cells[0].Value.ToString());
                     ManagementBaseObject outParams = service.InvokeMethod("StopService", null, null);
                     if (outParams["ReturnValue"].ToString() == "0")
                     {
@@ -162,8 +160,7 @@ namespace TP_MasterTool
             {
                 try
                 {
-                    Telemetry.LogOnMachineAction(connectionPara.TAG, Globals.Funkcje.ServiceManager, "Start Service: " + dataGridView1.CurrentRow.Cells[0].Value.ToString());
-                    Telemetry.LogFunctionUsage(Globals.Funkcje.ServiceManager);
+                    Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.ServiceManager, "Start Service: " + dataGridView1.CurrentRow.Cells[0].Value.ToString());
                     ManagementBaseObject outParams = service.InvokeMethod("StartService", null, null);
                     if (outParams["ReturnValue"].ToString() == "0")
                     {

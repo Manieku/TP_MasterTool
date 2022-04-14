@@ -30,7 +30,7 @@ namespace TP_MasterTool.Forms
         int masterRow;
         readonly int bgwCount = 20;
         bool cancel = false;
-        Logger logger = new Logger(Globals.Funkcje.Blank, "None", "");
+        Logger logger = new Logger(Globals.Funkcje.MonitoringSlayer, "None", "");
         private readonly object rowLock = new object();
         int tixNr;
         int status;
