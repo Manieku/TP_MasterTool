@@ -117,14 +117,12 @@ namespace TP_MasterTool
         }
         private void Test_Button_Click(object sender, EventArgs e)
         {
-            //string output = "";
-            //foreach (string file in System.IO.Directory.GetFiles(@"\\" + connectionPara.TAG + @"\d$\TPDotnet\Server\HostData\Download\Data", "*", System.IO.SearchOption.AllDirectories))
+
+            //foreach(string line in File.ReadAllLines(@".\dates.txt"))
             //{
-            //    output += file + Environment.NewLine;
+            //    string[] temp = line.Split('\t');
+            //    File.AppendAllText(Directory.GetFiles(@".\Csv\", temp[1] + "*")[0], temp[0] + Environment.NewLine);
             //}
-
-            //MessageBox.Show(output);
-
 
             //CtrlFunctions.EncryptFile(@".\mojepasy.txt", "cycuszki", Globals.configPath + "credentials.crypt");
             //MessageBox.Show("krypto krypto superman lezy");
@@ -720,7 +718,16 @@ namespace TP_MasterTool
             List<string> fileList = new List<string>();
             foreach (string file in files)
             {
-                fileList.Add(System.IO.Path.GetFileName(file) + " - " + XDocument.Load(file).Root.Element("BATCHRESULT").Element("szFinalResult").Value);
+                string result = "";
+                try
+                {
+                    result = XDocument.Load(file).Root.Element("BATCHRESULT").Element("szFinalResult").Value;
+                }
+                catch
+                {
+                    result = "Error reading file";
+                }
+                fileList.Add(System.IO.Path.GetFileName(file) + " - " + result);
             }
 
             string selectedFile = null;
