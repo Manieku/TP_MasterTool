@@ -53,7 +53,7 @@ namespace TP_MasterTool
         {
             //RemoteCMD's//
             //Quick Access//
-            //"APC", // not working for now
+            "APC",
             "MiniLogger",
             "TP Reports",
             //Logs//
