@@ -75,6 +75,7 @@ namespace TP_MasterTool
             IsBackupDriveAccessible,
             DownloadJavaPosLogs,
             CheckForKB,
+            GetApcLogs,
             Stocktaking,
             DeleteLock,
             GetSqlInfo,

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -60,6 +61,7 @@ namespace TP_MasterTool
             "Installation Logs",
             "TFTPD Logs",
             "OEMInst Logs",
+            "Get APC Logs",
             "PDCU Data Error Secure",
             //Diagnostics//
             "Backup Checker",
@@ -280,7 +282,7 @@ namespace TP_MasterTool
         //------------Windows Logs------------------
         private void WindowsLogsMenuItem_Click(object sender, EventArgs e)
         {
-            CtrlFunctions.GetWinLogs((sender as ToolStripMenuItem).Text, connectionPara);
+            CtrlFunctions.GetWinLogs((sender as ToolStripMenuItem).Text, connectionPara.TAG);
         }
 
         //-----------EPOS Logs-----------------
@@ -465,6 +467,67 @@ namespace TP_MasterTool
                 slave.RunWorkerAsync();
             }
         }
+
+        //-----------------APC Logs-------------------
+        private void ApcLogsMenuItem_Click(object sender, EventArgs e)
+        {
+            ConnectionPara connectionPara = Main.interfejs.connectionPara;
+            Main.ChangeStatusBar("Working...");
+            Dictionary<int, string> idMapping = new Dictionary<int, string>();
+            try
+            {
+                foreach (string line in File.ReadAllLines(Globals.configPath + "ApcEventIdMapping.txt"))
+                {
+                    string[] temp = line.Split('\t');
+                    idMapping.Add(int.Parse(temp[0]), temp[1]);
+                }
+            }
+            catch (Exception exp)
+            {
+                Logger.QuickLog(Globals.Funkcje.GetApcLogs, "Dictionary Creation", connectionPara.TAG, "CriticalError", exp.ToString());
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Dictionary Creation Error", "Toolbox wasn't able to map Apc events IDs to dictionary:" + Environment.NewLine + exp.Message);
+                Main.ChangeStatusBar("Ready");
+                return;
+            }
+            Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.GetApcLogs, "");
+            if (!FileController.CopyFile(@"\\" + connectionPara.TAG + @"\c$\Program Files (x86)\APC\PowerChute Business Edition\agent\DataLog", @".\Logs\" + connectionPara.TAG + " - APC DataLog.txt", false, out Exception copyExp))
+            {
+                Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "DataLogs: " + copyExp.Message);
+                Logger.QuickLog(Globals.Funkcje.GetApcLogs, "DataLog", connectionPara.TAG, "ErrorLog", copyExp.ToString());
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Downloading Error", "Failed to download Data logs with error: " + copyExp.Message);
+            }
+            if (!FileController.CopyFile(@"\\" + connectionPara.TAG + @"\c$\Windows\System32\winevt\Logs\Application.evtx", @".\Logs\Windows\" + connectionPara.TAG + " - Application Log.evtx", true, out copyExp))
+            {
+                if (copyExp != null)
+                {
+                    Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "EventLogs: " + copyExp.Message);
+                    Logger.QuickLog(Globals.Funkcje.GetApcLogs, "EventLog", connectionPara.TAG, "ErrorLog", copyExp.ToString());
+                    CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Downloading Error", "ToolBox encountered error during downloading logs:" + Environment.NewLine + copyExp.Message);
+                }
+                Main.ChangeStatusBar("Ready");
+                return;
+            }
+            EventLogQuery eventsQuery = new EventLogQuery(@".\Logs\Windows\" + connectionPara.TAG + " - Application Log.evtx", PathType.FilePath, "*[System/Provider/@Name=\"APCPBEAgent\"]");
+            using (var reader = new EventLogReader(eventsQuery))
+            {
+                string output = "";
+                EventRecord record;
+                while ((record = reader.ReadEvent()) != null)
+                {
+                    output += record.TimeCreated + "\t" + idMapping[record.Id] + Environment.NewLine;
+                }
+                if (!FileController.SaveTxtToFile(@".\Logs\" + connectionPara.TAG + " - APC EventLog.txt", output, out Exception saveExp))
+                {
+                    Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Save EventLog: " + saveExp.Message);
+                    Logger.QuickLog(Globals.Funkcje.GetApcLogs, "Save EventLog", connectionPara.TAG, "ErrorLog", saveExp.ToString());
+                    CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Downloading Error", "ToolBox encountered while saving logs:" + Environment.NewLine + saveExp.Message);
+                    return;
+                }
+            }
+            CustomMsgBox.Show(CustomMsgBox.MsgType.Done, "Logs Downloaded", "APC Logs were successfully downloaded and saved in ToolBox Logs folder");
+            Main.ChangeStatusBar("Ready");
+        }
+
 
         /**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**/
         private void QuickPingTAGMenuItem_Click(object sender, EventArgs e)
@@ -1317,7 +1380,8 @@ namespace TP_MasterTool
         //--------------------About-----------------------------
         private void HelpToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Process.Start(Globals.configPath + @"ToolBox v2.0 Manual.pdf");
+            Help.ShowHelp(this, @".\help.chm");
+            //Process.Start(Globals.configPath + @"ToolBox v2.0 Manual.pdf");
         }
         private void ChangeLogMenuItem_Click(object sender, EventArgs e)
         {

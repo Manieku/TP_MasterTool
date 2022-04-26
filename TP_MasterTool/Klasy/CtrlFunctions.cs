@@ -341,23 +341,23 @@ namespace TP_MasterTool.Klasy
 
             return true;
         }
-        public static void GetWinLogs(string type, ConnectionPara connectionPara)
+        public static void GetWinLogs(string type, string host)
         {
-            Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.GetWinLogs, type);
-            Logger myLog = new Logger(Globals.Funkcje.GetWinLogs, type, connectionPara.TAG);
+            Telemetry.LogCompleteTelemetryData(host, Globals.Funkcje.GetWinLogs, type);
+            Logger myLog = new Logger(Globals.Funkcje.GetWinLogs, type, host);
             using (BackgroundWorker slave = new BackgroundWorker())
             {
                 slave.DoWork += (s, args) =>
                 {
-                    string fileName = connectionPara.TAG + " - " + type + " Log.evtx";
+                    string fileName = host + " - " + type + " Log.evtx";
                     myLog.Add("Copying: " + type + @".evtx");
-                    if (!FileController.CopyFile(@"\\" + connectionPara.TAG + @"\c$\Windows\System32\winevt\Logs\" + type + @".evtx", @".\Logs\Windows\" + fileName, true, out Exception copyExp))
+                    if (!FileController.CopyFile(@"\\" + host + @"\c$\Windows\System32\winevt\Logs\" + type + @".evtx", @".\Logs\Windows\" + fileName, true, out Exception copyExp))
                     {
                         if (copyExp != null)
                         {
                             myLog.Add("Failed:" + Environment.NewLine + copyExp.ToString());
                             myLog.SaveLog("ErrorLog");
-                            Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Error during copying");
+                            Telemetry.LogMachineAction(host, Globals.Funkcje.Error, "Error during copying");
                             CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Downloading Error", "ToolBox encountered error during downloading logs:" + Environment.NewLine + copyExp.Message);
                         }
                         return;
@@ -376,7 +376,7 @@ namespace TP_MasterTool.Klasy
                         myLog.Add("Error trying open log file - " + @".\Logs\Windows\" + fileName);
                         myLog.Add(exp.ToString());
                         myLog.SaveLog("ErrorLog");
-                        Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Log file open error");
+                        Telemetry.LogMachineAction(host, Globals.Funkcje.Error, "Log file open error");
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Log file open error", @"System encouter a problem while trying to open log file: " + Environment.NewLine + exp.Message);
                     }
                 };
