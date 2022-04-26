@@ -5,6 +5,8 @@ namespace TP_MasterTool.Klasy
 {
     class Telemetry
     {
+        readonly static object logLock = new object();
+        //---//
         public static void CreateFunctionUsageXml(ref Logger myLog)
         {
             myLog.Add("CreateFunctionUsageXml");
@@ -26,11 +28,14 @@ namespace TP_MasterTool.Klasy
             string filePath = Globals.machineLogPath + host + ".csv";
             try
             {
-                if (!System.IO.File.Exists(filePath))
+                lock (logLock)
                 {
-                    System.IO.File.AppendAllText(filePath, @"TimeStamp,User,Function,Comments" + Environment.NewLine);
+                    if (!System.IO.File.Exists(filePath))
+                    {
+                        System.IO.File.AppendAllText(filePath, @"TimeStamp,User,Function,Comments" + Environment.NewLine);
+                    }
+                    System.IO.File.AppendAllText(filePath, string.Join(",", DateTime.Now.ToString("G"), Logger.EnvironmentVariables.activeUser, funkcja, comments) + Environment.NewLine);
                 }
-                System.IO.File.AppendAllText(filePath, string.Join(",", DateTime.Now.ToString("G"), Logger.EnvironmentVariables.activeUser, funkcja, comments) + Environment.NewLine);
             }
             catch (Exception exp)
             {
@@ -43,17 +48,19 @@ namespace TP_MasterTool.Klasy
             string filePath = Globals.telemetryLogPath + Logger.EnvironmentVariables.activeUser + ".csv";
             try
             {
-                if (!System.IO.File.Exists(filePath))
+                lock (logLock)
                 {
-                    System.IO.File.AppendAllText(filePath, @"TimeStamp,Host,Function,Comments" + Environment.NewLine);
+                    if (!System.IO.File.Exists(filePath))
+                    {
+                        System.IO.File.AppendAllText(filePath, @"TimeStamp,Host,Function,Comments" + Environment.NewLine);
+                    }
+                    System.IO.File.AppendAllText(filePath, string.Join(",", DateTime.Now.ToString("G"), host, funkcja, comments) + Environment.NewLine);
                 }
-                System.IO.File.AppendAllText(filePath, string.Join(",", DateTime.Now.ToString("G"), host, funkcja, comments) + Environment.NewLine);
             }
             catch (Exception exp)
             {
                 Logger.QuickLog(Globals.Funkcje.LogUserAction, funkcja.ToString(), host, "TelemetryError", exp.ToString());
             }
-
         }
         public static void LogFunctionUsage(Globals.Funkcje funkcja)
         {
@@ -64,18 +71,21 @@ namespace TP_MasterTool.Klasy
             }
             try
             {
-                XDocument telemetryXml = XDocument.Load(Globals.telemetryLogPath + @"FunctionStats.xml");
-                XElement node = telemetryXml.Root.Element(funkcja.ToString());
-                if (node == null)
+                lock (logLock)
                 {
-                    telemetryXml.Root.Add(new XElement(funkcja.ToString(), "1"));
+                    XDocument telemetryXml = XDocument.Load(Globals.telemetryLogPath + @"FunctionStats.xml");
+                    XElement node = telemetryXml.Root.Element(funkcja.ToString());
+                    if (node == null)
+                    {
+                        telemetryXml.Root.Add(new XElement(funkcja.ToString(), "1"));
+                        telemetryXml.Save(Globals.telemetryLogPath + @"FunctionStats.xml");
+                        return;
+                    }
+                    int count = int.Parse(node.Value);
+                    count++;
+                    node.Value = count.ToString();
                     telemetryXml.Save(Globals.telemetryLogPath + @"FunctionStats.xml");
-                    return;
                 }
-                int count = int.Parse(node.Value);
-                count++;
-                node.Value = count.ToString();
-                telemetryXml.Save(Globals.telemetryLogPath + @"FunctionStats.xml");
             }
             catch (Exception exp)
             {

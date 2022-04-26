@@ -236,8 +236,8 @@ namespace TP_MasterTool.Klasy
             lock (massFunctionForm.logLock)
             {
                 massFunctionForm.log = massFunctionForm.log.Concat(output.Split(new string[] { Environment.NewLine }, StringSplitOptions.None)).ToArray();
-                Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.UpdatePackageInvalidCheck, "Found Invalid Items");
             }
+            Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.UpdatePackageInvalidCheck, "Found Invalid Items");
             massFunctionForm.GridChange(rownr, "Found Invalid", Globals.errorColor);
         }
         public static void BulkFileMove(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
@@ -285,7 +285,6 @@ namespace TP_MasterTool.Klasy
                 massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "CMD exited with error code: " + cmdOutput.exitCode);
                 return;
             }
-
             massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
             massFunctionForm.AddToLog(rownr, "[SUCCESS] - ESF Client Restarted");
         }
@@ -574,10 +573,7 @@ namespace TP_MasterTool.Klasy
                 {
                     output = " - [SUCCESS] - CSV Export successful";
                 }
-                lock(massFunctionForm.logLock)
-                {
-                    Telemetry.LogFunctionUsage(Globals.Funkcje.BackstoreCsvExport);
-                }
+                Telemetry.LogFunctionUsage(Globals.Funkcje.BackstoreCsvExport);
                 inputDates[i] += output;
             }
             if(!FileController.SaveTxtToFile(inputFile, String.Join(Environment.NewLine, inputDates), out Exception saveExp))
