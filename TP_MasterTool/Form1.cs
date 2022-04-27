@@ -117,7 +117,6 @@ namespace TP_MasterTool
         }
         private void Test_Button_Click(object sender, EventArgs e)
         {
-
             //foreach(string line in File.ReadAllLines(@".\dates.txt"))
             //{
             //    string[] temp = line.Split('\t');
@@ -1059,7 +1058,12 @@ namespace TP_MasterTool
 
                     ChangeStatusBar("Resetting Signator");
                     myLog.Add("Resetting Signator");
-                    string cashBoxID = "0000" + "43" + connectionPara.storeNr + "00000000" + connectionPara.deviceNr;
+                    string deviceID = connectionPara.deviceNr;
+                    if(connectionPara.deviceType == "SCO")
+                    {
+                        deviceID = (int.Parse(connectionPara.deviceNr) + 49).ToString();
+                    }
+                    string cashBoxID = "0000" + "43" + connectionPara.storeNr + "00000000" + deviceID;
                     CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c cd c:\Program Files (x86)\signator && signatorhelper -closecashbox cashboxid=" + cashBoxID + " reason=7 && net stop signator");
                     if (cmdOutput.exitCode != 0)
                     {
