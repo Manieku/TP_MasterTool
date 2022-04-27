@@ -745,9 +745,18 @@ namespace TP_MasterTool
             myLog.Add("Selected file: " + selectedFile);
             Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.EodCheck, selectedFile);
             XDocument eodXml;
+            string output = "";
             try
             {
                 eodXml = XDocument.Load(@"\\" + connectionPara.TAG + @"\d$\TPDotnet\Log\" + selectedFile.Split(' ')[0]);
+                foreach (XElement node in eodXml.Root.Elements("ACTIVITYLOG"))
+                {
+                    if (node.Element("szFinalResult").Value == "AbortedCancel" || node.Element("szFinalResult").Value == "Failure")
+                    {
+                        output += node.ToString() + Environment.NewLine;
+                    }
+                }
+                output += Environment.NewLine + eodXml.Root.Element("BATCHRESULT").ToString();
             }
             catch (Exception exp)
             {
@@ -758,15 +767,6 @@ namespace TP_MasterTool
                 CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Error reading log file", "ToolBox wasn't able to read log file:" + Environment.NewLine + exp.Message);
                 return;
             }
-            string output = "";
-            foreach (XElement node in eodXml.Root.Elements("ACTIVITYLOG"))
-            {
-                if (node.Element("szFinalResult").Value == "AbortedCancel" || node.Element("szFinalResult").Value == "Failure")
-                {
-                    output += node.ToString() + Environment.NewLine;
-                }
-            }
-            output += Environment.NewLine + eodXml.Root.Element("BATCHRESULT").ToString();
 
             CustomMsgBox.Show(CustomMsgBox.MsgType.Done, "Eod Result", output);
         } //dont support IP MODE
