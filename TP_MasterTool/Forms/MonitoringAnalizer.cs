@@ -338,7 +338,7 @@ namespace TP_MasterTool.Forms
                 if (new Ping().Send(connectionPara.TAG, 4000).Status == IPStatus.Success)
                 {
                     log += AddToLog("-> Yes");
-                    log += AddToLog(">>> Ticket can be close <<<");
+                    log += AddToLog(">>> Ticket can be close if issue is not reoccurring, please check history <<<");
                     log += AddToLog("");
                     log += AddToLog(">> Notes for ticket:");
                     CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("cmd.exe", "/c ping " + connectionPara.TAG);
@@ -378,8 +378,8 @@ namespace TP_MasterTool.Forms
             log += AddToLog(">>> Create task for L1 with note below and close L2 task <<<");
             log += AddToLog("");
             log += AddToLog(">> Notes for ticket:");
-            log += AddToLog("@L1" + Environment.NewLine + "Hello, TAG is offline. Please check why and perform standard troubleshooting for offline devices.");
-            gridChange(rownr, "Ticket ready to be close. See log.", Color.LightGreen);
+            log += AddToLog("@L1" + Environment.NewLine + "Hello, " + connectionPara.TAG + " is offline. Please check why and perform standard troubleshooting for offline devices.");
+            gridChange(rownr, "Task ready to be close. See log.", Color.LightGreen);
         }
         private void ArchiveBuildFailure(int rownr, ref string log)
         {
@@ -485,8 +485,7 @@ namespace TP_MasterTool.Forms
                 if (new Ping().Send(connectionPara.country + connectionPara.storeNr + "CUC0" + cucNr, 4000).Status == IPStatus.Success)
                 {
                     log += AddToLog("-> Yes");
-                    log += AddToLog(">>> Ticket can be close <<<");
-                    log += AddToLog("");
+                    log += AddToLog(">>> Ticket can be close <<<" + Environment.NewLine);
                     log += AddToLog(">> Notes for ticket:");
                     CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("cmd.exe", "/c ping " + connectionPara.country + connectionPara.storeNr + "CUC0" + cucNr);
                     log += "Minilogger is back online:" + cmdOutput.outputText;
@@ -499,11 +498,9 @@ namespace TP_MasterTool.Forms
             log += AddToLog("CUC is still offline");
             CtrlFunctions.CmdOutput cmdOutput2 = CtrlFunctions.RunHiddenCmd("cmd.exe", "/c ping " + connectionPara.country + connectionPara.storeNr + "CUC0" + cucNr);
             log += AddToLog(cmdOutput2.outputText);
-            log += AddToLog(">>> Create task for L1 with note below and close L2 task <<<");
-            log += AddToLog("");
+            log += AddToLog(">>> Create task for L1 with note below and close L2 task <<<" + Environment.NewLine);
             log += AddToLog(">> Notes for ticket:");
-            log += AddToLog("@L1" + Environment.NewLine + "Hello, CUC is offline. Please contact the store and ask them to restart affected minilogger.");
-
+            log += AddToLog("@L1" + Environment.NewLine + "Hello, CUC" + cucNr + " is offline. Please contact the store and ask them to restart affected minilogger.");
             log += AddToLog(Environment.NewLine + ">> Additional information:");
             log += AddToLog(@"-> c$\oeminst\ALL_LOGS\Monitoring\minilogger.csv");
             gridChange(rownr, "Reading monitoring log");
@@ -527,18 +524,6 @@ namespace TP_MasterTool.Forms
         private void CDriveCritical(int rownr, ConnectionPara connectionPara, ref string log)
         {
             gridChange(rownr, "Gathering data");
-            log += AddToLog("Reading installed KB:");
-            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c systeminfo |find \"KB\"");
-            string kbInfo;
-            if (cmdOutput.exitCode != 0)
-            {
-                kbInfo = "-> Unable to read KB information";
-            }
-            else
-            {
-                kbInfo = cmdOutput.outputText;
-            }
-            log += AddToLog(kbInfo);
             log += AddToLog("Checking for WSUS Error");
             System.IO.DirectoryInfo dirInfo = new System.IO.DirectoryInfo(@"\\" + connectionPara.TAG + @"\c$\Windows\SoftwareDistribution\Download");
             long dirSize = dirInfo.EnumerateFiles("*", System.IO.SearchOption.AllDirectories).Sum(file => file.Length);
@@ -571,7 +556,6 @@ namespace TP_MasterTool.Forms
                 return;
             }
 
-
             log += AddToLog("Reading disc space info:");
             string discInfo = CtrlFunctions.GetDiskSpaceInfo("c", connectionPara, out _);
             log += AddToLog(discInfo);
@@ -580,8 +564,6 @@ namespace TP_MasterTool.Forms
             log += AddToLog(">> Notes for ticket:");
             log += AddToLog("@ADV" + Environment.NewLine + Environment.NewLine
                 + "C drive issue. Please investigate." + Environment.NewLine
-                + "Installed KB on station:" + Environment.NewLine
-                + kbInfo + Environment.NewLine
                 + "Drive C:\\ Informations:" + Environment.NewLine
                 + discInfo);
             gridChange(rownr, "Ticket ready to be close. See log.", Color.LightGreen);
@@ -815,7 +797,7 @@ namespace TP_MasterTool.Forms
             }
             else
             {
-                log += AddToLog(">>> Slayer don't have procedure for this error please proceed with manual investigation <<<");
+                log += AddToLog(">>> Slayer doesn't have procedure for this error please proceed with manual investigation <<<");
                 gridChange(rownr, "Ticket needs manual investigation. See log", Globals.errorColor);
             }
         }
