@@ -79,6 +79,8 @@ namespace TP_MasterTool
             Stocktaking,
             DeleteLock,
             GetSqlInfo,
+            GetDhcpScope,
+            DhcpMacFind,
             DecryptToString,
             Error,
         }

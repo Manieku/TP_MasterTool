@@ -83,8 +83,8 @@
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.symanteckBackupLogsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.InstallationLogsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.TFTPDLogsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.InstallationLogsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.oEMInstalLogsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.TPNetLogsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.TPLogOpenFolderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -121,6 +121,7 @@
             this.missingTxMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showLastSignOffFromYesterdayMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator14 = new System.Windows.Forms.ToolStripSeparator();
+            this.DhcpPScopeInfoMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fixesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ColonFixMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tillLocalCasheClearMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -142,6 +143,7 @@
             this.monitoringSlayerMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.stocktakingMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.massFunctionsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.FindMacInDhcpMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ADVMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.randomCollectionOfRandomnessToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.preferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -670,14 +672,6 @@
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(247, 6);
             // 
-            // InstallationLogsMenuItem
-            // 
-            this.InstallationLogsMenuItem.Name = "InstallationLogsMenuItem";
-            this.InstallationLogsMenuItem.Size = new System.Drawing.Size(250, 26);
-            this.InstallationLogsMenuItem.Tag = "d$\\OSMASTER\\$BmNewPC.dir\\log";
-            this.InstallationLogsMenuItem.Text = "Installation Logs";
-            this.InstallationLogsMenuItem.Click += new System.EventHandler(this.DriveMenuItem_Click);
-            // 
             // TFTPDLogsMenuItem
             // 
             this.TFTPDLogsMenuItem.Name = "TFTPDLogsMenuItem";
@@ -685,6 +679,14 @@
             this.TFTPDLogsMenuItem.Tag = "c$\\TFTPBOOT";
             this.TFTPDLogsMenuItem.Text = "TFTPD Logs";
             this.TFTPDLogsMenuItem.Click += new System.EventHandler(this.DriveMenuItem_Click);
+            // 
+            // InstallationLogsMenuItem
+            // 
+            this.InstallationLogsMenuItem.Name = "InstallationLogsMenuItem";
+            this.InstallationLogsMenuItem.Size = new System.Drawing.Size(250, 26);
+            this.InstallationLogsMenuItem.Tag = "d$\\OSMASTER\\$BmNewPC.dir\\log";
+            this.InstallationLogsMenuItem.Text = "Installation Logs";
+            this.InstallationLogsMenuItem.Click += new System.EventHandler(this.DriveMenuItem_Click);
             // 
             // oEMInstalLogsMenuItem
             // 
@@ -772,7 +774,8 @@
             this.dumpFileAnaliseMenuItem,
             this.toolStripSeparator25,
             this.sQlQueriesToolStripMenuItem,
-            this.toolStripSeparator14});
+            this.toolStripSeparator14,
+            this.DhcpPScopeInfoMenuItem});
             this.diagnosticsToolStripMenuItem.Name = "diagnosticsToolStripMenuItem";
             this.diagnosticsToolStripMenuItem.Overflow = System.Windows.Forms.ToolStripItemOverflow.AsNeeded;
             this.diagnosticsToolStripMenuItem.Size = new System.Drawing.Size(100, 24);
@@ -949,6 +952,13 @@
             this.toolStripSeparator14.Name = "toolStripSeparator14";
             this.toolStripSeparator14.Size = new System.Drawing.Size(229, 6);
             // 
+            // DhcpPScopeInfoMenuItem
+            // 
+            this.DhcpPScopeInfoMenuItem.Name = "DhcpPScopeInfoMenuItem";
+            this.DhcpPScopeInfoMenuItem.Size = new System.Drawing.Size(232, 26);
+            this.DhcpPScopeInfoMenuItem.Text = "DHCP Scope Info";
+            this.DhcpPScopeInfoMenuItem.Click += new System.EventHandler(this.DhcpPScopeInfoMenuItem_Click);
+            // 
             // fixesToolStripMenuItem
             // 
             this.fixesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -1061,7 +1071,8 @@
             this.MobilePosAppKillMenuItem,
             this.monitoringSlayerMenuItem,
             this.stocktakingMenuItem,
-            this.massFunctionsMenuItem});
+            this.massFunctionsMenuItem,
+            this.FindMacInDhcpMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Overflow = System.Windows.Forms.ToolStripItemOverflow.AsNeeded;
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(58, 24);
@@ -1108,6 +1119,13 @@
             this.massFunctionsMenuItem.Size = new System.Drawing.Size(250, 26);
             this.massFunctionsMenuItem.Text = "Mass Functions";
             this.massFunctionsMenuItem.Click += new System.EventHandler(this.massFunctionsMenuItem_Click);
+            // 
+            // FindMacInDhcpMenuItem
+            // 
+            this.FindMacInDhcpMenuItem.Name = "FindMacInDhcpMenuItem";
+            this.FindMacInDhcpMenuItem.Size = new System.Drawing.Size(250, 26);
+            this.FindMacInDhcpMenuItem.Text = "Find MAC in DHCP";
+            this.FindMacInDhcpMenuItem.Click += new System.EventHandler(this.FindMacInDhcpMenuItem_Click);
             // 
             // ADVMenuItem
             // 
@@ -1683,6 +1701,8 @@
         private System.Windows.Forms.HelpProvider helpProvider;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator14;
         private System.Windows.Forms.ToolStripMenuItem getAPCLogsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem DhcpPScopeInfoMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem FindMacInDhcpMenuItem;
     }
 }
 

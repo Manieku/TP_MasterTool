@@ -6,6 +6,7 @@ using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Management.Automation;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using TP_MasterTool.Forms;
@@ -45,6 +46,7 @@ namespace TP_MasterTool
             "Scan Store Endpoints",
             "System Boot Time",
             "SQl Queries",
+            "DHCP Scope Info",
             //Fixes//
             //Tools//
             //"Service Manager" // not working for now
@@ -117,15 +119,21 @@ namespace TP_MasterTool
         }
         private void Test_Button_Click(object sender, EventArgs e)
         {
-            foreach(string tag in File.ReadAllLines(@".\tps dsFin.txt"))
-            {
-                File.Create(@".\Csv\" + tag + ".txt").Close();
-            }
-            foreach (string line in File.ReadAllLines(@".\dates.txt"))
-            {
-                string[] temp = line.Split('\t');
-                File.AppendAllText(Directory.GetFiles(@".\Csv\", temp[1] + "*")[0], temp[0] + Environment.NewLine);
-            }
+            //MessageBox.Show(result.ToString());
+            //CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("powershell.exe", "& Get-DhcpServerv4lease -ComputerName de04cua031dcw04 -ScopeId 10.83.196.0 | Format-Table -Property IPAddress,ClientId,HostName,AddressState");
+            //MessageBox.Show(cmdOutput.exitCode.ToString());
+            //MessageBox.Show(cmdOutput.outputText);
+            //MessageBox.Show(cmdOutput.errorOutputText);
+            //Process.Start("powershell.exe", "& Get-DhcpServerv4lease -ComputerName de04cua031dcw04 -ScopeId 10.83.196.0 | Format-Table -Property IPAddress,ClientId,HostName,AddressState; pause");
+            //foreach(string tag in File.ReadAllLines(@".\tps dsFin.txt"))
+            //{
+            //    File.Create(@".\Csv\" + tag + ".txt").Close();
+            //}
+            //foreach (string line in File.ReadAllLines(@".\dates.txt"))
+            //{
+            //    string[] temp = line.Split('\t');
+            //    File.AppendAllText(Directory.GetFiles(@".\Csv\", temp[1] + "*")[0], temp[0] + Environment.NewLine);
+            //}
 
             //CtrlFunctions.EncryptFile(@".\mojepasy.txt", "cycuszki", Globals.configPath + "credentials.crypt");
             //MessageBox.Show("krypto krypto superman lezy");
@@ -857,6 +865,19 @@ namespace TP_MasterTool
             CustomMsgBox.Show(CustomMsgBox.MsgType.Done, "Sql Query result", output);
         }
 
+        //------------------------------------------------------------
+        private void DhcpPScopeInfoMenuItem_Click(object sender, EventArgs e)
+        {
+            ChangeStatusBar("Working...");
+            string scope = String.Join(".", connectionPara.IPbytes[0], connectionPara.IPbytes[1], connectionPara.IPbytes[2], "0");
+            string outputPath = @".\Logs\DhcpScope " + connectionPara.country + connectionPara.storeNr + " (" + scope + ") " + Logger.Datownik() + ".txt";
+
+            Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.GetDhcpScope, scope);
+            PowerShell.Create().AddCommand("Get-DhcpServerv4lease").AddParameter("ComputerName", "de04cua031dcw04").AddParameter("ScopeId", scope).AddCommand("Out-File").AddParameter("FilePath", Path.GetFullPath(outputPath)).Invoke();
+            ChangeStatusBar("Ready");
+            Process.Start(outputPath);
+        }
+
         /**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**/
 
         //--------------------Fixes-----------------------------
@@ -1317,6 +1338,23 @@ namespace TP_MasterTool
             };
             new MassFunctionForm(functionList).Show();
         }
+        private void FindMacInDhcpMenuItem_Click(object sender, EventArgs e)
+        {
+            string mac = Microsoft.VisualBasic.Interaction.InputBox("Enter MAC that our hounds should find in DHCP" + Environment.NewLine + "Format: aa-aa-aa-aa-aa-aa");
+            if (mac == "")
+            {
+                return;
+            }
+            Telemetry.LogUserAction("", Globals.Funkcje.DhcpMacFind, mac);
+            Telemetry.LogFunctionUsage(Globals.Funkcje.DhcpMacFind);
+            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("cmd.exe", "/c powershell -command \"Get-DhcpServerv4Scope -ComputerName de04cua031dcw04 | Get-DhcpServerv4Reservation -ComputerName de04cua031dcw04 | where {$_.ClientId -like '" + mac + "'} | Format-Table -Property IPAddress,ScopeId,Name\"");
+            string output = cmdOutput.outputText;
+            if (cmdOutput.outputText == "")
+            {
+                output = "None host found with MAC: " + mac;
+            }
+            CustomMsgBox.Show(CustomMsgBox.MsgType.Info, "DHCP Search Result", output);
+        }
 
         /**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**/
         //--------------------ADV-----------------------------
@@ -1538,6 +1576,7 @@ namespace TP_MasterTool
                 "MonitoringSlayer",
                 "Stocktaking",
                 "Mass Functions",
+                "Find MAC in DHCP",
                 "Random Collection of Randomness"
             };
             foreach (ToolStripMenuItem menu in menuStrip1.Items)
@@ -1740,5 +1779,6 @@ namespace TP_MasterTool
         {
             userSettings.notePadLines = notepad.Text;
         } // Save notepad content after change
+
     }
 }
