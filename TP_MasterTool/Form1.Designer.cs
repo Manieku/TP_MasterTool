@@ -89,6 +89,7 @@
             this.TPNetLogsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.TPLogOpenFolderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.secureLogsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.getAPCLogsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator19 = new System.Windows.Forms.ToolStripSeparator();
             this.s4FiscalSecureMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tSELogsSecureMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -179,7 +180,6 @@
             this.FiveMinTimer = new System.Windows.Forms.Timer(this.components);
             this.HourTimer = new System.Windows.Forms.Timer(this.components);
             this.helpProvider = new System.Windows.Forms.HelpProvider();
-            this.getAPCLogsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.Basic_Info.SuspendLayout();
             this.StatusBar.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -607,8 +607,8 @@
             this.toolStripSeparator2,
             this.symanteckBackupLogsMenuItem,
             this.toolStripSeparator1,
-            this.InstallationLogsMenuItem,
             this.TFTPDLogsMenuItem,
+            this.InstallationLogsMenuItem,
             this.oEMInstalLogsMenuItem,
             this.TPNetLogsMenuItem,
             this.getAPCLogsToolStripMenuItem,
@@ -706,7 +706,7 @@
             // TPLogOpenFolderMenuItem
             // 
             this.TPLogOpenFolderMenuItem.Name = "TPLogOpenFolderMenuItem";
-            this.TPLogOpenFolderMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.TPLogOpenFolderMenuItem.Size = new System.Drawing.Size(172, 26);
             this.TPLogOpenFolderMenuItem.Tag = "d$\\TPDotnet\\Log";
             this.TPLogOpenFolderMenuItem.Text = "Open folder";
             this.TPLogOpenFolderMenuItem.Click += new System.EventHandler(this.DriveMenuItem_Click);
@@ -714,9 +714,16 @@
             // secureLogsMenuItem
             // 
             this.secureLogsMenuItem.Name = "secureLogsMenuItem";
-            this.secureLogsMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.secureLogsMenuItem.Size = new System.Drawing.Size(172, 26);
             this.secureLogsMenuItem.Text = "Secure Logs";
             this.secureLogsMenuItem.Click += new System.EventHandler(this.SecureLogsMenuItem_Click);
+            // 
+            // getAPCLogsToolStripMenuItem
+            // 
+            this.getAPCLogsToolStripMenuItem.Name = "getAPCLogsToolStripMenuItem";
+            this.getAPCLogsToolStripMenuItem.Size = new System.Drawing.Size(250, 26);
+            this.getAPCLogsToolStripMenuItem.Text = "Get APC Logs";
+            this.getAPCLogsToolStripMenuItem.Click += new System.EventHandler(this.ApcLogsMenuItem_Click);
             // 
             // toolStripSeparator19
             // 
@@ -785,28 +792,28 @@
             // quickPingMenuItem
             // 
             this.quickPingMenuItem.Name = "quickPingMenuItem";
-            this.quickPingMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.quickPingMenuItem.Size = new System.Drawing.Size(195, 26);
             this.quickPingMenuItem.Text = "Quick Ping";
             this.quickPingMenuItem.Click += new System.EventHandler(this.QuickPingTAGMenuItem_Click);
             // 
             // pingWithLoadMenuItem
             // 
             this.pingWithLoadMenuItem.Name = "pingWithLoadMenuItem";
-            this.pingWithLoadMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.pingWithLoadMenuItem.Size = new System.Drawing.Size(195, 26);
             this.pingWithLoadMenuItem.Text = "Ping with Load";
             this.pingWithLoadMenuItem.Click += new System.EventHandler(this.PingWithLoad_TAGMenuItem_Click);
             // 
             // savePingToTxtMenuItem
             // 
             this.savePingToTxtMenuItem.Name = "savePingToTxtMenuItem";
-            this.savePingToTxtMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.savePingToTxtMenuItem.Size = new System.Drawing.Size(195, 26);
             this.savePingToTxtMenuItem.Text = "Save Ping to txt";
             this.savePingToTxtMenuItem.Click += new System.EventHandler(this.SavePingToTxtMenuItem_Click);
             // 
             // pingOverTimeMenuItem
             // 
             this.pingOverTimeMenuItem.Name = "pingOverTimeMenuItem";
-            this.pingOverTimeMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.pingOverTimeMenuItem.Size = new System.Drawing.Size(195, 26);
             this.pingOverTimeMenuItem.Text = "Ping over time";
             this.pingOverTimeMenuItem.Click += new System.EventHandler(this.PingOverTimeMenuItem_Click);
             // 
@@ -1487,13 +1494,6 @@
             // helpProvider
             // 
             this.helpProvider.HelpNamespace = "help.htm";
-            // 
-            // getAPCLogsToolStripMenuItem
-            // 
-            this.getAPCLogsToolStripMenuItem.Name = "getAPCLogsToolStripMenuItem";
-            this.getAPCLogsToolStripMenuItem.Size = new System.Drawing.Size(250, 26);
-            this.getAPCLogsToolStripMenuItem.Text = "Get APC Logs";
-            this.getAPCLogsToolStripMenuItem.Click += new System.EventHandler(this.ApcLogsMenuItem_Click);
             // 
             // Main
             // 
