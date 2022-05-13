@@ -1570,7 +1570,6 @@
         private System.Windows.Forms.Button BOF09_button;
         private System.Windows.Forms.Button BOF01_button;
         private System.Windows.Forms.Button Rescan_Button;
-        private System.Windows.Forms.Button getMAC_button;
         private System.Windows.Forms.ToolStripMenuItem rCMDMenuItem;
         private System.Windows.Forms.ToolStripMenuItem rebootDeviceMenuItem;
         private System.Windows.Forms.ToolStripMenuItem LogsMenuItem;
@@ -1703,6 +1702,7 @@
         private System.Windows.Forms.ToolStripMenuItem getAPCLogsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem DhcpPScopeInfoMenuItem;
         private System.Windows.Forms.ToolStripMenuItem FindMacInDhcpMenuItem;
+        public System.Windows.Forms.Button getMAC_button;
     }
 }
 

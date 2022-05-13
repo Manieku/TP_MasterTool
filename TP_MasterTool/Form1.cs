@@ -1607,6 +1607,7 @@ namespace TP_MasterTool
                     }
                 }
             }
+            Main.interfejs.getMAC_button.Enabled = false;
             Main.interfejs.SubnetStatusGroup.Enabled = false;
             Main.interfejs.Rescan_Button.Enabled = false;
         }
@@ -1629,6 +1630,7 @@ namespace TP_MasterTool
             {
                 SetEnableMenuItems(ipNotSupported, false);
             }
+            Main.interfejs.getMAC_button.Enabled = true;
             Main.interfejs.SubnetStatusGroup.Enabled = true;
             Main.interfejs.Rescan_Button.Enabled = true;
         }
