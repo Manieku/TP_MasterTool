@@ -204,9 +204,7 @@ namespace TP_MasterTool
         private void PRNPingButton_Click(object sender, EventArgs e)
         {
             Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.PingButton, (sender as Button).Text);
-            int de = 1;
-            if (connectionPara.country == "DE") { de = 0; }
-            Process.Start("cmd.exe", "/c ping " + String.Join(".", connectionPara.IPbytes[0], connectionPara.IPbytes[1], (connectionPara.IPbytes[2] + de).ToString(), (sender as Button).Tag.ToString()) + " && pause");
+            Process.Start("cmd.exe", "/c ping " + String.Join(".", connectionPara.IPbytes[0], connectionPara.IPbytes[1], (connectionPara.IPbytes[2] + 1).ToString(), (sender as Button).Tag.ToString()) + " && pause");
         }
 
         /**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**/
@@ -1613,7 +1611,7 @@ namespace TP_MasterTool
                     }
                 }
             }
-            //Main.interfejs.getMAC_button.Enabled = false;
+            Main.interfejs.getMAC_button.Enabled = false;
             Main.interfejs.SubnetStatusGroup.Enabled = false;
             Main.interfejs.Rescan_Button.Enabled = false;
         }

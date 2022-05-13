@@ -341,7 +341,7 @@
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(5, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(941, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(1176, 38);
             this.menuStrip1.TabIndex = 4;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -1327,7 +1327,7 @@
             this.PRN49_button.Name = "PRN49_button";
             this.PRN49_button.Size = new System.Drawing.Size(61, 28);
             this.PRN49_button.TabIndex = 7;
-            this.PRN49_button.Tag = "248";
+            this.PRN49_button.Tag = "249";
             this.PRN49_button.Text = "PRN49";
             this.PRN49_button.UseVisualStyleBackColor = true;
             this.PRN49_button.Click += new System.EventHandler(this.PRNPingButton_Click);

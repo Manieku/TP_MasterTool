@@ -112,9 +112,6 @@ namespace TP_MasterTool.Klasy
         }
         public static void SubNetScan(ConnectionPara connectionPara)
         {
-            int de = 1;
-            if (connectionPara.country == "DE") { de = 0; }
-
             foreach (Control control in Main.interfejs.SubnetStatusGroup.Controls)
             {
                 if (control is Button)
@@ -126,7 +123,7 @@ namespace TP_MasterTool.Klasy
                         {
                             if (control.Name == "PRN01_button" || control.Name == "PRN49_button")
                             {
-                                control.BackColor = CtrlFunctions.PingIP(string.Join(".", connectionPara.IPbytes[0], connectionPara.IPbytes[1], (connectionPara.IPbytes[2] + de).ToString(), control.Tag.ToString()));
+                                control.BackColor = CtrlFunctions.PingIP(string.Join(".", connectionPara.IPbytes[0], connectionPara.IPbytes[1], (connectionPara.IPbytes[2] + 1).ToString(), control.Tag.ToString()));
                                 return;
                             }
                             control.BackColor = CtrlFunctions.PingIP(string.Join(".", connectionPara.IPbytes[0], connectionPara.IPbytes[1], connectionPara.IPbytes[2], control.Tag.ToString()));
