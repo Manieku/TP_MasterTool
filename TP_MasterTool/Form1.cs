@@ -146,6 +146,12 @@ namespace TP_MasterTool
                 slave.DoWork += (s, args) =>
                 {
                     CtrlFunctions.CmdOutput macCmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c powershell -command \"Get-WmiObject win32_networkadapterconfiguration | where {$_.ipaddress -like '" + connectionPara.IP + "*'} | select macaddress | ft -hidetableheaders\"");
+                    if(macCmdOutput.exitCode != 0 || macCmdOutput.outputText == "")
+                    {
+                        textBox_MAC.Text = "ERROR";
+                        getMAC_button.Enabled = true;
+                        return;
+                    }
                     try
                     {
                         CtrlFunctions.CmdOutput dhcpCmdOutput = CtrlFunctions.RunHiddenCmd("cmd.exe", "/c powershell -command \"Get-DhcpServerv4Reservation -ComputerName de04cua031dcw04 -IPAddress " + connectionPara.IP + " | select ClientId | ft -HideTableHeaders\"");
@@ -1607,7 +1613,7 @@ namespace TP_MasterTool
                     }
                 }
             }
-            Main.interfejs.getMAC_button.Enabled = false;
+            //Main.interfejs.getMAC_button.Enabled = false;
             Main.interfejs.SubnetStatusGroup.Enabled = false;
             Main.interfejs.Rescan_Button.Enabled = false;
         }
