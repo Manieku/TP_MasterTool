@@ -119,12 +119,6 @@ namespace TP_MasterTool
         }
         private void Test_Button_Click(object sender, EventArgs e)
         {
-            //MessageBox.Show(result.ToString());
-            //CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("powershell.exe", "& Get-DhcpServerv4lease -ComputerName de04cua031dcw04 -ScopeId 10.83.196.0 | Format-Table -Property IPAddress,ClientId,HostName,AddressState");
-            //MessageBox.Show(cmdOutput.exitCode.ToString());
-            //MessageBox.Show(cmdOutput.outputText);
-            //MessageBox.Show(cmdOutput.errorOutputText);
-            //Process.Start("powershell.exe", "& Get-DhcpServerv4lease -ComputerName de04cua031dcw04 -ScopeId 10.83.196.0 | Format-Table -Property IPAddress,ClientId,HostName,AddressState; pause");
             //foreach(string tag in File.ReadAllLines(@".\tps dsFin.txt"))
             //{
             //    File.Create(@".\Csv\" + tag + ".txt").Close();
@@ -144,16 +138,29 @@ namespace TP_MasterTool
         //--------------------/UI Controls/---------------------------
         private void GetMAC_button_Click(object sender, EventArgs e)
         {
+            ConnectionPara connectionPara = interfejs.connectionPara;
             textBox_MAC.Text = "Stealing MAC...";
             getMAC_button.Enabled = false;
             using (BackgroundWorker slave = new BackgroundWorker())
             {
                 slave.DoWork += (s, args) =>
                 {
-                    CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c powershell -command \"Get-WmiObject win32_networkadapterconfiguration | where {$_.ipaddress -like '" + connectionPara.IP + "*'} | select macaddress | ft -hidetableheaders\"");
-                    textBox_MAC.Text = cmdOutput.outputText;
+                    CtrlFunctions.CmdOutput macCmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c powershell -command \"Get-WmiObject win32_networkadapterconfiguration | where {$_.ipaddress -like '" + connectionPara.IP + "*'} | select macaddress | ft -hidetableheaders\"");
+                    try
+                    {
+                        CtrlFunctions.CmdOutput dhcpCmdOutput = CtrlFunctions.RunHiddenCmd("cmd.exe", "/c powershell -command \"Get-DhcpServerv4Reservation -ComputerName de04cua031dcw04 -IPAddress " + connectionPara.IP + " | select ClientId | ft -HideTableHeaders\"");
+                        if (macCmdOutput.outputText.Trim().ToLower().Replace(":", "-") != dhcpCmdOutput.outputText.Trim())
+                        {
+                            CustomMsgBox.Show(CustomMsgBox.MsgType.Info, "DHCP Warning", "DHCP MAC Reservation for this IP address is different than MAC of this station. Please check DHCP and correct any errors.");
+                        }
+                    }
+                    catch(Exception exp)
+                    {
+                        Logger.QuickLog(Globals.Funkcje.GetMAC, connectionPara.IP, connectionPara.TAG, "WarningLog", "Get DHCP info error:" + Environment.NewLine + exp.ToString());
+                    }
+                    textBox_MAC.Text = macCmdOutput.outputText.Replace(":", "-").Trim();
                     getMAC_button.Enabled = true;
-                    Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.GetMAC, cmdOutput.outputText.Replace("\n", "").Replace("\r", "").ToUpper());
+                    Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.GetMAC, macCmdOutput.outputText.Replace(":", "-").Trim().ToUpper());
                 };
                 slave.RunWorkerAsync();
             }
@@ -868,12 +875,21 @@ namespace TP_MasterTool
         //------------------------------------------------------------
         private void DhcpPScopeInfoMenuItem_Click(object sender, EventArgs e)
         {
+            ConnectionPara connectionPara = interfejs.connectionPara;
             ChangeStatusBar("Working...");
             string scope = String.Join(".", connectionPara.IPbytes[0], connectionPara.IPbytes[1], connectionPara.IPbytes[2], "0");
             string outputPath = @".\Logs\DhcpScope " + connectionPara.country + connectionPara.storeNr + " (" + scope + ") " + Logger.Datownik() + ".txt";
 
             Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.GetDhcpScope, scope);
-            PowerShell.Create().AddCommand("Get-DhcpServerv4lease").AddParameter("ComputerName", "de04cua031dcw04").AddParameter("ScopeId", scope).AddCommand("Out-File").AddParameter("FilePath", Path.GetFullPath(outputPath)).Invoke();
+            try
+            {
+                PowerShell.Create().AddCommand("Get-DhcpServerv4lease").AddParameter("ComputerName", "de04cua031dcw04").AddParameter("ScopeId", scope).AddCommand("Out-File").AddParameter("FilePath", Path.GetFullPath(outputPath)).Invoke();
+            }
+            catch(Exception exp)
+            {
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "PowerShell Error", "ToolBox wasn't able to retrieve information from DHCP: " + Environment.NewLine + exp.Message);
+                Logger.QuickLog(Globals.Funkcje.GetDhcpScope, scope, connectionPara.TAG, "ErrorLog", exp.ToString());
+            }
             ChangeStatusBar("Ready");
             Process.Start(outputPath);
         }
