@@ -106,7 +106,7 @@ namespace TP_MasterTool.Klasy
                 {
                     myLog.SaveLog("ErrorLog");
                 }
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Minimal Version Not Satisfied", "Your ToolBox version don't meet the minimal requirements. Please restart the ToolBox and preform the update");
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Minimal Version Not Satisfied", "Your ToolBox version don't meet the minimal requirements. Please update ToolBox to newest version.");
                 Environment.Exit(0);
             }
             VersionControl.LogVersion();
