@@ -99,7 +99,7 @@ namespace TP_MasterTool
             "Backup Checker",
             "EoD Checker",
             "POS Colon : Fix",
-            "Till Local Cashe Clear"
+            "Till Local Cache Clear"
         };
 
         /**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**/
@@ -977,7 +977,7 @@ namespace TP_MasterTool
                 slave.DoWork += (s, args) =>
                 {
                     ConnectionPara connectionPara = Main.interfejs.connectionPara;
-                    if (CustomMsgBox.Show(CustomMsgBox.MsgType.Decision, "Local Cashe Clear", "This function will terminate MobilePOS app on selected host. Do you want to proceed?") != DialogResult.OK)
+                    if (CustomMsgBox.Show(CustomMsgBox.MsgType.Decision, "Local Cache Clear", "This function will terminate MobilePOS app on selected host. Do you want to proceed?") != DialogResult.OK)
                     {
                         return;
                     }
