@@ -564,6 +564,17 @@ namespace TP_MasterTool.Klasy
             {
                 massFunctionForm.GridChange(rownr, "Exporting CSV for " + (i + 1) + " out of " + inputDates.Length + " dates");
                 string output = "";
+                if(inputDates[i].Trim().Length != 10)
+                {
+                    if (inputDates[i].Contains("[ERROR]"))
+                    {
+                        inputDates[i] = inputDates[i].Substring(0, 10);
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
                 if(!CtrlFunctions.CsvExport(connectionPara, " " + inputDates[i].Trim() + " 49" + connectionPara.storeNr + @" D:\TPDotnet\Server\Reports\fiscal_files\", out string errorMsg))
                 {
                     output = " - [ERROR] - CSV Export Failed: " + errorMsg;
