@@ -240,7 +240,7 @@ namespace TP_MasterTool
             }
 
             outputFilePath = @"\\" + connectionPara.TAG + @"\d$\WNI\4GSS\" + tixnr + @"\" + outputFolderName + @".zip";
-            Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.ZipAndSteal, prefix);
+            Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.ZipAndSteal, prefix + " | " + tixnr);
             return true;
         }
     }
