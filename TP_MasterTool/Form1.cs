@@ -45,7 +45,8 @@ namespace TP_MasterTool
             "Install WinDirStat",
             "Scan Store Endpoints",
             "System Boot Time",
-            "SQl Queries",
+            "DumpFile Analyse",
+            "SQL Queries",
             "DHCP Scope Info",
             //Fixes//
             //Tools//
@@ -60,15 +61,14 @@ namespace TP_MasterTool
             "TP Reports",
             //Logs//
             "Symantec Backup Logs",
-            "Installation Logs",
             "TFTPD Logs",
+            "Installation Logs",
             "OEMInst Logs",
             "Get APC Logs",
             "PDCU Data Error Secure",
             //Diagnostics//
             "Backup Checker",
             "EoD Checker",
-            "DumpFile Analyse",
             //Fixes//
             "APC Service Fix",
             "Veritas Backup Job Reset",
@@ -85,7 +85,7 @@ namespace TP_MasterTool
             //Diagnostics//
             //Fixes//
             "POS Colon : Fix",
-            "Till Local Cashe Clear",
+            "Till Local Cache Clear",
             "Parked TX Move",
             "TSE Webservice Restart",
             "Signator Reset",
@@ -119,15 +119,15 @@ namespace TP_MasterTool
         }
         private void Test_Button_Click(object sender, EventArgs e)
         {
-            //foreach(string tag in File.ReadAllLines(@".\tps dsFin.txt"))
-            //{
-            //    File.Create(@".\Csv\" + tag + ".txt").Close();
-            //}
-            //foreach (string line in File.ReadAllLines(@".\dates.txt"))
-            //{
-            //    string[] temp = line.Split('\t');
-            //    File.AppendAllText(Directory.GetFiles(@".\Csv\", temp[1] + "*")[0], temp[0] + Environment.NewLine);
-            //}
+            foreach (string tag in File.ReadAllLines(@".\tps dsFin.txt"))
+            {
+                File.Create(@".\Csv\" + tag + ".txt").Close();
+            }
+            foreach (string line in File.ReadAllLines(@".\dates.txt"))
+            {
+                string[] temp = line.Split('\t');
+                File.AppendAllText(Directory.GetFiles(@".\Csv\", temp[1] + "*")[0], temp[0] + Environment.NewLine);
+            }
 
             //CtrlFunctions.EncryptFile(@".\mojepasy.txt", "cycuszki", Globals.configPath + "credentials.crypt");
             //MessageBox.Show("krypto krypto superman lezy");
