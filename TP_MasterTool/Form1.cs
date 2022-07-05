@@ -1449,6 +1449,7 @@ namespace TP_MasterTool
                 "DeployAndExecute",
                 "DismAndSFC",
                 "BackstoreCsvExport",
+                "AdhocFunction"
             };
             new MassFunctionForm(functionList).Show();
         }

@@ -570,7 +570,7 @@ namespace TP_MasterTool.Klasy
                     {
                         inputDates[i] = inputDates[i].Substring(0, 10);
                     }
-                    else
+                    else if (inputDates[i].Contains("[SUCCESS]"))
                     {
                         continue;
                     }
@@ -605,5 +605,12 @@ namespace TP_MasterTool.Klasy
             massFunctionForm.AddToLog(rownr, "[SUCCESS] - All CSV Export was successful");
             massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
         }
+        public static void AdhocFunction(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
+        {
+            massFunctionForm.GridChange(rownr, "Reading disc space");
+            massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
+            massFunctionForm.AddToLog(rownr, "[SUCCESS] " + CtrlFunctions.GetDiskSpaceInfo("d", connectionPara, out _));
+        }
+
     }
 }

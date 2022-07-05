@@ -54,6 +54,7 @@ namespace TP_MasterTool
             LogUserAction,
             VersionLog,
             LogFunctionUsage,
+            ShowHelp,
             ShowChangeLog,
             SendReport,
             ServiceManager,
@@ -82,6 +83,7 @@ namespace TP_MasterTool
             GetDhcpScope,
             DhcpMacFind,
             DecryptToString,
+            AdhocFunction,
             Error,
         }
 
