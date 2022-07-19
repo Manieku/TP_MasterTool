@@ -17,7 +17,7 @@ namespace TP_MasterTool.Forms
     public partial class MassFunctionForm : Form
     {
         List<BackgroundWorker> slaveList;
-        List<string> additionalInfo = new List<string>();
+        List<string> additionalInfo = new List<string>() { "" };
         int masterRow;
         int iterator;
         readonly int bgwCount = 15;
@@ -71,7 +71,7 @@ namespace TP_MasterTool.Forms
             //here you enter your function to execution
             lock (logLock)
             {
-                Telemetry.LogCompleteTelemetryData(connectionPara.TAG, (Globals.Funkcje)Enum.Parse(typeof(Globals.Funkcje), functionName), "");
+                Telemetry.LogCompleteTelemetryData(connectionPara.TAG, (Globals.Funkcje)Enum.Parse(typeof(Globals.Funkcje), functionName), String.Join(" | ", additionalInfo));
             }
             Type type = Type.GetType("TP_MasterTool.Klasy.MassFunctions");
             MethodInfo methodInfo = type.GetMethod(functionName);
