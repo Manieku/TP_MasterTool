@@ -65,7 +65,18 @@ namespace TP_MasterTool.Klasy
             {
                 return null;
             }
-            return new List<string> { tixnr };
+            string logType;
+            using (DropDownSelect dropDownSelect = new DropDownSelect("Which version of logs to download?", new string[] { "ProBase POS (Old)", "ProBase Store (New)" }))
+            {
+                var result = dropDownSelect.ShowDialog();
+                if (result != DialogResult.OK)
+                {
+                    return null;
+                }
+                logType = dropDownSelect.ReturnValue1;            //values preserved after close
+            }
+
+            return new List<string> { tixnr, logType };
         }
         public static List<string> GetInfo_CheckForKB()
         {
@@ -302,20 +313,29 @@ namespace TP_MasterTool.Klasy
         }
         public static void JposLogsDownload(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
+            string remotePath = @"\d$\TPDotnet\DeviceService";
+            string localPath = @"D:\TPDotnet\DeviceService";
+            string logFileName = "JPOSRFIDScannerLogs*";
+            if(addInfo[1] == "ProBase Store (New)")
+            {
+                remotePath = @"\c$\ProgramData\javapos\wn\log";
+                localPath = @"C:\ProgramData\javapos\wn\log";
+                logFileName = "jniwrapper-diagnostics.log";
+            }
             massFunctionForm.GridChange(rownr, "Looking for files");
-            string[] files = Directory.GetFiles(@"\\" + connectionPara.TAG + @"\d$\TPDotnet\DeviceService", "JPOSRFIDScannerLogs*");
+            string[] files = Directory.GetFiles(@"\\" + connectionPara.TAG + remotePath, logFileName);
             if (files.Length == 0)
             {
                 massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "No JPOS logs found");
                 return;
             }
 
-            if (Directory.Exists(@"\\" + connectionPara.TAG + @"\d$\TPDotnet\DeviceService\JPOSLogs"))
+            if (Directory.Exists(@"\\" + connectionPara.TAG + remotePath + @"\JPOSLogs"))
             {
                 massFunctionForm.GridChange(rownr, "Deleting old zip");
                 try
                 {
-                    Directory.Delete(@"\\" + connectionPara.TAG + @"\d$\TPDotnet\DeviceService\JPOSLogs", true);
+                    Directory.Delete(@"\\" + connectionPara.TAG + remotePath + @"\JPOSLogs", true);
                 }
                 catch (Exception exp)
                 {
@@ -326,7 +346,7 @@ namespace TP_MasterTool.Klasy
 
             massFunctionForm.GridChange(rownr, "Gathering Logs");
             System.Threading.Thread.Sleep(150);
-            if(!FileController.MakeFolder(@"\\" + connectionPara.TAG + @"\d$\TPDotnet\DeviceService\JPOSLogs", out Exception makeExp))
+            if(!FileController.MakeFolder(@"\\" + connectionPara.TAG + remotePath + @"\JPOSLogs", out Exception makeExp))
             {
                 massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "Unable to create folder for logs: " + makeExp.Message);
                 return;
@@ -334,14 +354,14 @@ namespace TP_MasterTool.Klasy
 
             foreach (string file in files)
             {
-                if (!FileController.CopyFile(file, @"\\" + connectionPara.TAG + @"\d$\TPDotnet\DeviceService\JPOSLogs\" + Path.GetFileName(file), false, out Exception copyExp))
+                if (!FileController.CopyFile(file, @"\\" + connectionPara.TAG + remotePath + @"\JPOSLogs\" + Path.GetFileName(file), false, out Exception copyExp))
                 {
                     massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "Unable to copy " + file + ": " + copyExp.Message);
                     return;
                 }
             }
             massFunctionForm.GridChange(rownr, "Securing Logs");
-            if(!FileController.ZipAndStealFolder(addInfo[0], "JposLogs", @"\\" + connectionPara.TAG + @"\d$\TPDotnet\DeviceService\JPOSLogs", @"D:\TPDotnet\DeviceService\JPOSLogs", connectionPara, out string outputFilePath))
+            if(!FileController.ZipAndStealFolder(addInfo[0], "JposLogs", @"\\" + connectionPara.TAG + remotePath + @"\JPOSLogs", localPath + @"\JPOSLogs", connectionPara, out string outputFilePath))
             {
                 massFunctionForm.ErrorLog(rownr, connectionPara.TAG, outputFilePath);
                 return;

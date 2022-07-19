@@ -229,7 +229,13 @@ namespace TP_MasterTool
             }
 
             string outputFolderName = prefix + " - " + tixnr + "(" + connectionPara.TAG + ") " + Logger.Datownik();
-
+            if(!FileController.MakeFolder(@"\\" + connectionPara.TAG + @"\d$\WNI\4GSS\" + tixnr, out Exception makeExp))
+            {
+                outputFilePath = @"Unable to create \d$\WNI\4GSS\" + tixnr + " folder. " + makeExp.Message;
+                myLog.Add(@"Unable to create \d$\WNI\4GSS\" + tixnr + " folder. " + makeExp.ToString());
+                myLog.SaveLog("ErrorLog");
+                return false;
+            }
             CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c Xcopy /i /e /h /y """ + absolutePath + @""" ""D:\WNI\4GSS\" + tixnr + @"\Log"" && powershell -command ""Compress-Archive 'D:\WNI\4GSS\" + tixnr + @"\Log' 'D:\WNI\4GSS\" + tixnr + @"\" + outputFolderName + @".zip'"" && rmdir /s /q ""D:\WNI\4GSS\" + tixnr + @"\Log""");
             if (cmdOutput.exitCode != 0)
             {
