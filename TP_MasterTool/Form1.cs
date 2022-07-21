@@ -1507,11 +1507,15 @@ namespace TP_MasterTool
         //--------------------About-----------------------------
         private void HelpToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            Telemetry.LogFunctionUsage(Globals.Funkcje.ShowHelp);
+            Telemetry.LogUserAction("MainForm", Globals.Funkcje.ShowHelp, "");
             Help.ShowHelp(this, @".\help.chm");
             //Process.Start(Globals.configPath + @"ToolBox v2.0 Manual.pdf");
         }
         private void ChangeLogMenuItem_Click(object sender, EventArgs e)
         {
+            Telemetry.LogFunctionUsage(Globals.Funkcje.ShowChangeLog);
+            Telemetry.LogUserAction("MainForm", Globals.Funkcje.ShowChangeLog, "");
             new ChangeLog().Show(this);
         }
         private void ReportSuggestMenuItem_Click(object sender, EventArgs e)
@@ -1676,7 +1680,7 @@ namespace TP_MasterTool
             {
                 SetEnableMenuItems(tpsMenuItems, true);
             }
-            else if (connectionPara.deviceType == "STP")
+            else if (connectionPara.deviceType == "STP" || connectionPara.deviceType == "SCO")
             {
                 SetEnableMenuItems(stpMenuItems, true);
             }

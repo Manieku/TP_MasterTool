@@ -89,11 +89,18 @@ namespace TP_MasterTool.Klasy
         }
         public static List<string> GetInfo_DeployAndExecute()
         {
-            string file = Microsoft.VisualBasic.Interaction.InputBox(@"Provide file name you want to deply and execute from D:\C&A BLF\Rzemyk Mariusz\ToolBox Files\Tools", "Input data");
-            if (file == "")
+            string file;
+            string[] tempFiles = new DirectoryInfo(Globals.toolsPath).EnumerateFiles().Where(f => f.Extension.Contains("cmd")).Select(f => f.Name).ToArray();
+            using (DropDownSelect dropDownSelect = new DropDownSelect(@"Select file you want to deploy and execute from D:\C&A BLF\Rzemyk Mariusz\ToolBox Files\Tools", tempFiles))
             {
-                return null;
+                var result = dropDownSelect.ShowDialog();
+                if (result != DialogResult.OK)
+                {
+                    return null;
+                }
+                file = dropDownSelect.ReturnValue1;            //values preserved after close
             }
+
             string waitForExit;
             using (DropDownSelect dropDownSelect = new DropDownSelect("Should ToolBox wait for cmd exit?", new string[] { "True", "False" }))
             {
