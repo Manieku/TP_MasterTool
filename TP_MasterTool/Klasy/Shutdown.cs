@@ -2,21 +2,11 @@
 {
     static class Shutdown
     {
-        public static void DeleteWindowsLogs(ref Logger myLog)
-        {
-            myLog.Add("Deleting windows logs");
-            if(!FileController.ClearFolder(@".\Logs\Windows", true, out string errorList))
-            {
-                myLog.Add(errorList);
-                myLog.wasError = true;
-            }
-        }
         public static void ShutdownProcedure()
         {
             Logger myLog = new Logger(Globals.Funkcje.ShutdownProcedure, "none", "none");
             myLog.Add("Saving user settings");
             Main.interfejs.userSettings.SaveUserSettingsToXml();
-            DeleteWindowsLogs(ref myLog);
             if (myLog.wasError)
             {
                 myLog.SaveLog("ErrorLog");

@@ -182,6 +182,7 @@
             this.FiveMinTimer = new System.Windows.Forms.Timer(this.components);
             this.HourTimer = new System.Windows.Forms.Timer(this.components);
             this.helpProvider = new System.Windows.Forms.HelpProvider();
+            this.toolStripSeparator22 = new System.Windows.Forms.ToolStripSeparator();
             this.Basic_Info.SuspendLayout();
             this.StatusBar.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -613,6 +614,7 @@
             this.InstallationLogsMenuItem,
             this.oEMInstalLogsMenuItem,
             this.TPNetLogsMenuItem,
+            this.toolStripSeparator22,
             this.getAPCLogsToolStripMenuItem,
             this.toolStripSeparator19,
             this.s4FiscalSecureMenuItem,
@@ -708,7 +710,7 @@
             // TPLogOpenFolderMenuItem
             // 
             this.TPLogOpenFolderMenuItem.Name = "TPLogOpenFolderMenuItem";
-            this.TPLogOpenFolderMenuItem.Size = new System.Drawing.Size(172, 26);
+            this.TPLogOpenFolderMenuItem.Size = new System.Drawing.Size(224, 26);
             this.TPLogOpenFolderMenuItem.Tag = "d$\\TPDotnet\\Log";
             this.TPLogOpenFolderMenuItem.Text = "Open folder";
             this.TPLogOpenFolderMenuItem.Click += new System.EventHandler(this.DriveMenuItem_Click);
@@ -716,7 +718,7 @@
             // secureLogsMenuItem
             // 
             this.secureLogsMenuItem.Name = "secureLogsMenuItem";
-            this.secureLogsMenuItem.Size = new System.Drawing.Size(172, 26);
+            this.secureLogsMenuItem.Size = new System.Drawing.Size(224, 26);
             this.secureLogsMenuItem.Text = "Secure Logs";
             this.secureLogsMenuItem.Click += new System.EventHandler(this.SecureLogsMenuItem_Click);
             // 
@@ -795,28 +797,28 @@
             // quickPingMenuItem
             // 
             this.quickPingMenuItem.Name = "quickPingMenuItem";
-            this.quickPingMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.quickPingMenuItem.Size = new System.Drawing.Size(195, 26);
             this.quickPingMenuItem.Text = "Quick Ping";
             this.quickPingMenuItem.Click += new System.EventHandler(this.QuickPingTAGMenuItem_Click);
             // 
             // pingWithLoadMenuItem
             // 
             this.pingWithLoadMenuItem.Name = "pingWithLoadMenuItem";
-            this.pingWithLoadMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.pingWithLoadMenuItem.Size = new System.Drawing.Size(195, 26);
             this.pingWithLoadMenuItem.Text = "Ping with Load";
             this.pingWithLoadMenuItem.Click += new System.EventHandler(this.PingWithLoad_TAGMenuItem_Click);
             // 
             // savePingToTxtMenuItem
             // 
             this.savePingToTxtMenuItem.Name = "savePingToTxtMenuItem";
-            this.savePingToTxtMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.savePingToTxtMenuItem.Size = new System.Drawing.Size(195, 26);
             this.savePingToTxtMenuItem.Text = "Save Ping to txt";
             this.savePingToTxtMenuItem.Click += new System.EventHandler(this.SavePingToTxtMenuItem_Click);
             // 
             // pingOverTimeMenuItem
             // 
             this.pingOverTimeMenuItem.Name = "pingOverTimeMenuItem";
-            this.pingOverTimeMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.pingOverTimeMenuItem.Size = new System.Drawing.Size(195, 26);
             this.pingOverTimeMenuItem.Text = "Ping over time";
             this.pingOverTimeMenuItem.Click += new System.EventHandler(this.PingOverTimeMenuItem_Click);
             // 
@@ -1513,6 +1515,11 @@
             // 
             this.helpProvider.HelpNamespace = "help.htm";
             // 
+            // toolStripSeparator22
+            // 
+            this.toolStripSeparator22.Name = "toolStripSeparator22";
+            this.toolStripSeparator22.Size = new System.Drawing.Size(247, 6);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -1703,6 +1710,7 @@
         private System.Windows.Forms.ToolStripMenuItem DhcpPScopeInfoMenuItem;
         private System.Windows.Forms.ToolStripMenuItem FindMacInDhcpMenuItem;
         public System.Windows.Forms.Button getMAC_button;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator22;
     }
 }
 

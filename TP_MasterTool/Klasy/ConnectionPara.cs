@@ -68,5 +68,18 @@ namespace TP_MasterTool.Klasy
                 return null;
             }
         }
+        public void CredentialsSwitch()
+        {
+            if (storeType == "T")
+            {
+                userName = Globals.PRODuserName;
+                password = Globals.PRODpassword;
+            }
+            else
+            {
+                userName = Globals.TESTuserName;
+                password = Globals.TESTpassword;
+            }
+        }
     }
 }

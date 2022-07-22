@@ -154,6 +154,13 @@ namespace TP_MasterTool.Klasy
                 myLog.Add("Error during deleting old files");
                 myLog.Add(exp.ToString());
             }
+
+            myLog.Add("Deleting windows logs");
+            if (!FileController.ClearFolder(@".\Logs\Windows", true, out string errorList))
+            {
+                myLog.Add(errorList);
+                myLog.wasError = true;
+            }
         }
         private static void ToolBoxSetup(ref Logger myLog)
         {

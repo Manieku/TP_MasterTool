@@ -153,7 +153,7 @@ namespace TP_MasterTool.Klasy
         }
         private static bool ReMapDriveWithCredSwitch(ref ConnectionPara connectionPara, out CmdOutput cmdOutput)
         {
-            CredentialsSwitch(ref connectionPara);
+            connectionPara.CredentialsSwitch();
             cmdOutput = CtrlFunctions.RunHiddenCmd("cmd.exe", @"/c net use \\" + connectionPara.TAG + " " + connectionPara.password + " /user:" + connectionPara.userName);
             if (cmdOutput.exitCode != 0)
             {
@@ -163,19 +163,6 @@ namespace TP_MasterTool.Klasy
                 return false;
             }
             return true;
-        }
-        private static void CredentialsSwitch(ref ConnectionPara connectionPara)
-        {
-            if (connectionPara.storeType == "T")
-            {
-                connectionPara.userName = Globals.PRODuserName;
-                connectionPara.password = Globals.PRODpassword;
-            }
-            else
-            {
-                connectionPara.userName = Globals.TESTuserName;
-                connectionPara.password = Globals.TESTpassword;
-            }
         }
         public static string GetIpFromDNSError(ConnectionPara connectionPara)
         {
