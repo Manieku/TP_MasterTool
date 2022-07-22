@@ -72,8 +72,9 @@ namespace TP_MasterTool
             //Fixes//
             "APC Service Fix",
             "Veritas Backup Job Reset",
-            "Backstore CSV Export"
+            "Backstore CSV Export",
             //Tools//
+            "MiniLogger Data Collect"
         };
         readonly List<string> stpMenuItems = new List<string>
         {
@@ -1428,6 +1429,19 @@ namespace TP_MasterTool
             }
             CustomMsgBox.Show(CustomMsgBox.MsgType.Info, "DHCP Search Result", output);
         }
+        private void MiniLoggerDataCollectMenuItem_Click(object sender, EventArgs e)
+        {
+            Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.CucDataCollect, "");
+            if (!FileController.CopyFile(Globals.toolsPath + @"mccs.run", @"\\" + connectionPara.TAG + @"\d$\StoreApps\pfm\programs\mccs.run", false, out Exception copyExp))
+            {
+                Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, copyExp.Message);
+                Logger.QuickLog(Globals.Funkcje.CucDataCollect, "", connectionPara.TAG, "ErrorLog", copyExp.ToString());
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Mccs.run Copy Error", "ToolBox was unable to copy file to targeted host." + Environment.NewLine + copyExp.Message);
+                return;
+            }
+            Process.Start("explorer.exe", @"\\" + connectionPara.TAG + @"\d$\StoreApps\pfm\programs");
+        }
+
 
         /**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**/
         //--------------------ADV-----------------------------

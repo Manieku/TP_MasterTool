@@ -89,6 +89,7 @@
             this.TPNetLogsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.TPLogOpenFolderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.secureLogsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator22 = new System.Windows.Forms.ToolStripSeparator();
             this.getAPCLogsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator19 = new System.Windows.Forms.ToolStripSeparator();
             this.s4FiscalSecureMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -182,7 +183,7 @@
             this.FiveMinTimer = new System.Windows.Forms.Timer(this.components);
             this.HourTimer = new System.Windows.Forms.Timer(this.components);
             this.helpProvider = new System.Windows.Forms.HelpProvider();
-            this.toolStripSeparator22 = new System.Windows.Forms.ToolStripSeparator();
+            this.miniLoggerDataCollectMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.Basic_Info.SuspendLayout();
             this.StatusBar.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -710,7 +711,7 @@
             // TPLogOpenFolderMenuItem
             // 
             this.TPLogOpenFolderMenuItem.Name = "TPLogOpenFolderMenuItem";
-            this.TPLogOpenFolderMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.TPLogOpenFolderMenuItem.Size = new System.Drawing.Size(172, 26);
             this.TPLogOpenFolderMenuItem.Tag = "d$\\TPDotnet\\Log";
             this.TPLogOpenFolderMenuItem.Text = "Open folder";
             this.TPLogOpenFolderMenuItem.Click += new System.EventHandler(this.DriveMenuItem_Click);
@@ -718,9 +719,14 @@
             // secureLogsMenuItem
             // 
             this.secureLogsMenuItem.Name = "secureLogsMenuItem";
-            this.secureLogsMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.secureLogsMenuItem.Size = new System.Drawing.Size(172, 26);
             this.secureLogsMenuItem.Text = "Secure Logs";
             this.secureLogsMenuItem.Click += new System.EventHandler(this.SecureLogsMenuItem_Click);
+            // 
+            // toolStripSeparator22
+            // 
+            this.toolStripSeparator22.Name = "toolStripSeparator22";
+            this.toolStripSeparator22.Size = new System.Drawing.Size(247, 6);
             // 
             // getAPCLogsToolStripMenuItem
             // 
@@ -1074,7 +1080,8 @@
             this.monitoringSlayerMenuItem,
             this.stocktakingMenuItem,
             this.massFunctionsMenuItem,
-            this.FindMacInDhcpMenuItem});
+            this.FindMacInDhcpMenuItem,
+            this.miniLoggerDataCollectMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Overflow = System.Windows.Forms.ToolStripItemOverflow.AsNeeded;
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(58, 24);
@@ -1083,49 +1090,49 @@
             // serviceManagerMenuItem
             // 
             this.serviceManagerMenuItem.Name = "serviceManagerMenuItem";
-            this.serviceManagerMenuItem.Size = new System.Drawing.Size(250, 26);
+            this.serviceManagerMenuItem.Size = new System.Drawing.Size(254, 26);
             this.serviceManagerMenuItem.Text = "Service Manager";
             this.serviceManagerMenuItem.Click += new System.EventHandler(this.ServiceManagerMenuItem_Click);
             // 
             // TransactionsXMLToCSVMenuItem
             // 
             this.TransactionsXMLToCSVMenuItem.Name = "TransactionsXMLToCSVMenuItem";
-            this.TransactionsXMLToCSVMenuItem.Size = new System.Drawing.Size(250, 26);
+            this.TransactionsXMLToCSVMenuItem.Size = new System.Drawing.Size(254, 26);
             this.TransactionsXMLToCSVMenuItem.Text = "TransactionsXML to CSV";
             this.TransactionsXMLToCSVMenuItem.Click += new System.EventHandler(this.TransactionsXMLToCSVMenuItem_Click);
             // 
             // MobilePosAppKillMenuItem
             // 
             this.MobilePosAppKillMenuItem.Name = "MobilePosAppKillMenuItem";
-            this.MobilePosAppKillMenuItem.Size = new System.Drawing.Size(250, 26);
+            this.MobilePosAppKillMenuItem.Size = new System.Drawing.Size(254, 26);
             this.MobilePosAppKillMenuItem.Text = "MobilePos App Kill";
             this.MobilePosAppKillMenuItem.Click += new System.EventHandler(this.MobilePosAppKillMenuItem_Click);
             // 
             // monitoringSlayerMenuItem
             // 
             this.monitoringSlayerMenuItem.Name = "monitoringSlayerMenuItem";
-            this.monitoringSlayerMenuItem.Size = new System.Drawing.Size(250, 26);
+            this.monitoringSlayerMenuItem.Size = new System.Drawing.Size(254, 26);
             this.monitoringSlayerMenuItem.Text = "MonitoringSlayer";
             this.monitoringSlayerMenuItem.Click += new System.EventHandler(this.MonitoringSlayerMenuItem_Click);
             // 
             // stocktakingMenuItem
             // 
             this.stocktakingMenuItem.Name = "stocktakingMenuItem";
-            this.stocktakingMenuItem.Size = new System.Drawing.Size(250, 26);
+            this.stocktakingMenuItem.Size = new System.Drawing.Size(254, 26);
             this.stocktakingMenuItem.Text = "Stocktaking";
             this.stocktakingMenuItem.Click += new System.EventHandler(this.StocktakingMenuItem_Click);
             // 
             // massFunctionsMenuItem
             // 
             this.massFunctionsMenuItem.Name = "massFunctionsMenuItem";
-            this.massFunctionsMenuItem.Size = new System.Drawing.Size(250, 26);
+            this.massFunctionsMenuItem.Size = new System.Drawing.Size(254, 26);
             this.massFunctionsMenuItem.Text = "Mass Functions";
             this.massFunctionsMenuItem.Click += new System.EventHandler(this.massFunctionsMenuItem_Click);
             // 
             // FindMacInDhcpMenuItem
             // 
             this.FindMacInDhcpMenuItem.Name = "FindMacInDhcpMenuItem";
-            this.FindMacInDhcpMenuItem.Size = new System.Drawing.Size(250, 26);
+            this.FindMacInDhcpMenuItem.Size = new System.Drawing.Size(254, 26);
             this.FindMacInDhcpMenuItem.Text = "Find MAC in DHCP";
             this.FindMacInDhcpMenuItem.Click += new System.EventHandler(this.FindMacInDhcpMenuItem_Click);
             // 
@@ -1515,10 +1522,12 @@
             // 
             this.helpProvider.HelpNamespace = "help.htm";
             // 
-            // toolStripSeparator22
+            // miniLoggerDataCollectMenuItem
             // 
-            this.toolStripSeparator22.Name = "toolStripSeparator22";
-            this.toolStripSeparator22.Size = new System.Drawing.Size(247, 6);
+            this.miniLoggerDataCollectMenuItem.Name = "miniLoggerDataCollectMenuItem";
+            this.miniLoggerDataCollectMenuItem.Size = new System.Drawing.Size(254, 26);
+            this.miniLoggerDataCollectMenuItem.Text = "MiniLogger Data Collect";
+            this.miniLoggerDataCollectMenuItem.Click += new System.EventHandler(this.MiniLoggerDataCollectMenuItem_Click);
             // 
             // Main
             // 
@@ -1711,6 +1720,7 @@
         private System.Windows.Forms.ToolStripMenuItem FindMacInDhcpMenuItem;
         public System.Windows.Forms.Button getMAC_button;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator22;
+        private System.Windows.Forms.ToolStripMenuItem miniLoggerDataCollectMenuItem;
     }
 }
 
