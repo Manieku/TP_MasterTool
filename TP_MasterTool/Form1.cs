@@ -756,14 +756,11 @@ namespace TP_MasterTool
             string selectedFile = null;
             using (DropDownSelect dropDownSelect = new DropDownSelect("Select Eod Raport to analyse", fileList.ToArray()))
             {
-                if (dropDownSelect.ShowDialog() == DialogResult.OK)
-                {
-                    selectedFile = dropDownSelect.ReturnValue1;            //values preserved after close
-                }
-                else
+                if (dropDownSelect.ShowDialog() != DialogResult.OK)
                 {
                     return;
                 }
+                selectedFile = dropDownSelect.ReturnValue1;            //values preserved after close
             }
             myLog.Add("Selected file: " + selectedFile);
             Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.EodCheck, selectedFile);
