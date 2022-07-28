@@ -17,7 +17,6 @@ namespace TP_MasterTool.Forms
 
         private void ChangeLog_Load(object sender, EventArgs e)
         {
-            Telemetry.LogUserAction("ChangeLog", Globals.Funkcje.ShowChangeLog, "");
             try
             {
                 changelog = System.IO.File.ReadAllLines(Globals.configPath + "ChangeLog.txt");

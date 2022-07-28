@@ -120,15 +120,16 @@ namespace TP_MasterTool
         }
         private void Test_Button_Click(object sender, EventArgs e)
         {
-            foreach (string tag in File.ReadAllLines(@".\tps dsFin.txt"))
-            {
-                File.Create(@".\Csv\" + tag + ".txt").Close();
-            }
-            foreach (string line in File.ReadAllLines(@".\dates.txt"))
-            {
-                string[] temp = line.Split('\t');
-                File.AppendAllText(Directory.GetFiles(@".\Csv\", temp[1] + "*")[0], temp[0] + Environment.NewLine);
-            }
+
+            //foreach (string tag in File.ReadAllLines(@".\tps dsFin.txt"))
+            //{
+            //    File.Create(@".\Csv\" + tag + ".txt").Close();
+            //}
+            //foreach (string line in File.ReadAllLines(@".\dates.txt"))
+            //{
+            //    string[] temp = line.Split('\t');
+            //    File.AppendAllText(Directory.GetFiles(@".\Csv\", temp[1] + "*")[0], temp[0] + Environment.NewLine);
+            //}
 
             //CtrlFunctions.EncryptFile(@".\mojepasy.txt", "cycuszki", Globals.configPath + "credentials.crypt");
             //MessageBox.Show("krypto krypto superman lezy");

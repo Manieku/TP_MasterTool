@@ -612,7 +612,8 @@ namespace TP_MasterTool.Forms
                 return;
             }
             log += AddToLog("-> " + Logger.LogTime() + "- " + zipOutput);
-            log += AddToLog(Environment.NewLine + ">>> Ticket can be close with note below <<<");
+            System.IO.File.AppendAllText(@"\\" + connectionPara.TAG + @"\c$\service\scripts\MONITORING\Log\COLLECT_TP_REPORTS_" + DateTime.Today.ToString("yyyyMMdd") + ".log", "canda_omnipos_reports_ok|" + DateTime.Now.ToString("yyyyMMddHHmm") + "|Local Reports were recreated and collected manually by script on " + DateTime.Now.ToString("d/MM/yyyy HH:mm:ss") + Environment.NewLine, System.Text.Encoding.ASCII);
+            log += AddToLog(Environment.NewLine + ">>> Ticket should auto close, if not close with note below <<<");
             log += AddToLog("");
             log += AddToLog(">> Notes for ticket:");
             log += AddToLog(regenOutput + " | " + zipOutput);
