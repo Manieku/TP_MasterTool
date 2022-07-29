@@ -634,9 +634,14 @@ namespace TP_MasterTool.Klasy
         }
         public static void AdhocFunction(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
-            massFunctionForm.GridChange(rownr, "Reading disc space");
+            massFunctionForm.GridChange(rownr, "Copying");
+            if(!FileController.CopyFile(Globals.toolsPath + "collect_tp_reports.ps1", @"\\" + connectionPara.TAG + @"\c$\service\qem\collect_tp_reports\collect_tp_reports.ps1", false, out Exception copyExp))
+            {
+                massFunctionForm.ErrorLog(rownr, copyExp.Message);
+                return;
+            }
             massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
-            massFunctionForm.AddToLog(rownr, "[SUCCESS] " + CtrlFunctions.GetDiskSpaceInfo("d", connectionPara, out _));
+            massFunctionForm.AddToLog(rownr, "[SUCCESS] Script replaced");
         }
 
     }

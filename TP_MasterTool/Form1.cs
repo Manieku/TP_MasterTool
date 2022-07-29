@@ -723,7 +723,7 @@ namespace TP_MasterTool
             try
             {
                 myLog.Add("Reading log files");
-                files = Directory.GetFiles(@"\\" + connectionPara.TAG + @"\d$\TPDotnet\Log", "LOG_*_" + connectionPara.TAG + "_????????_??????_MANUALEOD.xml");
+                files = new DirectoryInfo(@"\\" + connectionPara.TAG + @"\d$\TPDotnet\Log").EnumerateFiles("LOG_*_" + connectionPara.TAG + "_????????_??????_MANUALEOD.xml").OrderByDescending(file => file.CreationTime).Select(file => file.FullName).ToArray();
             }
             catch (Exception exp)
             {
