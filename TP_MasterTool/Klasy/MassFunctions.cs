@@ -543,10 +543,11 @@ namespace TP_MasterTool.Klasy
             if (exitCode != 0)
             {
                 massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "Script exited with error code: " + exitCode);
+                return;
             }
-            Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.DeployAndExecute, addInfo[0] + " Exetuted");
+            Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.DeployAndExecute, addInfo[0] + " Executed");
             massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
-            massFunctionForm.AddToLog(rownr, "[SUCCESS] - " + addInfo[0] + " Exetuted");
+            massFunctionForm.AddToLog(rownr, "[SUCCESS] - " + addInfo[0] + " Executed");
         }
         public static void DismAndSFC(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
