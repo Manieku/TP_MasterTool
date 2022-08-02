@@ -523,50 +523,19 @@ namespace TP_MasterTool.Forms
         }
         private void CDriveCritical(int rownr, ConnectionPara connectionPara, ref string log)
         {
-            gridChange(rownr, "Gathering data");
-            log += AddToLog("Checking for WSUS Error");
-            System.IO.DirectoryInfo dirInfo = new System.IO.DirectoryInfo(@"\\" + connectionPara.TAG + @"\c$\Windows\SoftwareDistribution\Download");
-            long dirSize = dirInfo.EnumerateFiles("*", System.IO.SearchOption.AllDirectories).Sum(file => file.Length);
+            gridChange(rownr, "Clearing drive");
+            log += AddToLog(@"Clear C:\Widows\Temp:");
+            CtrlFunctions.RunHiddenCmdWitoutOutput("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c del /q /f C:\Windows\Temp", false);
+            log += AddToLog("-> Executed");
+            log += AddToLog(@"Clear C:\Widows\CbsTemp:");
+            CtrlFunctions.RunHiddenCmdWitoutOutput("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c del /q /f C:\Windows\CbsTemp", false);
+            log += AddToLog("-> Executed");
+            log += AddToLog(@"Clear C:\Widows\WinSxS:");
+            CtrlFunctions.RunHiddenCmdWitoutOutput("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c del /q /f C:\Windows\WinSxS", false);
+            log += AddToLog("-> Executed");
 
-            log += AddToLog(@"Size of SoftwareDistribution\Download Folder: " + dirSize / 1024.0 / 1024 + " MB");
-            if (dirSize / 1024.0 / 1024 / 1024 > 9)
-            {
-                log += AddToLog("-> It's Over 9000!");
-            }
-            if (dirSize / 1024.0 / 1024 / 1024 > 5)
-            {
-                gridChange(rownr, "Applying workaround");
-                log += AddToLog("Applying workaround");
-                if(!FileController.CopyFile(Globals.toolsPath + "WsusWorkaround.cmd", @"\\" + connectionPara.TAG + @"\c$\temp\WsusWorkaround.cmd", false, out _))
-                {
-                    log += AddToLog(Environment.NewLine + ">>> Create solution task for ADV with note below and close L2 task <<<");
-                    log += AddToLog("");
-                    log += AddToLog(">> Notes for ticket:");
-                    log += AddToLog("@ADV" + Environment.NewLine + Environment.NewLine
-                        + "C drive issue. Please investigate." + Environment.NewLine
-                        + @"Wsus error detected -> Size of SoftwareDistribution\Download Folder: " + dirSize / 1024.0 / 1024 + " MB." + Environment.NewLine
-                        + "Unable to apply workaround ");
-                    gridChange(rownr, "Ticket ready to be close. See log.", Color.LightGreen);
-                    return;
-                }
-                CtrlFunctions.RunHiddenCmdWitoutOutput("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c C:\temp\WsusWorkaround.cmd", false);
-                log += AddToLog("Workaround applied");
-                log += AddToLog(Environment.NewLine + ">>> Ticket should auto close in few minutes, if not please check c drive space and close it manually. In case c drive is still critical create task for ADV <<<");
-                gridChange(rownr, "Ticket ready to be close. See log.", Color.LightGreen);
-                return;
-            }
-
-            log += AddToLog("Reading disc space info:");
-            string discInfo = CtrlFunctions.GetDiskSpaceInfo("c", connectionPara, out _);
-            log += AddToLog(discInfo);
-            log += AddToLog(Environment.NewLine + ">>> Create solution task for ADV with note below and close L2 task <<<");
-            log += AddToLog("");
-            log += AddToLog(">> Notes for ticket:");
-            log += AddToLog("@ADV" + Environment.NewLine + Environment.NewLine
-                + "C drive issue. Please investigate." + Environment.NewLine
-                + "Drive C:\\ Informations:" + Environment.NewLine
-                + discInfo);
-            gridChange(rownr, "Ticket ready to be close. See log.", Color.LightGreen);
+            log += AddToLog(Environment.NewLine + ">>> Ticket should autoclose in ~15min, if not create task for ADV with this log and current disk space info <<<");
+            gridChange(rownr, "Ticket needs action from agent. See log", Color.LightYellow);
         }
         private void CollectionFailed(int rownr, ConnectionPara connectionPara, ref string log)
         {

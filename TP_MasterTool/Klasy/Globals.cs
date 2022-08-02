@@ -84,6 +84,7 @@ namespace TP_MasterTool
             DhcpMacFind,
             DecryptToString,
             AdhocFunction,
+            CDriveClean,
             CucDataCollect,
             Error,
         }

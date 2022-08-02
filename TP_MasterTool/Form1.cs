@@ -120,7 +120,7 @@ namespace TP_MasterTool
         }
         private void Test_Button_Click(object sender, EventArgs e)
         {
-
+            CtrlFunctions.RunHiddenCmdWitoutOutput("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c del /q /f C:\Windows\Temp", false);
             //foreach (string tag in File.ReadAllLines(@".\tps dsFin.txt"))
             //{
             //    File.Create(@".\Csv\" + tag + ".txt").Close();
@@ -1460,6 +1460,7 @@ namespace TP_MasterTool
                 "CheckForKB",
                 "DeployAndExecute",
                 "DismAndSFC",
+                "CDriveClean",
                 "BackstoreCsvExport",
                 "AdhocFunction"
             };
