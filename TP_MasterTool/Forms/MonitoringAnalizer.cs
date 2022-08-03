@@ -555,6 +555,47 @@ namespace TP_MasterTool.Forms
             }
             log += AddToLog("-> Done");
 
+            gridChange(rownr, "Checking files");
+            log += AddToLog("Checking for zip in output folder:");
+            if(System.IO.File.Exists(@"\\" + connectionPara.TAG + @"\c$\service\dms_output\collect_tp_reports.zip"))
+            {
+                log += AddToLog("-> Present | Ready to be picked up after next successful run");
+                System.IO.File.AppendAllText(@"\\" + connectionPara.TAG + @"\c$\service\scripts\MONITORING\Log\COLLECT_TP_REPORTS_" + DateTime.Today.ToString("yyyyMMdd") + ".log", "canda_omnipos_reports_ok|" + DateTime.Now.ToString("yyyyMMddHHmm") + "|Local Reports zip was present in output folder - no action needed" + Environment.NewLine, System.Text.Encoding.ASCII);
+                log += AddToLog(Environment.NewLine + ">>> Ticket should auto close, if not close it manually <<<");
+                gridChange(rownr, "Ticket ready to be close. See log.", Color.LightGreen);
+                return;
+            }
+
+            log += AddToLog("-> Missing");
+            log += AddToLog("Checking for backup zip in ArchivedReports folder:");
+            string[] searchResult = System.IO.Directory.GetFiles(@"\\" + connectionPara.TAG + @"\d$\ArchivedReports", "collect_tp_reports.zip." + DateTime.Today.ToString("yyyyMMdd") + "*");
+            if(searchResult.Length > 1)
+            {
+                log += AddToLog("-> Found more than one backup zip");
+                log += AddToLog(Environment.NewLine + ">>> Please verify proper backup zip in ArchivedReports and copy it to dms_output folder as collect_tp_reports.zip and close the ticket <<<");
+                gridChange(rownr, "Ticket require action from agent. See log.", Color.LightYellow);
+                return;
+            }
+
+            if(searchResult.Length == 1)
+            {
+                log += AddToLog("-> Found: " + System.IO.Path.GetFileName(searchResult[0]));
+                log += AddToLog("Copying backup zip into dms_output folder:");
+                if(!FileController.CopyFile(searchResult[0], @"\\" + connectionPara.TAG + @"\c$\service\dms_output\collect_tp_reports.zip", false, out Exception copyExp))
+                {
+                    log += AddToLog("-> Error: " + copyExp.Message);
+                    log += AddToLog(Environment.NewLine + ">>> Unable to copy backup zip | Please copy backup zip from ArchivedReports to dms_output folder as collect_tp_reports.zip and close the ticket <<<");
+                    gridChange(rownr, "Ticket require action from agent. See log.", Color.LightYellow);
+                    return;
+                }
+                log += AddToLog("-> Done");
+                System.IO.File.AppendAllText(@"\\" + connectionPara.TAG + @"\c$\service\scripts\MONITORING\Log\COLLECT_TP_REPORTS_" + DateTime.Today.ToString("yyyyMMdd") + ".log", "canda_omnipos_reports_ok|" + DateTime.Now.ToString("yyyyMMddHHmm") + "|Local Reports zip was copied from ArchivedReports (" + System.IO.Path.GetFileName(searchResult[0]) + ") to dms_output folder" + Environment.NewLine, System.Text.Encoding.ASCII);
+                log += AddToLog(Environment.NewLine + ">>> Ticket should auto close, if not close it manually <<<");
+                gridChange(rownr, "Ticket ready to be close. See log.", Color.LightGreen);
+                return;
+            }
+
+            log += AddToLog("-> Missing | Regenerating reports");
             int offset = 0;
             if (connectionPara.country == "BE" || connectionPara.country == "LU")
             {
