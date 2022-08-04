@@ -523,6 +523,22 @@ namespace TP_MasterTool.Forms
         }
         private void CDriveCritical(int rownr, ConnectionPara connectionPara, ref string log)
         {
+            gridChange(rownr, "Connecting to " + connectionPara.TAG);
+            log += AddToLog("Connecting to " + connectionPara.TAG);
+            if (connectionPara.IP == "DNS ERROR")
+            {
+                DnsRestore(rownr, connectionPara, ref log);
+                return;
+            }
+            if (!CtrlFunctions.MapEndpointDrive(ref connectionPara, out CtrlFunctions.CmdOutput cmdOutput))
+            {
+                log += AddToLog("-> Unable to map drive: " + cmdOutput.errorOutputText);
+                log += AddToLog(Environment.NewLine + ">>> Please check if host is online and credentials are working <<<");
+                gridChange(rownr, "Ticket needs manual investigation. See log", Globals.errorColor);
+                return;
+            }
+            log += AddToLog("-> Done");
+
             gridChange(rownr, "Clearing drive");
             log += AddToLog(@"Clear C:\Widows\Temp:");
             CtrlFunctions.RunHiddenCmdWitoutOutput("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c del /q /f C:\Windows\Temp", false);
