@@ -523,21 +523,10 @@ namespace TP_MasterTool.Forms
         }
         private void CDriveCritical(int rownr, ConnectionPara connectionPara, ref string log)
         {
-            gridChange(rownr, "Connecting to " + connectionPara.TAG);
-            log += AddToLog("Connecting to " + connectionPara.TAG);
-            if (connectionPara.IP == "DNS ERROR")
+            if(!ConnectToHost(rownr, connectionPara, ref log))
             {
-                DnsRestore(rownr, connectionPara, ref log);
                 return;
             }
-            if (!CtrlFunctions.MapEndpointDrive(ref connectionPara, out CtrlFunctions.CmdOutput cmdOutput))
-            {
-                log += AddToLog("-> Unable to map drive: " + cmdOutput.errorOutputText);
-                log += AddToLog(Environment.NewLine + ">>> Please check if host is online and credentials are working <<<");
-                gridChange(rownr, "Ticket needs manual investigation. See log", Globals.errorColor);
-                return;
-            }
-            log += AddToLog("-> Done");
 
             gridChange(rownr, "Clearing drive");
             log += AddToLog(@"Clear C:\Widows\Temp:");
@@ -555,28 +544,29 @@ namespace TP_MasterTool.Forms
         }
         private void CollectionFailed(int rownr, ConnectionPara connectionPara, ref string log)
         {
-            gridChange(rownr, "Connecting to " + connectionPara.TAG);
-            log += AddToLog("Connecting to " + connectionPara.TAG);
-            if (connectionPara.IP == "DNS ERROR")
+            if (!ConnectToHost(rownr, connectionPara, ref log))
             {
-                DnsRestore(rownr, connectionPara, ref log);
                 return;
             }
-            if (!CtrlFunctions.MapEndpointDrive(ref connectionPara, out CtrlFunctions.CmdOutput cmdOutput))
-            {
-                log += AddToLog("Unable to map host drive:" + cmdOutput.errorOutputText);
-                log += AddToLog(Environment.NewLine + ">>> Unable to connect to network drive and copy required script to machine. Please check if machine is online and can be accessed. Run Regen+Zip manually if everything seems to be ok <<<");
-                gridChange(rownr, "Ticket needs manual investigation. See log", Globals.errorColor);
-                return;
-            }
-            log += AddToLog("-> Done");
 
             gridChange(rownr, "Checking files");
             log += AddToLog("Checking for zip in output folder:");
             if(System.IO.File.Exists(@"\\" + connectionPara.TAG + @"\c$\service\dms_output\collect_tp_reports.zip"))
             {
                 log += AddToLog("-> Present | Ready to be picked up after next successful run");
-                System.IO.File.AppendAllText(@"\\" + connectionPara.TAG + @"\c$\service\scripts\MONITORING\Log\COLLECT_TP_REPORTS_" + DateTime.Today.ToString("yyyyMMdd") + ".log", "canda_omnipos_reports_ok|" + DateTime.Now.ToString("yyyyMMddHHmm") + "|Local Reports zip was present in output folder - no action needed" + Environment.NewLine, System.Text.Encoding.ASCII);
+                try
+                {
+                    lock (logLock)
+                    {
+                        System.IO.File.AppendAllText(@"\\" + connectionPara.TAG + @"\c$\service\scripts\MONITORING\Log\COLLECT_TP_REPORTS_" + DateTime.Today.ToString("yyyyMMdd") + ".log", "canda_omnipos_reports_ok|" + DateTime.Now.ToString("yyyyMMddHHmm") + "|Local Reports zip was present in output folder - no action needed" + Environment.NewLine, System.Text.Encoding.ASCII);
+                    }
+                }
+                catch(Exception appendExp)
+                {
+                    log += AddToLog("!! Error during logging process: " + appendExp.Message);
+                    log += AddToLog("!! Autoclosure not possible - please close ticket manually");
+                    Logger.QuickLog(Globals.Funkcje.MonitoringSlayer, "Collection Failed", connectionPara.TAG, "ErrorLog", "AppendText Error: " + appendExp.ToString());
+                }
                 log += AddToLog(Environment.NewLine + ">>> Ticket should auto close, if not close it manually <<<");
                 gridChange(rownr, "Ticket ready to be close. See log.", Color.LightGreen);
                 return;
@@ -605,7 +595,20 @@ namespace TP_MasterTool.Forms
                     return;
                 }
                 log += AddToLog("-> Done");
-                System.IO.File.AppendAllText(@"\\" + connectionPara.TAG + @"\c$\service\scripts\MONITORING\Log\COLLECT_TP_REPORTS_" + DateTime.Today.ToString("yyyyMMdd") + ".log", "canda_omnipos_reports_ok|" + DateTime.Now.ToString("yyyyMMddHHmm") + "|Local Reports zip was copied from ArchivedReports (" + System.IO.Path.GetFileName(searchResult[0]) + ") to dms_output folder" + Environment.NewLine, System.Text.Encoding.ASCII);
+                try
+                {
+                    lock (logLock)
+                    {
+                        System.IO.File.AppendAllText(@"\\" + connectionPara.TAG + @"\c$\service\scripts\MONITORING\Log\COLLECT_TP_REPORTS_" + DateTime.Today.ToString("yyyyMMdd") + ".log", "canda_omnipos_reports_ok|" + DateTime.Now.ToString("yyyyMMddHHmm") + "|Local Reports zip was copied from ArchivedReports (" + System.IO.Path.GetFileName(searchResult[0]) + ") to dms_output folder" + Environment.NewLine, System.Text.Encoding.ASCII);
+                    }
+                }
+                catch (Exception appendExp)
+                {
+                    log += AddToLog("!! Error during logging process: " + appendExp.Message);
+                    log += AddToLog("!! Autoclosure not possible - please close ticket manually");
+                    Logger.QuickLog(Globals.Funkcje.MonitoringSlayer, "Collection Failed", connectionPara.TAG, "ErrorLog", "AppendText Error: " + appendExp.ToString());
+                }
+
                 log += AddToLog(Environment.NewLine + ">>> Ticket should auto close, if not close it manually <<<");
                 gridChange(rownr, "Ticket ready to be close. See log.", Color.LightGreen);
                 return;
@@ -638,7 +641,20 @@ namespace TP_MasterTool.Forms
                 return;
             }
             log += AddToLog("-> " + Logger.LogTime() + "- " + zipOutput);
-            System.IO.File.AppendAllText(@"\\" + connectionPara.TAG + @"\c$\service\scripts\MONITORING\Log\COLLECT_TP_REPORTS_" + DateTime.Today.ToString("yyyyMMdd") + ".log", "canda_omnipos_reports_ok|" + DateTime.Now.ToString("yyyyMMddHHmm") + "|Local Reports were recreated and collected manually by script on " + DateTime.Now.ToString("d/MM/yyyy HH:mm:ss") + Environment.NewLine, System.Text.Encoding.ASCII);
+            try
+            {
+                lock (logLock)
+                {
+                    System.IO.File.AppendAllText(@"\\" + connectionPara.TAG + @"\c$\service\scripts\MONITORING\Log\COLLECT_TP_REPORTS_" + DateTime.Today.ToString("yyyyMMdd") + ".log", "canda_omnipos_reports_ok|" + DateTime.Now.ToString("yyyyMMddHHmm") + "|Local Reports were recreated and collected manually by script on " + DateTime.Now.ToString("d/MM/yyyy HH:mm:ss") + Environment.NewLine, System.Text.Encoding.ASCII);
+                }
+            }
+            catch (Exception appendExp)
+            {
+                log += AddToLog("!! Error during logging process: " + appendExp.Message);
+                log += AddToLog("!! Autoclosure not possible - please close ticket manually");
+                Logger.QuickLog(Globals.Funkcje.MonitoringSlayer, "Collection Failed", connectionPara.TAG, "ErrorLog", "AppendText Error: " + appendExp.ToString());
+            }
+
             log += AddToLog(Environment.NewLine + ">>> Ticket should auto close, if not close with note below <<<");
             log += AddToLog("");
             log += AddToLog(">> Notes for ticket:");
@@ -648,21 +664,10 @@ namespace TP_MasterTool.Forms
         }
         private void MissingTA(int rownr, ConnectionPara connectionPara, ref string log)
         {
-            gridChange(rownr, "Connecting to " + connectionPara.TAG);
-            log += AddToLog("Connecting to " + connectionPara.TAG);
-            if (connectionPara.IP == "DNS ERROR")
+            if (!ConnectToHost(rownr, connectionPara, ref log))
             {
-                DnsRestore(rownr, connectionPara, ref log);
                 return;
             }
-            if (!CtrlFunctions.MapEndpointDrive(ref connectionPara, out CtrlFunctions.CmdOutput cmdOutput))
-            {
-                log += AddToLog("-> Unable to map drive: " + cmdOutput.errorOutputText);
-                log += AddToLog(Environment.NewLine + ">>> Please check if host is online and credentials are working <<<");
-                gridChange(rownr, "Ticket needs manual investigation. See log", Globals.errorColor);
-                return;
-            }
-            log += AddToLog("-> Done");
 
             gridChange(rownr, "Connecting to " + String.Join(".", connectionPara.IPbytes[0], connectionPara.IPbytes[1], connectionPara.IPbytes[2], "180"));
             log += AddToLog("Connecting to " + String.Join(".", connectionPara.IPbytes[0], connectionPara.IPbytes[1], connectionPara.IPbytes[2], "180"));
@@ -706,21 +711,11 @@ namespace TP_MasterTool.Forms
         }
         private void EoDFailed(int rownr, ConnectionPara connectionPara, ref string log)
         {
-            gridChange(rownr, "Connecting to " + connectionPara.TAG);
-            log += AddToLog("Connecting to " + connectionPara.TAG);
-            if (connectionPara.IP == "DNS ERROR")
+            if (!ConnectToHost(rownr, connectionPara, ref log))
             {
-                DnsRestore(rownr, connectionPara, ref log);
                 return;
             }
-            if (!CtrlFunctions.MapEndpointDrive(ref connectionPara, out CtrlFunctions.CmdOutput cmdOutput))
-            {
-                log += AddToLog("-> Unable to map drive: " + cmdOutput.errorOutputText);
-                log += AddToLog(Environment.NewLine + ">>> Please check if host is online and credentials are working <<<");
-                gridChange(rownr, "Ticket needs manual investigation. See log", Globals.errorColor);
-                return;
-            }
-            log += AddToLog("-> Done");
+
             gridChange(rownr, "Searching last EoD Log");
             log += AddToLog("Searching last EoD Log");
             System.IO.FileInfo eodLog = GetLastEodLog(connectionPara);
@@ -789,7 +784,7 @@ namespace TP_MasterTool.Forms
                 {
                     log += AddToLog("-> Failed: " + errorMsg);
                     log += AddToLog("Restarting TPDotnet Process Manager:");
-                    cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c net stop ""TPDotnet Process Manager"" && net start ""TPDotnet Process Manager""");
+                    CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c net stop ""TPDotnet Process Manager"" && net start ""TPDotnet Process Manager""");
                     if (cmdOutput.exitCode != 0)
                     {
                         log += AddToLog("-> Failed");
@@ -830,19 +825,11 @@ namespace TP_MasterTool.Forms
         }
         private void EoDAbortTest(int rownr, ConnectionPara connectionPara, ref string log)
         {
-            log += AddToLog("Connecting to " + connectionPara.TAG);
-            if (connectionPara.IP == "DNS ERROR")
+            if (!ConnectToHost(rownr, connectionPara, ref log))
             {
-                log += AddToLog("-> DNS Error");
                 return;
             }
-            if (!CtrlFunctions.MapEndpointDrive(ref connectionPara, out CtrlFunctions.CmdOutput cmdOutput))
-            {
-                log += AddToLog("-> Unable to map drive: " + cmdOutput.errorOutputText);
-                log += AddToLog(Environment.NewLine + ">>> Please check if host is online and credentials are working <<<");
-                return;
-            }
-            log += AddToLog("-> Done");
+
             log += AddToLog("Searching last EoD Log");
             System.IO.FileInfo eodLog = GetLastEodLog(connectionPara);
             if (eodLog == null)
@@ -888,7 +875,7 @@ namespace TP_MasterTool.Forms
             log += AddToLog(eodXml.Root.Element("BATCHRESULT").ToString() + Environment.NewLine);
         }
 
-        //------SUBROUTINE FUNCTIONS------------
+        //------Backend FUNCTIONS------------
         private bool GetIndexes(string[] tixList, out int tixNr, out int status, out int summary, out int tag, out int tixSource)
         {
             string[] templine = tixList[0].Split('\t');
@@ -912,6 +899,25 @@ namespace TP_MasterTool.Forms
             }
             CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Ticket List Formating Error", "Selected ticket list don't have " + columsNames[checkIndexes] + " column. Please enable it in EBS and export list again");
             return false;
+        }
+        private bool ConnectToHost(int rownr, ConnectionPara connectionPara, ref string log)
+        {
+            gridChange(rownr, "Connecting to " + connectionPara.TAG);
+            log += AddToLog("Connecting to " + connectionPara.TAG);
+            if (connectionPara.IP == "DNS ERROR")
+            {
+                DnsRestore(rownr, connectionPara, ref log);
+                return false;
+            }
+            if (!CtrlFunctions.MapEndpointDrive(ref connectionPara, out CtrlFunctions.CmdOutput cmdOutput))
+            {
+                log += AddToLog("-> Unable to map drive: " + cmdOutput.errorOutputText);
+                log += AddToLog(Environment.NewLine + ">>> Please check if host is online and credentials are working <<<");
+                gridChange(rownr, "Ticket needs manual investigation. See log", Globals.errorColor);
+                return false;
+            }
+            log += AddToLog("-> Done");
+            return true;
         }
         private void LookForTA(string txnr, string location, string filtr, ref string log)
         {

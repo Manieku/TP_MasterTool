@@ -120,25 +120,21 @@ namespace TP_MasterTool
         }
         private void Test_Button_Click(object sender, EventArgs e)
         {
-            //if (System.IO.File.Exists(@"\\" + connectionPara.TAG + @"\d$\ArchivedReports\collect_tp_reports.zip." + DateTime.Today.ToString("yyyyMMdd") + "*"))
-            string[] files = System.IO.Directory.GetFiles(@"\\" + connectionPara.TAG + @"\d$\ArchivedReports", "collect_tp_reports.zip." + DateTime.Today.ToString("yyyyMMdd") + "*");
-            MessageBox.Show(files.Length.ToString());
+            foreach (string tag in File.ReadAllLines(@".\tps dsFin.txt"))
+            {
+                File.Create(@".\Csv\" + tag + ".txt").Close();
+            }
+            foreach (string line in File.ReadAllLines(@".\dates.txt"))
+            {
+                string[] temp = line.Split('\t');
+                File.AppendAllText(Directory.GetFiles(@".\Csv\", temp[1] + "*")[0], temp[0] + Environment.NewLine);
+            }
 
-            //foreach (string tag in File.ReadAllLines(@".\tps dsFin.txt"))
-            //{
-            //    File.Create(@".\Csv\" + tag + ".txt").Close();
-            //}
-            //foreach (string line in File.ReadAllLines(@".\dates.txt"))
-            //{
-            //    string[] temp = line.Split('\t');
-            //    File.AppendAllText(Directory.GetFiles(@".\Csv\", temp[1] + "*")[0], temp[0] + Environment.NewLine);
-            //}
-
-                //CtrlFunctions.EncryptFile(@".\mojepasy.txt", "cycuszki", Globals.configPath + "credentials.crypt");
-                //MessageBox.Show("krypto krypto superman lezy");
+            //CtrlFunctions.EncryptFile(@".\mojepasy.txt", "cycuszki", Globals.configPath + "credentials.crypt");
+            //MessageBox.Show("krypto krypto superman lezy");
 
 
-                //Logger.GeneratePortalReport(@".\EoD_Abort_Test_Report.txt", @".\EoD_Abort_Test_AddInfo.txt", @".\logo.txt", @".\output.txt");
+            //Logger.GeneratePortalReport(@".\EoD_Abort_Test_Report.txt", @".\EoD_Abort_Test_AddInfo.txt", @".\logo.txt", @".\output.txt");
         }
         //--------------------/UI Controls/---------------------------
         private void GetMAC_button_Click(object sender, EventArgs e)

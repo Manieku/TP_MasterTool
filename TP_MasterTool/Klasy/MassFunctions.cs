@@ -646,14 +646,28 @@ namespace TP_MasterTool.Klasy
         }
         public static void AdhocFunction(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
-            massFunctionForm.GridChange(rownr, "Copying");
-            if(!FileController.CopyFile(Globals.toolsPath + "collect_tp_reports.ps1", @"\\" + connectionPara.TAG + @"\c$\service\qem\collect_tp_reports\collect_tp_reports.ps1", false, out Exception copyExp))
-            {
-                massFunctionForm.ErrorLog(rownr, copyExp.Message);
-                return;
-            }
-            massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
-            massFunctionForm.AddToLog(rownr, "[SUCCESS] Script replaced");
+            ////
+            //massFunctionForm.GridChange(rownr, "Checking Files");
+            //string[] lines;
+            //try
+            //{
+            //    lines = System.IO.File.ReadAllLines(@"\\" + connectionPara.TAG + @"\c$\Retail\Software\dlrmus\logs\dlslog.txt");
+            //}
+            //catch (Exception findExp)
+            //{
+            //    massFunctionForm.ErrorLog(rownr, "Unable to read log: " + findExp.Message);
+            //    return;
+            //}
+            //for (int i = lines.Length - 1; i >= 0; i--)
+            //{
+            //    if (lines[i].StartsWith("ApplicationROMID") && !lines[i].Contains("===>"))
+            //    {
+            //        massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
+            //        massFunctionForm.AddToLog(rownr, "[SUCCESS] - " + lines[i].Split(':')[1]);
+            //        return;
+            //    }
+            //}
+            //massFunctionForm.ErrorLog(rownr, "Didn't find ROMID in log");
         }
 
     }
