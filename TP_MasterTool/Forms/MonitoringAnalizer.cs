@@ -554,19 +554,8 @@ namespace TP_MasterTool.Forms
             if(System.IO.File.Exists(@"\\" + connectionPara.TAG + @"\c$\service\dms_output\collect_tp_reports.zip"))
             {
                 log += AddToLog("-> Present | Ready to be picked up after next successful run");
-                try
-                {
-                    lock (logLock)
-                    {
-                        System.IO.File.AppendAllText(@"\\" + connectionPara.TAG + @"\c$\service\scripts\MONITORING\Log\COLLECT_TP_REPORTS_" + DateTime.Today.ToString("yyyyMMdd") + ".log", "canda_omnipos_reports_ok|" + DateTime.Now.ToString("yyyyMMddHHmm") + "|Local Reports zip was present in output folder - no action needed" + Environment.NewLine, System.Text.Encoding.ASCII);
-                    }
-                }
-                catch(Exception appendExp)
-                {
-                    log += AddToLog("!! Error during logging process: " + appendExp.Message);
-                    log += AddToLog("!! Autoclosure not possible - please close ticket manually");
-                    Logger.QuickLog(Globals.Funkcje.MonitoringSlayer, "Collection Failed", connectionPara.TAG, "ErrorLog", "AppendText Error: " + appendExp.ToString());
-                }
+                CollectionFailedAutoClosure(connectionPara, ref log, "Local Reports zip was present in output folder - no action needed");
+
                 log += AddToLog(Environment.NewLine + ">>> Ticket should auto close, if not close it manually <<<");
                 gridChange(rownr, "Ticket ready to be close. See log.", Color.LightGreen);
                 return;
@@ -595,19 +584,7 @@ namespace TP_MasterTool.Forms
                     return;
                 }
                 log += AddToLog("-> Done");
-                try
-                {
-                    lock (logLock)
-                    {
-                        System.IO.File.AppendAllText(@"\\" + connectionPara.TAG + @"\c$\service\scripts\MONITORING\Log\COLLECT_TP_REPORTS_" + DateTime.Today.ToString("yyyyMMdd") + ".log", "canda_omnipos_reports_ok|" + DateTime.Now.ToString("yyyyMMddHHmm") + "|Local Reports zip was copied from ArchivedReports (" + System.IO.Path.GetFileName(searchResult[0]) + ") to dms_output folder" + Environment.NewLine, System.Text.Encoding.ASCII);
-                    }
-                }
-                catch (Exception appendExp)
-                {
-                    log += AddToLog("!! Error during logging process: " + appendExp.Message);
-                    log += AddToLog("!! Autoclosure not possible - please close ticket manually");
-                    Logger.QuickLog(Globals.Funkcje.MonitoringSlayer, "Collection Failed", connectionPara.TAG, "ErrorLog", "AppendText Error: " + appendExp.ToString());
-                }
+                CollectionFailedAutoClosure(connectionPara, ref log, "Local Reports zip was copied from ArchivedReports (" + System.IO.Path.GetFileName(searchResult[0]) + ") to dms_output folder");
 
                 log += AddToLog(Environment.NewLine + ">>> Ticket should auto close, if not close it manually <<<");
                 gridChange(rownr, "Ticket ready to be close. See log.", Color.LightGreen);
@@ -641,19 +618,7 @@ namespace TP_MasterTool.Forms
                 return;
             }
             log += AddToLog("-> " + Logger.LogTime() + "- " + zipOutput);
-            try
-            {
-                lock (logLock)
-                {
-                    System.IO.File.AppendAllText(@"\\" + connectionPara.TAG + @"\c$\service\scripts\MONITORING\Log\COLLECT_TP_REPORTS_" + DateTime.Today.ToString("yyyyMMdd") + ".log", "canda_omnipos_reports_ok|" + DateTime.Now.ToString("yyyyMMddHHmm") + "|Local Reports were recreated and collected manually by script on " + DateTime.Now.ToString("d/MM/yyyy HH:mm:ss") + Environment.NewLine, System.Text.Encoding.ASCII);
-                }
-            }
-            catch (Exception appendExp)
-            {
-                log += AddToLog("!! Error during logging process: " + appendExp.Message);
-                log += AddToLog("!! Autoclosure not possible - please close ticket manually");
-                Logger.QuickLog(Globals.Funkcje.MonitoringSlayer, "Collection Failed", connectionPara.TAG, "ErrorLog", "AppendText Error: " + appendExp.ToString());
-            }
+            CollectionFailedAutoClosure(connectionPara, ref log, "Local Reports were recreated and collected manually by script on " + DateTime.Now.ToString("d/MM/yyyy HH:mm:ss"));
 
             log += AddToLog(Environment.NewLine + ">>> Ticket should auto close, if not close with note below <<<");
             log += AddToLog("");
@@ -1043,6 +1008,20 @@ namespace TP_MasterTool.Forms
             {
                 return null;
             }
+        }
+        private void CollectionFailedAutoClosure(ConnectionPara connectionPara, ref string log, string closeMsg)
+        {
+            try
+            {
+                System.IO.File.AppendAllText(@"\\" + connectionPara.TAG + @"\c$\service\scripts\MONITORING\Log\COLLECT_TP_REPORTS_" + DateTime.Today.ToString("yyyyMMdd") + ".log", "canda_omnipos_reports_ok|" + DateTime.Now.ToString("yyyyMMddHHmm") + "|" + closeMsg + Environment.NewLine, System.Text.Encoding.ASCII);
+            }
+            catch (Exception appendExp)
+            {
+                log += AddToLog("!! Error during logging process: " + appendExp.Message);
+                log += AddToLog("!! Autoclosure not possible - please close ticket manually");
+                Logger.QuickLog(Globals.Funkcje.MonitoringSlayer, "Collection Failed", connectionPara.TAG, "ErrorLog", "AppendText Error: " + appendExp.ToString());
+            }
+
         }
     }
 }
