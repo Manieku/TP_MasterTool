@@ -147,12 +147,12 @@ namespace TP_MasterTool.Forms
                 ArchiveBuildFailure(rownr, ref output);
                 Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.MonitoringSlayer, "System-TS_ERR_BUILD_ARCHIVE_FAILURE");
             }
-            //else if ((string)dataGridView1.Rows[rownr].Cells[2].Value == dataGridView1.Rows[rownr].Cells[1].Value + ";[Canda OmniPOS] The service TPDotnet Process Manager is down")
-            //{
-            //    output += AddToLog("Found procedure in database -> TPDotnet_Process_Manager_Down");
-            //    TPDotnetProcessManagerDown(rownr, connectionPara, ref output);
-            //    Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.MonitoringSlayer, "The service TPDotnet Process Manager is down");
-            //}
+            else if ((string)dataGridView1.Rows[rownr].Cells[2].Value == dataGridView1.Rows[rownr].Cells[1].Value + ";[Canda OmniPOS] The service TPDotnet Process Manager is down")
+            {
+                output += AddToLog("Found procedure in database -> TPDotnet_Process_Manager_Down");
+                TPDotnetProcessManagerDown(rownr, connectionPara, ref output);
+                Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.MonitoringSlayer, "The service TPDotnet Process Manager is down");
+            }
             else if (dataGridView1.Rows[rownr].Cells[2].Value.ToString().StartsWith(dataGridView1.Rows[rownr].Cells[1].Value + ";[Canda OmniPOS] Minilogger no. ") && dataGridView1.Rows[rownr].Cells[2].Value.ToString().Contains(" is Offline"))
             {
                 output += AddToLog("Found procedure in database -> CUC_Offline");
@@ -391,75 +391,19 @@ namespace TP_MasterTool.Forms
         }
         private void TPDotnetProcessManagerDown(int rownr, ConnectionPara connectionPara, ref string log)
         {
-            gridChange(rownr, "Checking service status");
-            log += AddToLog("Current TPDotnet Process Manager service state?");
-            ManagementObject service = new ManagementObject(serviceMgr.ConnectScope(connectionPara), new ManagementPath(String.Format("Win32_Service.Name='{0}'", "TPDotnet Process Manager")), null);
-            string state;
-            try
-            {
-                state = service.GetPropertyValue("State").ToString();
-                log += AddToLog("-> " + state);
-            }
-            catch (Exception exp)
-            {
-                if (exp.Message.ToLower().Trim() == "not found" || exp.GetHashCode() == 41149443)
-                {
-                    log += AddToLog("-> Service not found");
-                    log += AddToLog(">>> Ticket needs manual investigation <<<");
-                    gridChange(rownr, "Ticket needs manual investigation. See log", Globals.errorColor);
-                }
-                else
-                {
-                    log += AddToLog("-> Error reading service status");
-                    log += AddToLog(">>> Ticket needs manual investigation <<<");
-                    gridChange(rownr, "Ticket needs manual investigation. See log", Globals.errorColor);
-                }
-                return;
-            }
-            if (state == "Running")
-            {
-                gridChange(rownr, "Checking MobilePos status");
-                log += AddToLog("Is MobilePos running?"); //TP.UI.MobilePOS.exe
-                ObjectQuery Query = new ObjectQuery("SELECT * FROM Win32_Process Where Name='TP.UI.MobilePOS.exe'");
-                ManagementObjectSearcher Searcher = new ManagementObjectSearcher(serviceMgr.ConnectScope(connectionPara), Query);
-                if (Searcher.Get().Count == 0)
-                {
-                    log += AddToLog("-> No");
-                    log += AddToLog(">>> Please start MobilePos and check if ticket triggered autoclosure <<<");
-                    gridChange(rownr, "Ticket needs action from agent. See log", Color.LightYellow);
-                    return;
-                }
-                log += AddToLog("-> Yes");
-                log += AddToLog(">>> If autoclosure didn't occured please close the ticket with note below <<<");
-                log += AddToLog(Environment.NewLine + ">> Notes for ticket:");
-                log += AddToLog("TPDotnet Process Manager is running");
-                gridChange(rownr, "Ticket ready to be close. See log.", Color.LightGreen);
-                return;
-            }
-            gridChange(rownr, "Starting service");
             log += AddToLog("Starting TPDotnet Process Manager");
-            ManagementBaseObject outParams = service.InvokeMethod("StartService", null, null);
-            if (outParams["ReturnValue"].ToString() == "0" || outParams["ReturnValue"].ToString() == "10")
+            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c net start ""TPDotnet Process Manager""");
+            if(cmdOutput.exitCode != 0)
             {
-                log += AddToLog("-> Started");
-                log += AddToLog(">>> If autoclosure didn't occured please close the ticket with note below <<<");
-                log += AddToLog(Environment.NewLine + ">> Notes for ticket:");
-                log += AddToLog("TPDotnet Process Manager is running");
-                gridChange(rownr, "Ticket ready to be close. See log.", Color.LightGreen);
-            }
-            else if (outParams["ReturnValue"].ToString() == "14")
-            {
-                log += AddToLog("-> Unable to start the service: The service has been disabled from the system");
-                log += AddToLog(">>> Please connect to the host and enable TPDotnet Process Manager in service manager and start it again <<<");
-                gridChange(rownr, "Ticket needs action from agent. See log", Color.LightYellow);
-            }
-            else
-            {
-                log += AddToLog("-> Unable to start the service: Unhandled error with code:" + outParams["ReturnValue"].ToString());
-                log += AddToLog(">>> Ticket needs manual investigation <<<");
-                log += AddToLog("Error codes can be check at: https://docs.microsoft.com/en-us/windows/win32/cimwin32prov/startservice-method-in-class-win32-service");
+                log += AddToLog("-> Failed");
+                log += AddToLog(cmdOutput.errorOutputText);
+                log += AddToLog(Environment.NewLine + ">>> Unable to start TPDotnet Process Manager, please investigate <<<");
                 gridChange(rownr, "Ticket needs manual investigation. See log", Globals.errorColor);
+                return;
             }
+            log += AddToLog("-> Done");
+            log += AddToLog(Environment.NewLine + ">>> TPDotnet Process Manager started, ticket should auto close if not please restart MobilePOS and close ticket <<<");
+            gridChange(rownr, "Ticket ready to be close. See log.", Color.LightGreen);
         }
         private void CUCOffline(int rownr, string cucNr, ConnectionPara connectionPara, ref string log)
         {
