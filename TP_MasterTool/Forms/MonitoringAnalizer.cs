@@ -965,7 +965,6 @@ namespace TP_MasterTool.Forms
                 log += AddToLog("!! Autoclosure not possible - please close ticket manually");
                 Logger.QuickLog(Globals.Funkcje.MonitoringSlayer, "Collection Failed", connectionPara.TAG, "ErrorLog", "AppendText Error: " + appendExp.ToString());
             }
-
         }
     }
 }

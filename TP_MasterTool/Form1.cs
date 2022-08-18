@@ -582,10 +582,6 @@ namespace TP_MasterTool
             }
             ChangeStatusBar("Ready");
         }
-        private void PingOverTimeMenuItem_Click(object sender, EventArgs e)
-        {
-            new PingConst().Show();
-        }
 
         //------------SMARTY--------------------------
         private void GetSMARTMenuItem_Click(object sender, EventArgs e)

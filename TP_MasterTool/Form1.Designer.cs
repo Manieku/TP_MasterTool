@@ -100,7 +100,6 @@
             this.quickPingMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pingWithLoadMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.savePingToTxtMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.pingOverTimeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.sMARTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
@@ -145,6 +144,7 @@
             this.stocktakingMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.massFunctionsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.FindMacInDhcpMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.miniLoggerDataCollectMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ADVMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.randomCollectionOfRandomnessToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.preferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -183,7 +183,6 @@
             this.FiveMinTimer = new System.Windows.Forms.Timer(this.components);
             this.HourTimer = new System.Windows.Forms.Timer(this.components);
             this.helpProvider = new System.Windows.Forms.HelpProvider();
-            this.miniLoggerDataCollectMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.Basic_Info.SuspendLayout();
             this.StatusBar.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -794,8 +793,7 @@
             this.pingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.quickPingMenuItem,
             this.pingWithLoadMenuItem,
-            this.savePingToTxtMenuItem,
-            this.pingOverTimeMenuItem});
+            this.savePingToTxtMenuItem});
             this.pingsToolStripMenuItem.Name = "pingsToolStripMenuItem";
             this.pingsToolStripMenuItem.Size = new System.Drawing.Size(232, 26);
             this.pingsToolStripMenuItem.Text = "Ping\'s";
@@ -803,30 +801,23 @@
             // quickPingMenuItem
             // 
             this.quickPingMenuItem.Name = "quickPingMenuItem";
-            this.quickPingMenuItem.Size = new System.Drawing.Size(195, 26);
+            this.quickPingMenuItem.Size = new System.Drawing.Size(224, 26);
             this.quickPingMenuItem.Text = "Quick Ping";
             this.quickPingMenuItem.Click += new System.EventHandler(this.QuickPingTAGMenuItem_Click);
             // 
             // pingWithLoadMenuItem
             // 
             this.pingWithLoadMenuItem.Name = "pingWithLoadMenuItem";
-            this.pingWithLoadMenuItem.Size = new System.Drawing.Size(195, 26);
+            this.pingWithLoadMenuItem.Size = new System.Drawing.Size(224, 26);
             this.pingWithLoadMenuItem.Text = "Ping with Load";
             this.pingWithLoadMenuItem.Click += new System.EventHandler(this.PingWithLoad_TAGMenuItem_Click);
             // 
             // savePingToTxtMenuItem
             // 
             this.savePingToTxtMenuItem.Name = "savePingToTxtMenuItem";
-            this.savePingToTxtMenuItem.Size = new System.Drawing.Size(195, 26);
+            this.savePingToTxtMenuItem.Size = new System.Drawing.Size(224, 26);
             this.savePingToTxtMenuItem.Text = "Save Ping to txt";
             this.savePingToTxtMenuItem.Click += new System.EventHandler(this.SavePingToTxtMenuItem_Click);
-            // 
-            // pingOverTimeMenuItem
-            // 
-            this.pingOverTimeMenuItem.Name = "pingOverTimeMenuItem";
-            this.pingOverTimeMenuItem.Size = new System.Drawing.Size(195, 26);
-            this.pingOverTimeMenuItem.Text = "Ping over time";
-            this.pingOverTimeMenuItem.Click += new System.EventHandler(this.PingOverTimeMenuItem_Click);
             // 
             // toolStripSeparator3
             // 
@@ -1135,6 +1126,13 @@
             this.FindMacInDhcpMenuItem.Size = new System.Drawing.Size(254, 26);
             this.FindMacInDhcpMenuItem.Text = "Find MAC in DHCP";
             this.FindMacInDhcpMenuItem.Click += new System.EventHandler(this.FindMacInDhcpMenuItem_Click);
+            // 
+            // miniLoggerDataCollectMenuItem
+            // 
+            this.miniLoggerDataCollectMenuItem.Name = "miniLoggerDataCollectMenuItem";
+            this.miniLoggerDataCollectMenuItem.Size = new System.Drawing.Size(254, 26);
+            this.miniLoggerDataCollectMenuItem.Text = "MiniLogger Data Collect";
+            this.miniLoggerDataCollectMenuItem.Click += new System.EventHandler(this.MiniLoggerDataCollectMenuItem_Click);
             // 
             // ADVMenuItem
             // 
@@ -1522,13 +1520,6 @@
             // 
             this.helpProvider.HelpNamespace = "help.htm";
             // 
-            // miniLoggerDataCollectMenuItem
-            // 
-            this.miniLoggerDataCollectMenuItem.Name = "miniLoggerDataCollectMenuItem";
-            this.miniLoggerDataCollectMenuItem.Size = new System.Drawing.Size(254, 26);
-            this.miniLoggerDataCollectMenuItem.Text = "MiniLogger Data Collect";
-            this.miniLoggerDataCollectMenuItem.Click += new System.EventHandler(this.MiniLoggerDataCollectMenuItem_Click);
-            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -1655,7 +1646,6 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator15;
         private System.Windows.Forms.ToolStripMenuItem changeLogMenuItem;
         private System.Windows.Forms.ToolStripMenuItem reportSuggestMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem pingOverTimeMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator16;
         public System.Windows.Forms.ToolStripStatusLabel StatusBarText;
         public System.Windows.Forms.ToolStripMenuItem currentVersionMenuItem;
