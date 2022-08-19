@@ -332,6 +332,7 @@ namespace TP_MasterTool.Forms
         private void HostOffline1h(int rownr, ConnectionPara connectionPara, ref string log)
         {
             gridChange(rownr, "Pinging TAG");
+            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("cmd.exe", "/c ping " + connectionPara.TAG);
             log += AddToLog("Is host back online?:");
             try
             {
@@ -341,7 +342,6 @@ namespace TP_MasterTool.Forms
                     log += AddToLog(">>> Ticket can be close if issue is not reoccurring, please check history <<<");
                     log += AddToLog("");
                     log += AddToLog(">> Notes for ticket:");
-                    CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("cmd.exe", "/c ping " + connectionPara.TAG);
                     log += "Machine is back online:" + cmdOutput.outputText;
                     gridChange(rownr, "Ticket ready to be close. See log.", Color.LightGreen);
                     return;
@@ -373,8 +373,7 @@ namespace TP_MasterTool.Forms
 
             log += AddToLog("IP also not pingable");
             log += AddToLog("Host is still offline");
-            CtrlFunctions.CmdOutput cmdOutput3 = CtrlFunctions.RunHiddenCmd("cmd.exe", "/c ping " + connectionPara.TAG);
-            log += AddToLog(cmdOutput3.outputText);
+            log += AddToLog(cmdOutput.outputText);
             log += AddToLog(">>> Create task for L1 with note below and close L2 task <<<");
             log += AddToLog("");
             log += AddToLog(">> Notes for ticket:");
@@ -578,24 +577,11 @@ namespace TP_MasterTool.Forms
                 return;
             }
 
-            gridChange(rownr, "Connecting to " + String.Join(".", connectionPara.IPbytes[0], connectionPara.IPbytes[1], connectionPara.IPbytes[2], "180"));
-            log += AddToLog("Connecting to " + String.Join(".", connectionPara.IPbytes[0], connectionPara.IPbytes[1], connectionPara.IPbytes[2], "180"));
             ConnectionPara connectionParaTPS = ConnectionPara.EstablishConnection(String.Join(".", connectionPara.IPbytes[0], connectionPara.IPbytes[1], connectionPara.IPbytes[2], "180"));
-            if (connectionParaTPS == null)
+            if (!ConnectToHost(rownr, connectionParaTPS, ref log))
             {
-                log += AddToLog("-> Unable to establish connection");
-                log += AddToLog(Environment.NewLine + ">>> Please check if host is online and credentials are working <<<");
-                gridChange(rownr, "Ticket needs manual investigation. See log", Globals.errorColor);
                 return;
             }
-            if (!CtrlFunctions.MapEndpointDrive(ref connectionParaTPS, out CtrlFunctions.CmdOutput cmdOutputTPS))
-            {
-                log += AddToLog("-> Unable to map drive: " + cmdOutputTPS.errorOutputText);
-                log += AddToLog(Environment.NewLine + ">>> Please check if host is online and credentials are working <<<");
-                gridChange(rownr, "Ticket needs manual investigation. See log", Globals.errorColor);
-                return;
-            }
-            log += AddToLog("-> Done");
 
             log += AddToLog("Reading TA numbers");
             string[] txnrs = dataGridView1.Rows[rownr].Cells[2].Value.ToString().Remove(dataGridView1.Rows[rownr].Cells[2].Value.ToString().Length - 59).Remove(0, 41).Split(',');

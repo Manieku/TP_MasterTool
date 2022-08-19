@@ -154,12 +154,6 @@
     <Compile Include="Forms\EndpointsScan.Designer.cs">
       <DependentUpon>EndpointsScan.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\PingConst.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\PingConst.Designer.cs">
-      <DependentUpon>PingConst.cs</DependentUpon>
-    </Compile>
     <Compile Include="Forms\Report.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -205,9 +199,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\MonitoringAnalizer.resx">
       <DependentUpon>MonitoringAnalizer.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\PingConst.resx">
-      <DependentUpon>PingConst.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Report.resx">
       <DependentUpon>Report.cs</DependentUpon>
