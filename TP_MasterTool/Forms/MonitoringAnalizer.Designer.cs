@@ -32,12 +32,12 @@ namespace TP_MasterTool.Forms
             this.textBox = new System.Windows.Forms.TextBox();
             this.FetchTxtButton = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.StartStopButton = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
             this.ticketNr = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.hostname = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tixSummary = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.toolStatus = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.StartStopButton = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -89,38 +89,6 @@ namespace TP_MasterTool.Forms
             this.dataGridView1.TabIndex = 4;
             this.dataGridView1.CellContentDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentDoubleClick);
             // 
-            // ticketNr
-            // 
-            this.ticketNr.HeaderText = "Ticket Nr";
-            this.ticketNr.MinimumWidth = 6;
-            this.ticketNr.Name = "ticketNr";
-            this.ticketNr.ReadOnly = true;
-            this.ticketNr.Width = 125;
-            // 
-            // hostname
-            // 
-            this.hostname.HeaderText = "TAG";
-            this.hostname.MinimumWidth = 6;
-            this.hostname.Name = "hostname";
-            this.hostname.ReadOnly = true;
-            this.hostname.Width = 125;
-            // 
-            // tixSummary
-            // 
-            this.tixSummary.HeaderText = "Summary";
-            this.tixSummary.MinimumWidth = 6;
-            this.tixSummary.Name = "tixSummary";
-            this.tixSummary.ReadOnly = true;
-            this.tixSummary.Width = 450;
-            // 
-            // toolStatus
-            // 
-            this.toolStatus.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.toolStatus.HeaderText = "Status";
-            this.toolStatus.MinimumWidth = 6;
-            this.toolStatus.Name = "toolStatus";
-            this.toolStatus.ReadOnly = true;
-            // 
             // StartStopButton
             // 
             this.StartStopButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -142,6 +110,42 @@ namespace TP_MasterTool.Forms
             this.label1.Size = new System.Drawing.Size(36, 17);
             this.label1.TabIndex = 6;
             this.label1.Text = "0 / 0";
+            // 
+            // ticketNr
+            // 
+            this.ticketNr.HeaderText = "Ticket Nr";
+            this.ticketNr.MinimumWidth = 6;
+            this.ticketNr.Name = "ticketNr";
+            this.ticketNr.ReadOnly = true;
+            this.ticketNr.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.ticketNr.Width = 125;
+            // 
+            // hostname
+            // 
+            this.hostname.HeaderText = "TAG";
+            this.hostname.MinimumWidth = 6;
+            this.hostname.Name = "hostname";
+            this.hostname.ReadOnly = true;
+            this.hostname.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.hostname.Width = 125;
+            // 
+            // tixSummary
+            // 
+            this.tixSummary.HeaderText = "Summary";
+            this.tixSummary.MinimumWidth = 6;
+            this.tixSummary.Name = "tixSummary";
+            this.tixSummary.ReadOnly = true;
+            this.tixSummary.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.tixSummary.Width = 450;
+            // 
+            // toolStatus
+            // 
+            this.toolStatus.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.toolStatus.HeaderText = "Status";
+            this.toolStatus.MinimumWidth = 6;
+            this.toolStatus.Name = "toolStatus";
+            this.toolStatus.ReadOnly = true;
+            this.toolStatus.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
             // MonitoringAnalizer
             // 

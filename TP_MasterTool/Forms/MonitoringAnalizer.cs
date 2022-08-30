@@ -251,7 +251,12 @@ namespace TP_MasterTool.Forms
             foreach (string templine in ticketList)
             {
                 string[] line = templine.Split('\t');
-                if (line[status] == "Assigned" && line[tixSource] == "HTTP")
+                if(line.Length == 1)
+                {
+                    CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Input File Error", "Some lines in input file can't be splited by tabulator, please make sure that file was saved as Tab delimited and don't contain any empty lines.");
+                    return false;
+                }
+                else if (line[status] == "Assigned" && line[tixSource] == "HTTP")
                 {
                     dataGridView1.Rows.Add(line[tixNr], line[tag], line[summary].Replace("\"", ""), "Waiting");
                 }
