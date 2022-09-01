@@ -124,7 +124,7 @@
     <value>120, 17</value>
   </metadata>
   <data name="ColonFixMenuItem.ToolTipText" xml:space="preserve">
-    <value>Kills MobilePOS application, then copy posDB to your C:\temp folder with config file 
+    <value>Kills MobilePOS application, then copy posDB to your ToolBox folder with config file 
 and waits for your confirmation after which it will copy posDB back to till.
 NOTE: POS application needs to be started manually.</value>
   </data>

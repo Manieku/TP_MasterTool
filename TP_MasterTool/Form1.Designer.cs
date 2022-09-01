@@ -801,21 +801,21 @@
             // quickPingMenuItem
             // 
             this.quickPingMenuItem.Name = "quickPingMenuItem";
-            this.quickPingMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.quickPingMenuItem.Size = new System.Drawing.Size(195, 26);
             this.quickPingMenuItem.Text = "Quick Ping";
             this.quickPingMenuItem.Click += new System.EventHandler(this.QuickPingTAGMenuItem_Click);
             // 
             // pingWithLoadMenuItem
             // 
             this.pingWithLoadMenuItem.Name = "pingWithLoadMenuItem";
-            this.pingWithLoadMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.pingWithLoadMenuItem.Size = new System.Drawing.Size(195, 26);
             this.pingWithLoadMenuItem.Text = "Ping with Load";
             this.pingWithLoadMenuItem.Click += new System.EventHandler(this.PingWithLoad_TAGMenuItem_Click);
             // 
             // savePingToTxtMenuItem
             // 
             this.savePingToTxtMenuItem.Name = "savePingToTxtMenuItem";
-            this.savePingToTxtMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.savePingToTxtMenuItem.Size = new System.Drawing.Size(195, 26);
             this.savePingToTxtMenuItem.Text = "Save Ping to txt";
             this.savePingToTxtMenuItem.Click += new System.EventHandler(this.SavePingToTxtMenuItem_Click);
             // 
