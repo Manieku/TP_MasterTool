@@ -135,7 +135,6 @@
             this.toolStripSeparator17 = new System.Windows.Forms.ToolStripSeparator();
             this.veritasBackupJobResetMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator24 = new System.Windows.Forms.ToolStripSeparator();
-            this.backstoreCsvExportMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.serviceManagerMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.TransactionsXMLToCSVMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -972,8 +971,7 @@
             this.aPCServiceFixMenuItem,
             this.toolStripSeparator17,
             this.veritasBackupJobResetMenuItem,
-            this.toolStripSeparator24,
-            this.backstoreCsvExportMenuItem});
+            this.toolStripSeparator24});
             this.fixesToolStripMenuItem.Name = "fixesToolStripMenuItem";
             this.fixesToolStripMenuItem.Overflow = System.Windows.Forms.ToolStripItemOverflow.AsNeeded;
             this.fixesToolStripMenuItem.Size = new System.Drawing.Size(55, 24);
@@ -1054,13 +1052,6 @@
             // 
             this.toolStripSeparator24.Name = "toolStripSeparator24";
             this.toolStripSeparator24.Size = new System.Drawing.Size(252, 6);
-            // 
-            // backstoreCsvExportMenuItem
-            // 
-            this.backstoreCsvExportMenuItem.Name = "backstoreCsvExportMenuItem";
-            this.backstoreCsvExportMenuItem.Size = new System.Drawing.Size(255, 26);
-            this.backstoreCsvExportMenuItem.Text = "Backstore CSV Export";
-            this.backstoreCsvExportMenuItem.Click += new System.EventHandler(this.BackstoreCsvExportMenuItem_Click);
             // 
             // toolsToolStripMenuItem
             // 
@@ -1688,7 +1679,6 @@
         private System.Windows.Forms.ToolStripMenuItem dumpFileAnaliseMenuItem;
         private System.Windows.Forms.ToolStripMenuItem stocktakingMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator24;
-        private System.Windows.Forms.ToolStripMenuItem backstoreCsvExportMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator25;
         private System.Windows.Forms.ToolStripMenuItem sQlQueriesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem lastTxRollOverMenuItem;
