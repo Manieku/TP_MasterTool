@@ -7,6 +7,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Management.Automation;
+using System.Threading;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using TP_MasterTool.Forms;
@@ -120,15 +121,42 @@ namespace TP_MasterTool
         }
         private void Test_Button_Click(object sender, EventArgs e)
         {
-            foreach (string tag in File.ReadAllLines(@".\tps dsFin.txt"))
+
+            string output = "TAG,Timestamp,Bluescreen,PowerButton,Other" + Environment.NewLine;
+            foreach (string file in Directory.GetFiles(@".\Crash"))
             {
-                File.Create(@".\Csv\" + tag + ".txt").Close();
+                foreach (string line in File.ReadAllLines(file))
+                {
+                    string bluescreen = "0";
+                    string powerButen = "0";
+                    string other = "0";
+                    string[] data = line.Split(',');
+                    if (data[2] != "0")
+                    {
+                        powerButen = "1";
+                    }
+                    else if (data[1] != "0")
+                    {
+                        bluescreen = "1";
+                    }
+                    if (data[1] == "0" && data[2] == "0")
+                    {
+                        other = "1";
+                    }
+                    output += string.Join(",", Path.GetFileNameWithoutExtension(file), data[0], bluescreen, powerButen, other, Environment.NewLine);
+                }
             }
-            foreach (string line in File.ReadAllLines(@".\dates.txt"))
-            {
-                string[] temp = line.Split('\t');
-                File.AppendAllText(Directory.GetFiles(@".\Csv\", temp[1] + "*")[0], temp[0] + Environment.NewLine);
-            }
+            FileController.SaveTxtToFile(@".\result.txt", output, out _);
+
+            //foreach (string tag in File.ReadAllLines(@".\tps dsFin.txt"))
+            //{
+            //    File.Create(@".\Csv\" + tag + ".txt").Close();
+            //}
+            //foreach (string line in File.ReadAllLines(@".\dates.txt"))
+            //{
+            //    string[] temp = line.Split('\t');
+            //    File.AppendAllText(Directory.GetFiles(@".\Csv\", temp[1] + "*")[0], temp[0] + Environment.NewLine);
+            //}
 
             //CtrlFunctions.EncryptFile(@".\mojepasy.txt", "cycuszki", Globals.configPath + "credentials.crypt");
             //MessageBox.Show("krypto krypto superman lezy");

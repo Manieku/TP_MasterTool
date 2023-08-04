@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using TP_MasterTool.Forms;
+using TP_MasterTool.Forms.CustomMessageBox;
 
 namespace TP_MasterTool.Klasy
 {
@@ -646,7 +648,97 @@ namespace TP_MasterTool.Klasy
         }
         public static void AdhocFunction(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
-            ////
+            massFunctionForm.GridChange(rownr, "Downloading Log");
+            string fileName = connectionPara.TAG + ".evtx";
+            string output = "";
+            if (!FileController.CopyFile(@"\\" + connectionPara.TAG + @"\c$\Windows\System32\winevt\Logs\System.evtx", @".\Logs\Windows\" + fileName, false, out Exception copyExp))
+            {
+                if (copyExp != null)
+                {
+                    massFunctionForm.ErrorLog(rownr, copyExp.Message);
+                }
+                return;
+            }
+            massFunctionForm.GridChange(rownr, "Quering Log");
+
+            string newerThan = DateTime.Parse("07.01.2023").ToUniversalTime().ToString("o");  // <-------- date from (mm.dd.yyyy)
+
+            string query = string.Format("*[System / Level = 1] and *[System[EventID = 41]] and *[System[TimeCreated[@SystemTime >= '{0}']]]", newerThan);
+            EventLogQuery eventsQuery = new EventLogQuery(@".\Logs\Windows\" + fileName, PathType.FilePath, query);
+            using (EventLogReader logReader = new EventLogReader(eventsQuery))
+            {
+                EventRecord entry;
+                while ((entry = logReader.ReadEvent()) != null)
+                {
+                    output += entry.TimeCreated.ToString() + ",";
+                    XDocument logEntry = XDocument.Parse(entry.ToXml());
+                    string bugcheck = "";
+                    string powerbutton = "";
+                    foreach (XElement element in logEntry.Root.Element("{http://schemas.microsoft.com/win/2004/08/events/event}EventData").Elements())
+                    {
+                        if (element.Attribute("Name").Value == "BugcheckCode")
+                        {
+                            bugcheck = element.Value;
+                        }
+                        if (element.Attribute("Name").Value == "PowerButtonTimestamp")
+                        {
+                            powerbutton = element.Value;
+                        }
+                    }
+                    output += bugcheck + "," + powerbutton + Environment.NewLine;
+                }
+                if (output != "")
+                {
+                    FileController.SaveTxtToFile(@".\Crash\" + connectionPara.TAG + ".csv", output, out _);
+                }
+            }
+            File.Delete(@".\Logs\Windows\" + fileName);
+            massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
+            massFunctionForm.AddToLog(rownr, "[SUCCESS] - Event Log Checked");
+
+        }
+
+        //------------------------Moje wymysly------------------------------//
+        public static void ApcFirmwareCheck(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
+        {
+            /*
+             * Wyszukuje wszystkie logi w folderze APC energylog
+             * Zaczynajac od najnowszego i szuka wpisu pod firmware
+             * Jesli wpis jest null przechodzi do kolejnego pliku
+             * Na prosbe Gogarowski Petre (ADV)
+             */
+
+            massFunctionForm.GridChange(rownr, "Reading log");
+            try
+            {
+                string[] files = new DirectoryInfo(@"\\" + connectionPara.TAG + @"\c$\Program Files (x86)\APC\PowerChute Business Edition\agent\energylog").EnumerateFiles().OrderByDescending(file => file.CreationTime).Select(file => file.FullName).ToArray();
+                foreach (string file in files)
+                {
+                    string[] log = System.IO.File.ReadAllLines(file);
+                    foreach (string line in log)
+                    {
+                        if (line.StartsWith("# $firmware") && line.Split('=')[1] != "null")
+                        {
+                            massFunctionForm.AddToLog(rownr, "[SUCCESS] - " + Path.GetFileName(file) + " - " + line.Split('=')[1]);
+                            massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
+                            return;
+                        }
+                    }
+                }
+                massFunctionForm.ErrorLog(rownr, "null");
+            }
+            catch
+            {
+                massFunctionForm.ErrorLog(rownr, "Read log error");
+            }
+        }
+        public static void ScanerRomidVersionCheck(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
+        {
+            /*
+             * Wyciaga z dlslog.txt wersje firmware scanera
+             * Na prosbe Januszka Magdalena (Problem Managment)
+             */
+
             massFunctionForm.GridChange(rownr, "Checking Files");
             string[] lines;
             try
@@ -669,6 +761,189 @@ namespace TP_MasterTool.Klasy
             }
             massFunctionForm.ErrorLog(rownr, "Didn't find ROMID in log");
         }
+        public static void EdgeIconDeleteCheck(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
+        {
+            /*
+             * Sprawdza czy w SWAT logach jest folder z Edge icon delete
+             * Na prosbe Gogarowski Petre (ADV)
+             */
 
+            massFunctionForm.GridChange(rownr, "Checking");
+            if (Directory.Exists(@"\\" + connectionPara.TAG + @"\c$\oeminst\ALL_LOGS\SWAT\Edge_Icon_Delete"))
+            {
+                massFunctionForm.GridChange(rownr, "Good", Globals.successColor);
+                massFunctionForm.AddToLog(rownr, "[SUCCESS] - Folder exist");
+            }
+            else
+            {
+                massFunctionForm.ErrorLog(rownr, "Folder don't exist");
+            }
+        }
+        public static void WinLogsCheckForCrash(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
+        {
+            /*
+             * Pobiera system event log to windows log folder
+             * Przeszukuje log (Query) w poszukiwaniu critical ID 41 nowsze niz konkretna data (mm.dd.yyyy)
+             * I wypluwa wszystkie eventy w pliku z nazwa hosta do konkretnego folderu
+             * Na prosbe Gogarowski Petre (ADV)
+             */
+            massFunctionForm.GridChange(rownr, "Downloading Log");
+            string fileName = connectionPara.TAG + ".evtx";
+            string output = "";
+            if (!FileController.CopyFile(@"\\" + connectionPara.TAG + @"\c$\Windows\System32\winevt\Logs\System.evtx", @".\Logs\Windows\" + fileName, false, out Exception copyExp))
+            {
+                if (copyExp != null)
+                {
+                    massFunctionForm.ErrorLog(rownr, copyExp.Message);
+                }
+                return;
+            }
+            massFunctionForm.GridChange(rownr, "Quering Log");
+
+            string newerThan = DateTime.Parse("01.01.2023").ToUniversalTime().ToString("o");  // <-------- date from (mm.dd.yyyy)
+
+            string query = string.Format("*[System / Level = 1] and *[System[EventID = 41]] and *[System[TimeCreated[@SystemTime >= '{0}']]]", newerThan);
+            EventLogQuery eventsQuery = new EventLogQuery(@".\Logs\Windows\" + fileName, PathType.FilePath, query);
+            using (EventLogReader logReader = new EventLogReader(eventsQuery))
+            {
+                EventRecord entry;
+                while ((entry = logReader.ReadEvent()) != null)
+                {
+                    output += entry.TimeCreated.ToString() + ",";
+                    XDocument logEntry = XDocument.Parse(entry.ToXml());
+                    string bugcheck = "";
+                    string powerbutton = "";
+                    foreach (XElement element in logEntry.Root.Element("{http://schemas.microsoft.com/win/2004/08/events/event}EventData").Elements())
+                    {
+                        if (element.Attribute("Name").Value == "BugcheckCode")
+                        {
+                            bugcheck = element.Value;
+                        }
+                        if (element.Attribute("Name").Value == "PowerButtonTimestamp")
+                        {
+                            powerbutton = element.Value;
+                        }
+                    }
+                    output += bugcheck + "," + powerbutton + Environment.NewLine;
+                }
+                if (output != "")
+                {
+                    FileController.SaveTxtToFile(@".\Crash\" + connectionPara.TAG + ".csv", output, out _);
+                }
+            }
+            File.Delete(@".\Logs\Windows\" + fileName);
+            massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
+            massFunctionForm.AddToLog(rownr, "[SUCCESS] - Event Log Checked");
+        }
+        public static void SmartCheck(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
+        {
+            /*
+             * Copy CrystalDisk and gets smarts of disks
+             * Gets result and puts each disk health status in csv file
+             * >> ze wzgledu na duza ilosc kopiowania zaleca sie zmniejszenie ilosci background workerow do 5 <<
+             * Moj wymysl (ADV)
+             */
+            massFunctionForm.GridChange(rownr, "Getting SMART");
+            if (!CtrlFunctions.Smarty(connectionPara, out string errorMsg))
+            {
+                massFunctionForm.ErrorLog(rownr, errorMsg);
+            }
+            else
+            {
+                massFunctionForm.GridChange(rownr, "Reading SMART");
+                string output = connectionPara.TAG + ",";
+                string[] smartLog = File.ReadAllLines(@"\\" + connectionPara.TAG + @"\c$\SMART\DiskInfo.txt");
+                foreach(string line in smartLog)
+                {
+                    if(line.Contains("Model") || line.Contains("Disk Size") || line.Contains("Health Status"))
+                    {
+                        output += line.Split(':')[1] + ",";
+                    }
+                }
+                output += Environment.NewLine;
+                File.AppendAllText(@".\Logs\SmartCheck.csv", output);
+            }
+            massFunctionForm.GridChange(rownr, "Deleting Lock");
+            if(!CtrlFunctions.DeleteLock(@"\\" + connectionPara.TAG + @"\c$\SMART\smart.lock"))
+            {
+                massFunctionForm.GridChange(rownr, "Lock delete error");
+                return;
+            }
+            massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
+            massFunctionForm.AddToLog(rownr, "[SUCCESS] - SMART Data Saved");
+        }
+        public static void LookForWinSxsFolders(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
+        {
+            massFunctionForm.GridChange(rownr, "Looking for folders");
+            string[] folders = File.ReadAllLines(@".\folders.txt");
+            for (int i = 0; i < folders.Length; i++)
+            {
+                massFunctionForm.GridChange(rownr, "Looking for folders");
+                if (folders[i] == "")
+                {
+                    continue;
+                }
+                if (Directory.Exists(@"\\" + connectionPara.TAG + @"\c$\Windows\WinSxS\" + folders[i]))
+                {
+                    massFunctionForm.GridChange(rownr, "Copying folder");
+                    if (!FileController.CopyFolder(@"\\" + connectionPara.TAG + @"\c$\Windows\WinSxS\" + folders[i], @".\Foldery\" + folders[i], false, out Exception copyExp))
+                    {
+                        massFunctionForm.ErrorLog(rownr, copyExp.Message);
+                    }
+                    folders[i] = "";
+                }
+            }
+            File.WriteAllLines(@".\folders.txt", folders);
+            massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
+            
+        }
+        public static void RfidErrorFinder(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
+        {
+            /*
+             * Sprawdza i dobiera odpowiednia sciezke w zaleznosci od wersji ProBase
+             * Robi kopie logu poniewaz jest blokowany
+             * Przeszukuje kazda linijke najnowszego logu jpos i zlicza error 
+             * Na koniec usuwa kopie logu i wypluwa ilosc bledow na stacji do output loga
+             * Na prosbe Dovgalova Olga (PM)
+             */
+
+            string errorToFind = "Bad file descriptor in nativeavailable";
+
+            massFunctionForm.GridChange(rownr, "Reading log");
+            string sciezka = @"\\" + connectionPara.TAG + @"\c$\ProgramData\javapos\wn\log\jniwrapper-diagnostics.log";
+            if (!File.Exists(sciezka))
+            {
+                sciezka = @"\\" + connectionPara.TAG + @"\d$\TPDotnet\DeviceService\JPOSRFIDScannerLogs.log";
+            }
+            string sciezka2 = sciezka + "bak";
+
+            if (!FileController.CopyFile(sciezka, sciezka2, false, out Exception copyExp))
+            {
+                massFunctionForm.ErrorLog(rownr, "Error copying log: " + copyExp.Message);
+                return;
+            }
+
+            string[] log;
+            try
+            {
+                log = File.ReadAllLines(sciezka2);
+            }
+            catch (Exception exp)
+            {
+                massFunctionForm.ErrorLog(rownr, "Error reading log - " + exp.Message);
+                return;
+            }
+            int errorCount = 0;
+            foreach (string line in log)
+            {
+                if (line.Contains(errorToFind))
+                {
+                    errorCount++;
+                }
+            }
+            File.Delete(sciezka2);
+            massFunctionForm.AddToLog(rownr, "[SUCCESS] - " + errorCount);
+            massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
+        }
     }
 }

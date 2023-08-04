@@ -20,7 +20,7 @@ namespace TP_MasterTool.Forms
         List<string> additionalInfo = new List<string>() { "" };
         int masterRow;
         int iterator;
-        readonly int bgwCount = 15;
+        readonly int bgwCount = 5;
         bool cancel = false;
         public string[] log;
         string functionName;
