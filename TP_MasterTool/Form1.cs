@@ -121,32 +121,65 @@ namespace TP_MasterTool
         }
         private void Test_Button_Click(object sender, EventArgs e)
         {
+            MessageBox.Show(Globals.storeId2Tag["430009"]);
 
-            string output = "TAG,Timestamp,Bluescreen,PowerButton,Other" + Environment.NewLine;
-            foreach (string file in Directory.GetFiles(@".\Crash"))
-            {
-                foreach (string line in File.ReadAllLines(file))
-                {
-                    string bluescreen = "0";
-                    string powerButen = "0";
-                    string other = "0";
-                    string[] data = line.Split(',');
-                    if (data[2] != "0")
-                    {
-                        powerButen = "1";
-                    }
-                    else if (data[1] != "0")
-                    {
-                        bluescreen = "1";
-                    }
-                    if (data[1] == "0" && data[2] == "0")
-                    {
-                        other = "1";
-                    }
-                    output += string.Join(",", Path.GetFileNameWithoutExtension(file), data[0], bluescreen, powerButen, other, Environment.NewLine);
-                }
-            }
-            FileController.SaveTxtToFile(@".\result.txt", output, out _);
+            //string[] tags = File.ReadAllLines(@".\temp.txt");
+            //foreach(string tag in tags)
+            //{
+            //    File.Create(@".\Dates\" + tag + ".txt").Close();
+            //    string[] lines = { "20231209", "20231210" };
+            //    if (tag.StartsWith("PT")) { lines = new string[] { "20231209", "20231210", "20231208" }; }
+            //    File.WriteAllLines(@".\Dates\" + tag + ".txt", lines);
+            //}
+
+            //string output = "";
+            //foreach(string file in Directory.GetFiles(@".\Dates"))
+            //{
+            //    foreach(string line in File.ReadAllLines(file))
+            //    {
+            //        output += Path.GetFileNameWithoutExtension(file) + "," + line + Environment.NewLine;
+            //    }
+            //}
+            //File.WriteAllText(@".\output.csv", output);
+
+            //ChangeStatusBar("Working");
+            //CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c systeminfo | find /i \"BIOS Version\"");
+            //if (cmdOutput.exitCode != 0)
+            //{
+            //    Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "RCMD Error");
+            //    CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "RCMD Error", "Unable to get last boot time - RCMD exited with error:" +
+            //        Environment.NewLine + cmdOutput.errorOutputText);
+            //    ChangeStatusBar("Ready");
+            //    return;
+            //}
+            //CustomMsgBox.Show(CustomMsgBox.MsgType.Info, "Last Boot Time Info", cmdOutput.outputText);
+            //ChangeStatusBar("Ready");
+
+            //string output = "TAG,Timestamp,Bluescreen,PowerButton,Other" + Environment.NewLine;
+            //foreach (string file in Directory.GetFiles(@".\Crash"))
+            //{
+            //    foreach (string line in File.ReadAllLines(file))
+            //    {
+            //        string bluescreen = "0";
+            //        string powerButen = "0";
+            //        string other = "0";
+            //        string[] data = line.Split(',');
+            //        if (data[2] != "0")
+            //        {
+            //            powerButen = "1";
+            //        }
+            //        else if (data[1] != "0")
+            //        {
+            //            bluescreen = "1";
+            //        }
+            //        if (data[1] == "0" && data[2] == "0")
+            //        {
+            //            other = "1";
+            //        }
+            //        output += string.Join(",", Path.GetFileNameWithoutExtension(file), data[0], bluescreen, powerButen, other, Environment.NewLine);
+            //    }
+            //}
+            //FileController.SaveTxtToFile(@".\result.txt", output, out _);
 
             //foreach (string tag in File.ReadAllLines(@".\tps dsFin.txt"))
             //{

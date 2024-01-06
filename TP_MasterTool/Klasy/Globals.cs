@@ -99,6 +99,7 @@ namespace TP_MasterTool
         public static string SQLuserName = "";
         public static string SQLpassword = "";
 
+        public static Dictionary<string, string> storeId2Tag = new Dictionary<string, string>();
 
         public static List<string> advUsers = new List<string> { "mariusz.rzemyk", "mariusz.rzemyk.adm", "a.parzy.ext.adm", "petre.gogarowski.adm", "s.krochmal.adm" };
         public static List<string> mineAccounts = new List<string> { "mariusz.rzemyk", "u103583", "mariusz.rzemyk.adm" };

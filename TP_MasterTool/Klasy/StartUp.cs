@@ -179,6 +179,22 @@ namespace TP_MasterTool.Klasy
             Globals.TESTpassword = credentials[3];
             Globals.SQLuserName = credentials[4];
             Globals.SQLpassword = credentials[5];
+
+            myLog.Add("Store ID to TPS tag dictionary creation");
+            try
+            {
+                foreach(string line in System.IO.File.ReadAllLines(Globals.configPath + "storeIdDictionary.txt"))
+                {
+                    string[] temp = line.Split('\t');
+                    Globals.storeId2Tag.Add(temp[0], temp[1]);
+                }
+            }
+            catch(Exception exp)
+            {
+                myLog.Add("Creation failed:" + Environment.NewLine + exp.ToString());
+                myLog.SaveLog("CriticalError");
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Dictionary Creation Error", "Toolbox was unable to create storeID dictionary: " + exp.Message);
+            }
         }
 
         //-------------------------------------------//

@@ -165,7 +165,7 @@ namespace TP_MasterTool.Forms
                 CDriveCritical(rownr, connectionPara, ref output);
                 Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.MonitoringSlayer, @"Msg from InfoDaemon drive C:\ state has been changed to critical");
             }
-            else if ((string)dataGridView1.Rows[rownr].Cells[2].Value == dataGridView1.Rows[rownr].Cells[1].Value + @";[Canda OmniPOS] *TPNAPP* Central Collection Process for TP.Report failed")
+            else if ((string)dataGridView1.Rows[rownr].Cells[2].Value == dataGridView1.Rows[rownr].Cells[1].Value + @";[Canda OmniPOS] Central Collection Process for TP.Report failed")
             {
                 output += AddToLog("Found procedure in database -> CollectionFailed");
                 CollectionFailed(rownr, connectionPara, ref output);
