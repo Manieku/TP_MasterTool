@@ -540,10 +540,10 @@ namespace TP_MasterTool.Forms
             }
 
             log += AddToLog("-> Missing | Regenerating reports");
-            int offset = 0;
-            if (connectionPara.country == "BE" || connectionPara.country == "LU")
+            int offset = -1;
+            if (connectionPara.country == "PT" || connectionPara.country == "ES")
             {
-                offset = -1;
+                offset = 0;
             }
             gridChange(rownr, "Regenerating reports");
             log += AddToLog("Executing runeodreports.bat " + DateTime.Today.AddDays(offset - 1).ToString("yyyyMMdd") + " - " + DateTime.Today.AddDays(offset).ToString("yyyyMMdd"));

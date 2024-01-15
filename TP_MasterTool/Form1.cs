@@ -121,7 +121,28 @@ namespace TP_MasterTool
         }
         private void Test_Button_Click(object sender, EventArgs e)
         {
-            MessageBox.Show(Globals.storeId2Tag["430009"]);
+            //List<string> errors = new List<string>();
+            //foreach (string line in File.ReadAllLines(@".\input.txt"))
+            //{
+            //    string[] numbers = line.Split(new char[] { '\t' }, StringSplitOptions.RemoveEmptyEntries);
+            //    for (int i = 1; i < numbers.Length; i++)
+            //    {
+            //        if (Globals.storeId2Tag.ContainsKey(numbers[i]))
+            //        {
+            //            File.AppendAllText(@".\Dates\" + Globals.storeId2Tag[numbers[i]] + ".txt", numbers[0] + Environment.NewLine);
+            //        }
+            //        else if(!errors.Contains(numbers[i]))
+            //        {
+            //            errors.Add(numbers[i]);
+            //        }
+            //    }
+            //}
+            //File.AppendAllLines(@".\errors.txt", errors);
+
+            //foreach (string file in Directory.GetFiles(@".\Dates"))
+            //{
+            //    File.AppendAllText(@".\dates_tps.txt", Path.GetFileNameWithoutExtension(file) + Environment.NewLine);
+            //}
 
             //string[] tags = File.ReadAllLines(@".\temp.txt");
             //foreach(string tag in tags)
@@ -132,15 +153,15 @@ namespace TP_MasterTool
             //    File.WriteAllLines(@".\Dates\" + tag + ".txt", lines);
             //}
 
-            //string output = "";
-            //foreach(string file in Directory.GetFiles(@".\Dates"))
-            //{
-            //    foreach(string line in File.ReadAllLines(file))
-            //    {
-            //        output += Path.GetFileNameWithoutExtension(file) + "," + line + Environment.NewLine;
-            //    }
-            //}
-            //File.WriteAllText(@".\output.csv", output);
+            string output = "";
+            foreach (string file in Directory.GetFiles(@".\Dates"))
+            {
+                foreach (string line in File.ReadAllLines(file))
+                {
+                    output += Path.GetFileNameWithoutExtension(file) + "," + line + Environment.NewLine;
+                }
+            }
+            File.WriteAllText(@".\output.csv", output);
 
             //ChangeStatusBar("Working");
             //CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c systeminfo | find /i \"BIOS Version\"");
