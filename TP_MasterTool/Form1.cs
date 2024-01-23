@@ -131,7 +131,7 @@ namespace TP_MasterTool
             //        {
             //            File.AppendAllText(@".\Dates\" + Globals.storeId2Tag[numbers[i]] + ".txt", numbers[0] + Environment.NewLine);
             //        }
-            //        else if(!errors.Contains(numbers[i]))
+            //        else if (!errors.Contains(numbers[i]))
             //        {
             //            errors.Add(numbers[i]);
             //        }
@@ -142,15 +142,6 @@ namespace TP_MasterTool
             //foreach (string file in Directory.GetFiles(@".\Dates"))
             //{
             //    File.AppendAllText(@".\dates_tps.txt", Path.GetFileNameWithoutExtension(file) + Environment.NewLine);
-            //}
-
-            //string[] tags = File.ReadAllLines(@".\temp.txt");
-            //foreach(string tag in tags)
-            //{
-            //    File.Create(@".\Dates\" + tag + ".txt").Close();
-            //    string[] lines = { "20231209", "20231210" };
-            //    if (tag.StartsWith("PT")) { lines = new string[] { "20231209", "20231210", "20231208" }; }
-            //    File.WriteAllLines(@".\Dates\" + tag + ".txt", lines);
             //}
 
             string output = "";
@@ -201,16 +192,6 @@ namespace TP_MasterTool
             //    }
             //}
             //FileController.SaveTxtToFile(@".\result.txt", output, out _);
-
-            //foreach (string tag in File.ReadAllLines(@".\tps dsFin.txt"))
-            //{
-            //    File.Create(@".\Csv\" + tag + ".txt").Close();
-            //}
-            //foreach (string line in File.ReadAllLines(@".\dates.txt"))
-            //{
-            //    string[] temp = line.Split('\t');
-            //    File.AppendAllText(Directory.GetFiles(@".\Csv\", temp[1] + "*")[0], temp[0] + Environment.NewLine);
-            //}
 
             //CtrlFunctions.EncryptFile(@".\mojepasy.txt", "cycuszki", Globals.configPath + "credentials.crypt");
             //MessageBox.Show("krypto krypto superman lezy");
@@ -723,7 +704,7 @@ namespace TP_MasterTool
                     {
                         if (System.IO.Directory.Exists(@"\\" + connectionPara.TAG + @"\" + letter + @"$"))
                         {
-                            output += "Drive " + letter.ToUpper() + ":\\ Informations:" + "\n" + CtrlFunctions.GetDiskSpaceInfo(letter, connectionPara, out _) + "\n\n";
+                            output += "Drive " + letter.ToUpper() + ":\\ Informations:" + "\n" + CtrlFunctions.GetDiskSpaceInfo(letter, connectionPara, out _, out _) + "\n\n";
                         }
                     }
                     if (output == "")

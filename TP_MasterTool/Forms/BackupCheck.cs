@@ -61,7 +61,7 @@ namespace TP_MasterTool.Forms
         private void GetDiskSpaceInfo()
         {
             myLog.Add("Reading disc space info");
-            driveSpaceLabel.Text = spaceLabelDefault + CtrlFunctions.GetDiskSpaceInfo("F", connectionPara, out ulong freeBytes);
+            driveSpaceLabel.Text = spaceLabelDefault + CtrlFunctions.GetDiskSpaceInfo("F", connectionPara, out ulong freeBytes, out _);
             if ((freeBytes / (1024 * 1024)) < 102400)
             {
                 statusLabel.Text = "Status: [ERROR] Low disc space - please check if there aren't duplicated backup files.";
