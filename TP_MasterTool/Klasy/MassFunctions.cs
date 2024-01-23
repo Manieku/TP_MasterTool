@@ -663,17 +663,18 @@ namespace TP_MasterTool.Klasy
             string output = "";
             foreach (string letter in drives)
             {
-                if (Directory.Exists(@"\\" + connectionPara.TAG + @"\" + letter + @"$"))
+                massFunctionForm.GridChange(rownr, "Reading " + letter + " drive");
+                if(CtrlFunctions.GetDiskSpaceInfo(letter, connectionPara, out ulong freeBytes, out ulong totalBytes).Contains("Error"))
                 {
-
+                    output += " - " + " - " + " - ";
+                }
+                else
+                {
+                    output += (freeBytes / (1024 * 1024 * 1024)).ToString() + " - " + (totalBytes / (1024 * 1024 * 1024)).ToString() + " - " + Math.Round((((totalBytes - freeBytes) * 1.0 / totalBytes) * 100), 2, MidpointRounding.AwayFromZero).ToString() + " - ";
                 }
             }
-            if (output == "")
-            {
-                Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Disc Connection Error");
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Disc Connection Error", @"Couldn't establish connection to any disc. Please check if target machine is online or initialize it anew and try again.");
-                return;
-            }
+            massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
+            massFunctionForm.AddToLog(rownr, "[SUCCESS] - " + output);
 
         }
         public static void AdhocFunction(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)

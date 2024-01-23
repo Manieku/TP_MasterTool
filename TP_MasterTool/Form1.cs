@@ -1449,6 +1449,7 @@ namespace TP_MasterTool
                 "DismAndSFC",
                 "CDriveClean",
                 "BackstoreCsvExport",
+                "DiscSpaceInfo",
                 "AdhocFunction"
             };
             new MassFunctionForm(functionList).Show();
