@@ -688,6 +688,53 @@ namespace TP_MasterTool.Klasy
         }
         public static void CheckEodAbortedStatus(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
+            /* 
+                 * Czyta daty kiedy eod bylo abort (data od kiedy w sql query)
+                 * Dla kazdej daty przeszukuje log w poszikuwaniu dlaczego bylo abort 
+                 * wrzuca wszystko w csv row per abort
+                 * Na zyczenie Olga Dovgalova (Problem manager)
+             */
+            massFunctionForm.GridChange(rownr, "Reading DB");
+            if (!CtrlFunctions.SqlGetInfo(connectionPara.TAG, "TPCentralDB", "select szStartDateEOD from RetailStoreEODJournal where szStartDateEOD > " + addInfo[0] + " and szComment = 'MANUALEOD - Final result: Aborted'", out string sqlOutput)) // query do DB z data
+            {
+                massFunctionForm.ErrorLog(rownr, "SQL read error");
+                return;
+            }
+
+            string[] dates = sqlOutput.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+            massFunctionForm.GridChange(rownr, "Checking logs");
+            foreach (string tempDate in dates)
+            {
+                string date = tempDate.Split(':')[1].Substring(1, 8);
+                string output = connectionPara.TAG + "," + date + ",";
+                string[] logFiles = Directory.GetFiles(@"\\" + connectionPara.TAG + @"\d$\TPDotnet\Log", "*TSBatchActWorkstationStatus*.log"); // logi EoD
+                foreach (string file in logFiles)
+                {
+                    try
+                    {
+                        foreach (string line in File.ReadAllLines(file))
+                        {
+                            if (line.Contains(date) && line.Contains("frmMonitor|LogInvalidStatus"))
+                            {
+                                int start = line.IndexOf("frmMonitor|LogInvalidStatus") + 36;
+                                int end = line.IndexOf('|', start);
+                                output += line.Substring(start, end - start) + " | ";
+                            }
+                        }
+                    }
+                    catch(Exception exp)
+                    {
+                        massFunctionForm.ErrorLog(rownr, "Log read error: " + exp.Message);
+                        return;
+                    }
+                }
+                output += Environment.NewLine;
+                lock (massFunctionForm.logLock)
+                {
+                    File.AppendAllText(Globals.userTempLogsPath + "EodAbortedCheckOutput.csv", output);
+                }
+            }
+            massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
 
         }
         public static void AdhocFunction(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
