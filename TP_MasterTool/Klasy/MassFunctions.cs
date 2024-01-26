@@ -686,6 +686,10 @@ namespace TP_MasterTool.Klasy
             massFunctionForm.AddToLog(rownr, "[SUCCESS] - " + output);
 
         }
+        public static void CheckEodAbortedStatus(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
+        {
+
+        }
         public static void AdhocFunction(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
             massFunctionForm.GridChange(rownr, "Reading dates");

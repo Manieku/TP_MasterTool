@@ -1450,6 +1450,7 @@ namespace TP_MasterTool
                 "CDriveClean",
                 "BackstoreCsvExport",
                 "DiscSpaceInfo",
+                "CheckEodAbortedStatus",
                 "AdhocFunction"
             };
             new MassFunctionForm(functionList).Show();

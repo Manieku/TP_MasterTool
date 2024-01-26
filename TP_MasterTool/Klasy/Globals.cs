@@ -75,6 +75,7 @@ namespace TP_MasterTool
             DeleteOldBackupFiles,
             IsBackupDriveAccessible,
             DownloadJavaPosLogs,
+            CheckEodAbortedStatus,
             CheckForKB,
             GetApcLogs,
             Stocktaking,
