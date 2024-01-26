@@ -126,6 +126,15 @@ namespace TP_MasterTool.Klasy
             }
             return new List<string> { folder };
         }
+        public static List<string> GetInfo_CheckEodAbortedStatus()
+        {
+            string date = Microsoft.VisualBasic.Interaction.InputBox("Provide start date to check till now (YYYYMMDD):", "Input data");
+            if (date == "")
+            {
+                return null;
+            }
+            return new List<string> { date };
+        }
 
         //-------Mass Functions-------------
         public static void GetMAC(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
