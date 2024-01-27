@@ -135,6 +135,16 @@ namespace TP_MasterTool.Klasy
             }
             return new List<string> { date };
         }
+        public static List<string> GetInfo_WinCrashReasonCheck()
+        {
+            string date = Microsoft.VisualBasic.Interaction.InputBox("Provide start date to check till now (mm.dd.yyyy):", "Input data");
+            if (date == "")
+            {
+                return null;
+            }
+            return new List<string> { date };
+        }
+
 
         //-------Mass Functions-------------
         public static void GetMAC(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)

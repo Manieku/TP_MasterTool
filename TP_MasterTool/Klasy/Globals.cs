@@ -76,6 +76,7 @@ namespace TP_MasterTool
             IsBackupDriveAccessible,
             DownloadJavaPosLogs,
             CheckEodAbortedStatus,
+            WinCrashReasonCheck,
             CheckForKB,
             GetApcLogs,
             Stocktaking,
