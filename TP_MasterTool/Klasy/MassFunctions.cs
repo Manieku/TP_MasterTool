@@ -840,53 +840,7 @@ namespace TP_MasterTool.Klasy
         }
         public static void AdhocFunction(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
-            massFunctionForm.GridChange(rownr, "Downloading Log");
-            string fileName = connectionPara.TAG + ".evtx";
-            string output = "";
-            if (!FileController.CopyFile(@"\\" + connectionPara.TAG + @"\c$\Windows\System32\winevt\Logs\System.evtx", @".\Logs\Windows\" + fileName, false, out Exception copyExp))
-            {
-                if (copyExp != null)
-                {
-                    massFunctionForm.ErrorLog(rownr, copyExp.Message);
-                }
-                return;
-            }
-            massFunctionForm.GridChange(rownr, "Quering Log");
 
-            string newerThan = DateTime.Parse("12.01.2023").ToUniversalTime().ToString("o");  // <-------- date from (mm.dd.yyyy)
-
-            string query = string.Format("*[System / Level = 1] and *[System[EventID = 41]] and *[System[TimeCreated[@SystemTime >= '{0}']]]", newerThan);
-            EventLogQuery eventsQuery = new EventLogQuery(@".\Logs\Windows\" + fileName, PathType.FilePath, query);
-            using (EventLogReader logReader = new EventLogReader(eventsQuery))
-            {
-                EventRecord entry;
-                while ((entry = logReader.ReadEvent()) != null)
-                {
-                    output += entry.TimeCreated.ToString() + ",";
-                    XDocument logEntry = XDocument.Parse(entry.ToXml());
-                    string bugcheck = "";
-                    string powerbutton = "";
-                    foreach (XElement element in logEntry.Root.Element("{http://schemas.microsoft.com/win/2004/08/events/event}EventData").Elements())
-                    {
-                        if (element.Attribute("Name").Value == "BugcheckCode")
-                        {
-                            bugcheck = element.Value;
-                        }
-                        if (element.Attribute("Name").Value == "PowerButtonTimestamp")
-                        {
-                            powerbutton = element.Value;
-                        }
-                    }
-                    output += bugcheck + "," + powerbutton + Environment.NewLine;
-                }
-                if (output != "")
-                {
-                    FileController.SaveTxtToFile(@".\Crash\" + connectionPara.TAG + ".csv", output, out _);
-                }
-            }
-            File.Delete(@".\Logs\Windows\" + fileName);
-            massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
-            massFunctionForm.AddToLog(rownr, "[SUCCESS] - Event Log Checked");
         }
 
         //------------------------Moje wymysly------------------------------//
