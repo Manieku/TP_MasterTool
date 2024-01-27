@@ -133,7 +133,18 @@ namespace TP_MasterTool.Klasy
             {
                 return null;
             }
-            return new List<string> { date };
+            string outputFileName = "EodAbortedCheckReport " + Logger.Datownik() + ".csv";
+            try
+            {
+                File.AppendAllText(Globals.userTempLogsPath + outputFileName, "TAG,Date,Reasons" + Environment.NewLine);
+            }
+            catch (Exception exp)
+            {
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Creating output file Error", "Unable to create output file in logs folder: " + exp.Message);
+                return null;
+            }
+
+            return new List<string> { date, outputFileName };
         }
         public static List<string> GetInfo_WinCrashReasonCheck()
         {
@@ -750,7 +761,7 @@ namespace TP_MasterTool.Klasy
                 }
                 lock (massFunctionForm.logLock)
                 {
-                    File.AppendAllText(Globals.userTempLogsPath + "EodAbortedCheckOutput.csv", output + Environment.NewLine);
+                    File.AppendAllText(Globals.userTempLogsPath + addInfo[1], output + Environment.NewLine);
                 }
             }
             massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
