@@ -1083,49 +1083,6 @@ namespace TP_MasterTool.Klasy
             massFunctionForm.AddToLog(rownr, "[SUCCESS] - " + errorCount);
             massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
         }
-        public static void GetEodAbortReason(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
-        {
-            /* 
-             * Czyta daty kiedy eod bylo abort (data od kiedy w sql query)
-             * Dla kazdej daty przeszukuje log w poszikuwaniu dlaczego bylo abort 
-             * wrzuca wszystko w csv row per abort
-             * Na zyczenie Olga Dovgalova (Problem manager)
-             */
-            massFunctionForm.GridChange(rownr, "Reading DB");
-            if (!CtrlFunctions.SqlGetInfo(connectionPara.TAG, "TPCentralDB", "select szStartDateEOD from RetailStoreEODJournal where szStartDateEOD > 20231201 and szComment = 'MANUALEOD - Final result: Aborted'", out string sqlOutput)) // query do DB z data
-            {
-                massFunctionForm.ErrorLog(rownr, "SQL read error");
-                return;
-            }
-
-            string[] dates = sqlOutput.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-            massFunctionForm.GridChange(rownr, "Checking logs");
-            foreach (string tempDate in dates)
-            {
-                string date = tempDate.Split(':')[1].Substring(1, 8);
-                string output = connectionPara.TAG + "," + date + ",";
-                string[] logFiles = Directory.GetFiles(@"\\" + connectionPara.TAG + @"\d$\TPDotnet\Log", "*TSBatchActWorkstationStatus*.log"); // logi EoD
-                foreach (string file in logFiles)
-                {
-                    string[] logLines = File.ReadAllLines(file);
-                    foreach (string line in logLines)
-                    {
-                        if (line.Contains(date) && line.Contains("frmMonitor|LogInvalidStatus"))
-                        {
-                            int start = line.IndexOf("frmMonitor|LogInvalidStatus") + 36;
-                            int end = line.IndexOf('|', start);
-                            output += line.Substring(start, end - start) + " | ";
-                        }
-                    }
-                }
-                output += Environment.NewLine;
-                lock (massFunctionForm.logLock)
-                {
-                    File.AppendAllText("eodCheck.csv", output);
-                }
-            }
-            massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
-        }
         public static void GetAndUpdateBios(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
             /*

@@ -1468,6 +1468,7 @@ namespace TP_MasterTool
             };
             new MassFunctionForm(functionList).Show();
         }
+
         /**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**/
 
         //--------------------Preferences-----------------------------
