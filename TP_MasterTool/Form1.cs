@@ -1429,6 +1429,7 @@ namespace TP_MasterTool
 
 
         /**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**/
+
         //--------------------ADV-----------------------------
         private void randomCollectionOfRandomnessToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -1456,6 +1457,17 @@ namespace TP_MasterTool
             new MassFunctionForm(functionList).Show();
         }
 
+        /**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**/
+
+        //--------------------PM-----------------------------
+        private void raportsMenuItem_Click(object sender, EventArgs e)
+        {
+            string[] functionList = new string[]
+            {
+                "CheckEodAbortedStatus",
+            };
+            new MassFunctionForm(functionList).Show();
+        }
         /**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**/
 
         //--------------------Preferences-----------------------------

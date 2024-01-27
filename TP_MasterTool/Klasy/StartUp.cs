@@ -122,6 +122,10 @@ namespace TP_MasterTool.Klasy
             {
                 Main.interfejs.ADVMenuItem.Visible = true;
             }
+            if(Globals.pmUsers.Contains(Logger.EnvironmentVariables.activeUser) || Globals.advUsers.Contains(Logger.EnvironmentVariables.activeUser))
+            {
+                Main.interfejs.PmMenuItem.Visible = true;
+            }
             Main.interfejs.menuStrip1.CanOverflow = true;
             Main.interfejs.currentVersionMenuItem.Text = "Current Version: v" + Logger.EnvironmentVariables.programVersion;
         }
