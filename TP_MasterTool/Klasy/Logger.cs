@@ -51,7 +51,7 @@ namespace TP_MasterTool
         }
         public static string Datownik()
         {
-            return DateTime.Now.ToString("d/MM/yyyy HH:mm:ss").Replace(":", "-").Replace("/", "-");
+            return DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss").Replace(":", "-").Replace("/", "-");
         }
         public static string LogTime()
         {

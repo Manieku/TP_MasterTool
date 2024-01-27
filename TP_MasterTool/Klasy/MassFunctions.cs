@@ -142,7 +142,17 @@ namespace TP_MasterTool.Klasy
             {
                 return null;
             }
-            return new List<string> { date };
+            string outputFileName = "WinCrashReasonReport " + Logger.Datownik() + ".csv";
+            try
+            {
+                File.AppendAllText(Globals.userTempLogsPath + outputFileName, "TAG,TimeStamp,Bluescreen,PowerButton,Other" + Environment.NewLine);
+            }
+            catch(Exception exp)
+            {
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Creating output file Error", "Unable to create output file in logs folder: " + exp.Message);
+                return null;
+            }
+            return new List<string> { date, outputFileName };
         }
 
 
@@ -698,12 +708,12 @@ namespace TP_MasterTool.Klasy
         }
         public static void CheckEodAbortedStatus(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
-            /* 
-                 * Czyta daty kiedy eod bylo abort (data od kiedy w sql query)
-                 * Dla kazdej daty przeszukuje log w poszikuwaniu dlaczego bylo abort 
-                 * wrzuca wszystko w csv row per abort
-                 * Na zyczenie Olga Dovgalova (Problem manager)
-             */
+           /* 
+            * Czyta daty kiedy eod bylo abort (data od kiedy w sql query)
+            * Dla kazdej daty przeszukuje log w poszikuwaniu dlaczego bylo abort 
+            * wrzuca wszystko w csv row per abort
+            * Na zyczenie Olga Dovgalova (Problem manager)
+            */
             massFunctionForm.GridChange(rownr, "Reading DB");
             if (!CtrlFunctions.SqlGetInfo(connectionPara.TAG, "TPCentralDB", "select szStartDateEOD from RetailStoreEODJournal where szStartDateEOD > " + addInfo[0] + " and szComment = 'MANUALEOD - Final result: Aborted'", out string sqlOutput)) // query do DB z data
             {
@@ -738,112 +748,134 @@ namespace TP_MasterTool.Klasy
                         return;
                     }
                 }
-                output += Environment.NewLine;
                 lock (massFunctionForm.logLock)
                 {
-                    File.AppendAllText(Globals.userTempLogsPath + "EodAbortedCheckOutput.csv", output);
+                    File.AppendAllText(Globals.userTempLogsPath + "EodAbortedCheckOutput.csv", output + Environment.NewLine);
                 }
             }
             massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
 
         }
-        public static void AdhocFunction(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
+        public static void WinCrashReasonCheck(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
-            massFunctionForm.GridChange(rownr, "Reading dates");
-            string[] dates = File.ReadAllLines(@".\Dates\" + connectionPara.TAG + @".txt");
-            int iterator = -1;
-            try
+            /*
+             * Pobiera system event log to windows log folder
+             * Przeszukuje log (Query) w poszukiwaniu critical ID 41 nowsze niz konkretna data (mm.dd.yyyy)
+             * I wypluwa wszystkie eventy w pliku z nazwa hosta do konkretnego folderu
+             * Na prosbe Gogarowski Petre (ADV)
+             */
+            massFunctionForm.GridChange(rownr, "Downloading Log");
+            string fileName = connectionPara.TAG + ".evtx";
+            string output = "";
+            if (!FileController.CopyFile(@"\\" + connectionPara.TAG + @"\c$\Windows\System32\winevt\Logs\System.evtx", @".\Logs\Windows\" + fileName, false, out Exception copyExp))
             {
-                Directory.CreateDirectory(@"\\" + connectionPara.TAG + @"\c$\service\dms_output\temp");
-                if (!File.Exists(@"\\" + connectionPara.TAG + @"\c$\service\dms_output\collect_tp_reports.zip"))
-                {
-                    File.Create(@"\\" + connectionPara.TAG + @"\c$\service\dms_output\collect_tp_reports.zip").Close();
-                }
-            }
-            catch (Exception exp)
-            {
-                massFunctionForm.ErrorLog(rownr, "Error creating output zip");
-                dates[iterator] += ",[ERROR],unable to create zip file or temp folder in output folder: " + exp.Message;
+                massFunctionForm.ErrorLog(rownr, copyExp.Message);
                 return;
             }
-            try
+
+            massFunctionForm.GridChange(rownr, "Quering Log");
+            string newerThan = DateTime.Parse(addInfo[0]).ToUniversalTime().ToString("o");  // <-------- date from (mm.dd.yyyy)
+            string query = string.Format("*[System / Level = 1] and *[System[EventID = 41]] and *[System[TimeCreated[@SystemTime >= '{0}']]]", newerThan);
+            EventLogQuery eventsQuery = new EventLogQuery(@".\Logs\Windows\" + fileName, PathType.FilePath, query);
+            using (EventLogReader logReader = new EventLogReader(eventsQuery))
             {
-                foreach (string fuckDate in dates)
+                EventRecord entry;
+                while ((entry = logReader.ReadEvent()) != null)
                 {
-                    iterator++;
-                    string date = fuckDate;
-                    if (date.Length > 8)
+                    output += connectionPara.TAG + "," + entry.TimeCreated.ToString() + ",";
+                    XDocument logEntry = XDocument.Parse(entry.ToXml());
+                    string bugcheck = "0";
+                    string powerbutton = "0";
+                    string other = "0";
+                    foreach (XElement element in logEntry.Root.Element("{http://schemas.microsoft.com/win/2004/08/events/event}EventData").Elements())
                     {
-                        if (date.Contains("[ERROR]"))
+                        if (element.Attribute("Name").Value == "PowerButtonTimestamp")
                         {
-                            dates[iterator] = date.Substring(0, 8);
-                            date = date.Substring(0, 8);
-                        }
-                        else
-                        {
-                            continue;
-                        }
-                    }
-                    massFunctionForm.GridChange(rownr, "Restoring date: " + date + "(" + (iterator + 1).ToString() + "/" + dates.Length + ")");
-
-                    string zipDate = (int.Parse(date) + 1).ToString();
-                    if (date == "20231231") { zipDate = "20240101"; }
-                    string[] zipFiles = Directory.GetFiles(@"\\" + connectionPara.TAG + @"\d$\ArchivedReports", "collect_tp_reports.zip." + zipDate + "030*");
-                    if (zipFiles.Length > 1)
-                    {
-                        massFunctionForm.ErrorLog(rownr, "Error check date txt");
-                        dates[iterator] += ",[ERROR],more than one zip file on this date need manual check";
-                    }
-                    else if (zipFiles.Length == 1)
-                    {
-                        try
-                        {
-                            using (ZipArchive backupArchive = ZipFile.OpenRead(zipFiles[0]))
-                            using (ZipArchive outputArchive = ZipFile.Open(@"\\" + connectionPara.TAG + @"\c$\service\dms_output\collect_tp_reports.zip", ZipArchiveMode.Update))
+                            if (element.Value != "0")
                             {
-                                foreach (var zipedRaport in backupArchive.Entries)
-                                {
-                                    if (!zipedRaport.FullName.Contains(connectionPara.country + @"\"))
-                                    {
-
-                                        //long datePliku = long.Parse(zipedRaport.Name.Substring(zipedRaport.Name.IndexOf('_') + 1, 14))+1;
-                                        //string nazwaPliku = zipedRaport.Name.Substring(0, zipedRaport.Name.IndexOf('_') + 1) + datePliku + zipedRaport.Name.Substring(zipedRaport.Name.LastIndexOf('_'));
-                                        zipedRaport.ExtractToFile(@"\\" + connectionPara.TAG + @"\c$\service\dms_output\temp\" + zipedRaport.Name, true);
-                                        outputArchive.CreateEntryFromFile(@"\\" + connectionPara.TAG + @"\c$\service\dms_output\temp\" + zipedRaport.Name, zipedRaport.Name);
-                                    }
-                                }
+                                powerbutton = "1";
+                                continue;
                             }
                         }
-                        catch (Exception exp)
+                        if (element.Attribute("Name").Value == "BugcheckCode")
                         {
-                            massFunctionForm.ErrorLog(rownr, "Error check date txt");
-                            dates[iterator] += ",[ERROR],unable to handle zip file check manually: " + exp.Message;
-                            continue;
+                            if (element.Value != "0")
+                            {
+                                bugcheck = "1";
+                            }
                         }
-                        dates[iterator] += ",[SUCCESS],reports found in ArchivedReports - copied to output zip";
-                        massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
                     }
-                    else
+                    if (powerbutton == "0" && bugcheck == "0")
                     {
-                        massFunctionForm.ErrorLog(rownr, "Error check date txt");
-                        dates[iterator] += ",[FATAL],no reports found manual check needed";
+                        other = "1";
+                    }
+                    output += string.Join(",", new string[] { bugcheck, powerbutton, other }) + Environment.NewLine;
+                }
+                if (output != "")
+                {
+                    lock (massFunctionForm.logLock)
+                    {
+                        File.AppendAllText(Globals.userTempLogsPath + addInfo[1], output);
                     }
                 }
-                File.WriteAllLines(@".\Dates\" + connectionPara.TAG + @".txt", dates);
-                try
-                {
-                    Directory.Delete(@"\\" + connectionPara.TAG + @"\c$\service\dms_output\temp", true);
-                }
-                catch (Exception exp)
-                {
-                    massFunctionForm.ErrorLog(rownr, "Temp delete error");
-                    dates[iterator] += ",[ERROR],Can't delete some files in temp folder";
-                }
             }
-            catch (Exception exp)
+            try
             {
-                massFunctionForm.ErrorLog(rownr, exp.ToString());
+                File.Delete(@".\Logs\Windows\" + fileName);
             }
+            catch { }
+            massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
+            massFunctionForm.AddToLog(rownr, "[SUCCESS] - Event Log Checked");
+        }
+        public static void AdhocFunction(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
+        {
+            massFunctionForm.GridChange(rownr, "Downloading Log");
+            string fileName = connectionPara.TAG + ".evtx";
+            string output = "";
+            if (!FileController.CopyFile(@"\\" + connectionPara.TAG + @"\c$\Windows\System32\winevt\Logs\System.evtx", @".\Logs\Windows\" + fileName, false, out Exception copyExp))
+            {
+                if (copyExp != null)
+                {
+                    massFunctionForm.ErrorLog(rownr, copyExp.Message);
+                }
+                return;
+            }
+            massFunctionForm.GridChange(rownr, "Quering Log");
+
+            string newerThan = DateTime.Parse("12.01.2023").ToUniversalTime().ToString("o");  // <-------- date from (mm.dd.yyyy)
+
+            string query = string.Format("*[System / Level = 1] and *[System[EventID = 41]] and *[System[TimeCreated[@SystemTime >= '{0}']]]", newerThan);
+            EventLogQuery eventsQuery = new EventLogQuery(@".\Logs\Windows\" + fileName, PathType.FilePath, query);
+            using (EventLogReader logReader = new EventLogReader(eventsQuery))
+            {
+                EventRecord entry;
+                while ((entry = logReader.ReadEvent()) != null)
+                {
+                    output += entry.TimeCreated.ToString() + ",";
+                    XDocument logEntry = XDocument.Parse(entry.ToXml());
+                    string bugcheck = "";
+                    string powerbutton = "";
+                    foreach (XElement element in logEntry.Root.Element("{http://schemas.microsoft.com/win/2004/08/events/event}EventData").Elements())
+                    {
+                        if (element.Attribute("Name").Value == "BugcheckCode")
+                        {
+                            bugcheck = element.Value;
+                        }
+                        if (element.Attribute("Name").Value == "PowerButtonTimestamp")
+                        {
+                            powerbutton = element.Value;
+                        }
+                    }
+                    output += bugcheck + "," + powerbutton + Environment.NewLine;
+                }
+                if (output != "")
+                {
+                    FileController.SaveTxtToFile(@".\Crash\" + connectionPara.TAG + ".csv", output, out _);
+                }
+            }
+            File.Delete(@".\Logs\Windows\" + fileName);
+            massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
+            massFunctionForm.AddToLog(rownr, "[SUCCESS] - Event Log Checked");
         }
 
         //------------------------Moje wymysly------------------------------//
@@ -926,62 +958,6 @@ namespace TP_MasterTool.Klasy
             {
                 massFunctionForm.ErrorLog(rownr, "Folder don't exist");
             }
-        }
-        public static void WinLogsCheckForCrash(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
-        {
-            /*
-             * Pobiera system event log to windows log folder
-             * Przeszukuje log (Query) w poszukiwaniu critical ID 41 nowsze niz konkretna data (mm.dd.yyyy)
-             * I wypluwa wszystkie eventy w pliku z nazwa hosta do konkretnego folderu
-             * Na prosbe Gogarowski Petre (ADV)
-             */
-            massFunctionForm.GridChange(rownr, "Downloading Log");
-            string fileName = connectionPara.TAG + ".evtx";
-            string output = "";
-            if (!FileController.CopyFile(@"\\" + connectionPara.TAG + @"\c$\Windows\System32\winevt\Logs\System.evtx", @".\Logs\Windows\" + fileName, false, out Exception copyExp))
-            {
-                if (copyExp != null)
-                {
-                    massFunctionForm.ErrorLog(rownr, copyExp.Message);
-                }
-                return;
-            }
-            massFunctionForm.GridChange(rownr, "Quering Log");
-
-            string newerThan = DateTime.Parse("12.01.2023").ToUniversalTime().ToString("o");  // <-------- date from (mm.dd.yyyy)
-
-            string query = string.Format("*[System / Level = 1] and *[System[EventID = 41]] and *[System[TimeCreated[@SystemTime >= '{0}']]]", newerThan);
-            EventLogQuery eventsQuery = new EventLogQuery(@".\Logs\Windows\" + fileName, PathType.FilePath, query);
-            using (EventLogReader logReader = new EventLogReader(eventsQuery))
-            {
-                EventRecord entry;
-                while ((entry = logReader.ReadEvent()) != null)
-                {
-                    output += entry.TimeCreated.ToString() + ",";
-                    XDocument logEntry = XDocument.Parse(entry.ToXml());
-                    string bugcheck = "";
-                    string powerbutton = "";
-                    foreach (XElement element in logEntry.Root.Element("{http://schemas.microsoft.com/win/2004/08/events/event}EventData").Elements())
-                    {
-                        if (element.Attribute("Name").Value == "BugcheckCode")
-                        {
-                            bugcheck = element.Value;
-                        }
-                        if (element.Attribute("Name").Value == "PowerButtonTimestamp")
-                        {
-                            powerbutton = element.Value;
-                        }
-                    }
-                    output += bugcheck + "," + powerbutton + Environment.NewLine;
-                }
-                if (output != "")
-                {
-                    FileController.SaveTxtToFile(@".\Crash\" + connectionPara.TAG + ".csv", output, out _);
-                }
-            }
-            File.Delete(@".\Logs\Windows\" + fileName);
-            massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
-            massFunctionForm.AddToLog(rownr, "[SUCCESS] - Event Log Checked");
         }
         public static void SmartCheck(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {

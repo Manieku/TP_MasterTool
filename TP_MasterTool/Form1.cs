@@ -144,15 +144,15 @@ namespace TP_MasterTool
             //    File.AppendAllText(@".\dates_tps.txt", Path.GetFileNameWithoutExtension(file) + Environment.NewLine);
             //}
 
-            string output = "";
-            foreach (string file in Directory.GetFiles(@".\Dates"))
-            {
-                foreach (string line in File.ReadAllLines(file))
-                {
-                    output += Path.GetFileNameWithoutExtension(file) + "," + line + Environment.NewLine;
-                }
-            }
-            File.WriteAllText(@".\output.csv", output);
+            //string output = "";
+            //foreach (string file in Directory.GetFiles(@".\Dates"))
+            //{
+            //    foreach (string line in File.ReadAllLines(file))
+            //    {
+            //        output += Path.GetFileNameWithoutExtension(file) + "," + line + Environment.NewLine;
+            //    }
+            //}
+            //File.WriteAllText(@".\output.csv", output);
 
             //ChangeStatusBar("Working");
             //CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c systeminfo | find /i \"BIOS Version\"");
@@ -167,31 +167,31 @@ namespace TP_MasterTool
             //CustomMsgBox.Show(CustomMsgBox.MsgType.Info, "Last Boot Time Info", cmdOutput.outputText);
             //ChangeStatusBar("Ready");
 
-            //string output = "TAG,Timestamp,Bluescreen,PowerButton,Other" + Environment.NewLine;
-            //foreach (string file in Directory.GetFiles(@".\Crash"))
-            //{
-            //    foreach (string line in File.ReadAllLines(file))
-            //    {
-            //        string bluescreen = "0";
-            //        string powerButen = "0";
-            //        string other = "0";
-            //        string[] data = line.Split(',');
-            //        if (data[2] != "0")
-            //        {
-            //            powerButen = "1";
-            //        }
-            //        else if (data[1] != "0")
-            //        {
-            //            bluescreen = "1";
-            //        }
-            //        if (data[1] == "0" && data[2] == "0")
-            //        {
-            //            other = "1";
-            //        }
-            //        output += string.Join(",", Path.GetFileNameWithoutExtension(file), data[0], bluescreen, powerButen, other, Environment.NewLine);
-            //    }
-            //}
-            //FileController.SaveTxtToFile(@".\result.txt", output, out _);
+            string output = "TAG,Timestamp,Bluescreen,PowerButton,Other" + Environment.NewLine;
+            foreach (string file in Directory.GetFiles(@".\Crash"))
+            {
+                foreach (string line in File.ReadAllLines(file))
+                {
+                    string bluescreen = "0";
+                    string powerButen = "0";
+                    string other = "0";
+                    string[] data = line.Split(',');
+                    if (data[2] != "0")
+                    {
+                        powerButen = "1";
+                    }
+                    else if (data[1] != "0")
+                    {
+                        bluescreen = "1";
+                    }
+                    if (data[1] == "0" && data[2] == "0")
+                    {
+                        other = "1";
+                    }
+                    output += string.Join(",", Path.GetFileNameWithoutExtension(file), data[0], bluescreen, powerButen, other, Environment.NewLine);
+                }
+            }
+            FileController.SaveTxtToFile(@".\result.txt", output, out _);
 
             //CtrlFunctions.EncryptFile(@".\mojepasy.txt", "cycuszki", Globals.configPath + "credentials.crypt");
             //MessageBox.Show("krypto krypto superman lezy");
@@ -1465,6 +1465,7 @@ namespace TP_MasterTool
             string[] functionList = new string[]
             {
                 "CheckEodAbortedStatus",
+                "WinCrashReasonCheck",
             };
             new MassFunctionForm(functionList).Show();
         }
@@ -1670,7 +1671,8 @@ namespace TP_MasterTool
                 "Stocktaking",
                 "Mass Functions",
                 "Find MAC in DHCP",
-                "Random Collection of Randomness"
+                "Random Collection of Randomness",
+                "Reports"
             };
             foreach (ToolStripMenuItem menu in menuStrip1.Items)
             {
