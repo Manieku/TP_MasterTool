@@ -571,6 +571,12 @@ namespace TP_MasterTool
                 return;
             }
             Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.GetApcLogs, "");
+            if(!File.Exists(@"\\" + connectionPara.TAG + @"\c$\Program Files (x86)\APC\PowerChute Business Edition\agent\DataLog"))
+            {
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "No logs found", "No logs found, please check if software is properly installed.");
+                Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.Error, "No logs found");
+                return;
+            }
             if (!FileController.CopyFile(@"\\" + connectionPara.TAG + @"\c$\Program Files (x86)\APC\PowerChute Business Edition\agent\DataLog", @".\Logs\" + connectionPara.TAG + " - APC DataLog.txt", false, out Exception copyExp))
             {
                 Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "DataLogs: " + copyExp.Message);
