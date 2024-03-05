@@ -121,6 +121,25 @@ namespace TP_MasterTool
         }
         private void Test_Button_Click(object sender, EventArgs e)
         {
+            string output = "";
+            CtrlFunctions.CmdOutput cmdOutput2 = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c powershell -command \"Get-WmiObject Win32_BaseBoard | format-list -property Product\"") ;
+            if (cmdOutput2.exitCode != 0)
+            {
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Command Execution Error", "RCMD encounter a error during execution:" + Environment.NewLine + cmdOutput2.errorOutputText);
+                return;
+            }
+            output += cmdOutput2.outputText.Split(':')[1].Trim().Replace('-', '_') + " - ";
+            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c powershell -command \"get-disk | format-list -property DiskNumber,FriendlyName,HealthStatus,IsBoot,IsSystem,Size\"");
+            if (cmdOutput.exitCode != 0)
+            {
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Command Execution Error", "RCMD encounter a error during execution:" + Environment.NewLine + cmdOutput.errorOutputText);
+                return;
+            }
+            foreach(string line in cmdOutput.outputText.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                output += line.Split(':')[1].Trim() + " - ";
+            }
+
             //List<string> errors = new List<string>();
             //foreach (string line in File.ReadAllLines(@".\input.txt"))
             //{
@@ -138,6 +157,22 @@ namespace TP_MasterTool
             //    }
             //}
             //File.AppendAllLines(@".\errors.txt", errors);
+
+            //List<string> errors = new List<string>();
+            //foreach (string line in File.ReadAllLines(@".\input.txt"))
+            //{
+            //    string[] numbers = line.Split(new char[] { '\t' }, StringSplitOptions.RemoveEmptyEntries);
+            //    if (Globals.storeId2Tag.ContainsKey(numbers[0]))
+            //    {
+            //        File.AppendAllText(@".\Dates\" + Globals.storeId2Tag[numbers[0]] + ".txt", numbers[1] + Environment.NewLine);
+            //    }
+            //    else if (!errors.Contains(numbers[0]))
+            //    {
+            //        errors.Add(numbers[0]);
+            //    }
+            //}
+            //File.AppendAllLines(@".\errors.txt", errors);
+
 
             //foreach (string file in Directory.GetFiles(@".\Dates"))
             //{

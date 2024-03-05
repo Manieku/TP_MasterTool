@@ -220,6 +220,7 @@ namespace TP_MasterTool
         //--------COMPLEX--------------
         public static bool ZipAndStealFolder(string tixnr, string prefix, string remotePath, string absolutePath, ConnectionPara connectionPara, out string outputFilePath)
         {
+            tixnr = tixnr.Trim();
             outputFilePath = "";
             Logger myLog = new Logger(Globals.Funkcje.ZipAndSteal, prefix + " " + remotePath + " " + absolutePath, connectionPara.TAG);
             if (!System.IO.Directory.Exists(remotePath))

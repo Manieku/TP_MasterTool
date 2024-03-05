@@ -840,6 +840,29 @@ namespace TP_MasterTool.Klasy
         }
         public static void AdhocFunction(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
+            massFunctionForm.GridChange(rownr, "Reading MB Model");
+            string output = "";
+            CtrlFunctions.CmdOutput cmdOutput2 = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c powershell -command \"Get-WmiObject Win32_BaseBoard | format-list -property Product\"");
+            if (cmdOutput2.exitCode != 0)
+            {
+                massFunctionForm.ErrorLog(rownr, "Unable to read MB model (Psexec error)");
+                return;
+            }
+            output += cmdOutput2.outputText.Split(':')[1].Trim().Replace('-', '_') + " - ";
+
+            massFunctionForm.GridChange(rownr, "Reading volume information");
+            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c powershell -command \"get-disk | format-list -property DiskNumber,FriendlyName,HealthStatus,IsBoot,IsSystem,Size\"");
+            if (cmdOutput.exitCode != 0)
+            {
+                massFunctionForm.ErrorLog(rownr, "Unable to read volume information (Psexec error)");
+                return;
+            }
+            foreach (string line in cmdOutput.outputText.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                output += line.Split(':')[1].Trim().Replace('-', '_') + " - ";
+            }
+            massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
+            massFunctionForm.AddToLog(rownr, "[SUCCESS] - " + output);
 
         }
 
@@ -1130,7 +1153,7 @@ namespace TP_MasterTool.Klasy
                     massFunctionForm.GridChange(rownr, "Restoring date: " + date + "(" + (iterator + 1).ToString() + "/" + dates.Length + ")");
 
                     string zipDate = (int.Parse(date) + 1).ToString();
-                    if (date == "20231231") { zipDate = "20240101"; }
+                    if (date == "20240131") { zipDate = "20240201"; }
                     string[] zipFiles = Directory.GetFiles(@"\\" + connectionPara.TAG + @"\d$\ArchivedReports", "collect_tp_reports.zip." + zipDate + "030*");
                     if (zipFiles.Length > 1)
                     {
