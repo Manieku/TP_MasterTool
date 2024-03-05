@@ -820,6 +820,11 @@ namespace TP_MasterTool
             }
             myLog.Add("Selected file: " + selectedFile);
             Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.EodCheck, selectedFile);
+            if(selectedFile.Contains("Error"))
+            {
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Faulty file selected", "Selected file can't be read, please check manually");
+                return;
+            }
             XDocument eodXml;
             string output = "";
             try
