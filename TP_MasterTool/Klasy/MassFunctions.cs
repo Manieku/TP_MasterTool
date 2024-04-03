@@ -14,22 +14,22 @@ namespace TP_MasterTool.Klasy
     static class MassFunctions
     {
         //-------GetInfo-------------------
-        public static List<string> GetInfo_TpReportsRegenAndZip()
-        {
-            string dayBefore = Microsoft.VisualBasic.Interaction.InputBox("Provide <date-before-eod-run> according to USU 53669" + Environment.NewLine + "Dates must be given in yyyyMMdd format: 4-digits year, 2-digits month(01-12), 2-digits day (01-31)", "Input data", DateTime.Today.AddDays(-1).ToString("yyyyMMdd"));
-            if (dayBefore == "")
-            {
-                return null;
-            }
+        //public static List<string> GetInfo_TpReportsRegenAndZip()
+        //{
+        //    string dayBefore = Microsoft.VisualBasic.Interaction.InputBox("Provide <date-before-eod-run> according to USU 53669" + Environment.NewLine + "Dates must be given in yyyyMMdd format: 4-digits year, 2-digits month(01-12), 2-digits day (01-31)", "Input data", DateTime.Today.AddDays(-1).ToString("yyyyMMdd"));
+        //    if (dayBefore == "")
+        //    {
+        //        return null;
+        //    }
 
-            string dayofEOD = Microsoft.VisualBasic.Interaction.InputBox("Provide <date-of-eod-run> according to USU 53669" + Environment.NewLine + "Dates must be given in yyyyMMdd format: 4-digits year, 2-digits month(01-12), 2-digits day (01-31)", "Input data", DateTime.Today.ToString("yyyyMMdd"));
-            if (dayofEOD == "")
-            {
-                return null;
-            }
+        //    string dayofEOD = Microsoft.VisualBasic.Interaction.InputBox("Provide <date-of-eod-run> according to USU 53669" + Environment.NewLine + "Dates must be given in yyyyMMdd format: 4-digits year, 2-digits month(01-12), 2-digits day (01-31)", "Input data", DateTime.Today.ToString("yyyyMMdd"));
+        //    if (dayofEOD == "")
+        //    {
+        //        return null;
+        //    }
 
-            return new List<string> { dayBefore, dayofEOD };
-        }
+        //    return new List<string> { dayBefore, dayofEOD };
+        //}
         public static List<string> GetInfo_UpdatePackageInvalidCheck()
         {
             string date = Microsoft.VisualBasic.Interaction.InputBox("Provide the date to check for invalid packages (YYYYMMDD)", "Input data");
@@ -227,32 +227,95 @@ namespace TP_MasterTool.Klasy
         }
         public static void TpReportsRegenAndZip(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
-            //massFunctionForm.GridChange(rownr, "Checking files");
-            //if (File.Exists(@"\\" + connectionPara.TAG + @"\c$\service\dms_output\collect_tp_reports.zip"))
-            //{
-            //    massFunctionForm.AddToLog(rownr, "[SUCCESS] - " + "Present | Ready to be picked up after next successful run");
-            //    massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
-            //    return;
-            //}
+            massFunctionForm.GridChange(rownr, "Checking files");
+            if (File.Exists(@"\\" + connectionPara.TAG + @"\c$\service\dms_output\collect_tp_reports.zip"))
+            {
+                massFunctionForm.AddToLog(rownr, "[SUCCESS] - " + "Zip present in output folder ready to be picked up after next successful run");
+                try
+                {
+                    File.AppendAllText(@"\\" + connectionPara.TAG + @"\c$\service\scripts\MONITORING\Log\COLLECT_TP_REPORTS_" + DateTime.Today.ToString("yyyyMMdd") + ".log", "canda_omnipos_reports_ok|" + DateTime.Now.ToString("yyyyMMddHHmm") + "|" + "Local Reports zip was present in output folder - no action needed" + Environment.NewLine, System.Text.Encoding.ASCII);
+                }
+                catch(Exception appendExp)
+                {
+                    Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.Error, "Append log Error: " + appendExp.Message);
+                }
+                massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
+                return;
+            }
 
-            //massFunctionForm.GridChange(rownr, "Checking for backup zip");
-            
-            massFunctionForm.GridChange(rownr, "Executing runeodreports.bat");
-            if (!CtrlFunctions.RegenerateEoDReports(connectionPara, addInfo[0], addInfo[1], out string regenOutput))
+            massFunctionForm.GridChange(rownr, "Checking for backup zip");
+            string[] searchResult = Directory.GetFiles(@"\\" + connectionPara.TAG + @"\d$\ArchivedReports", "collect_tp_reports.zip." + DateTime.Today.ToString("yyyyMMdd") + "030*");
+            if (searchResult.Length > 1)
+            {
+                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "More than one backup archive found need manual check");
+                return;
+            }
+
+            if (searchResult.Length == 1)
+            {
+                massFunctionForm.GridChange(rownr, "Copying backup zip");
+                if (!FileController.CopyFile(searchResult[0], @"\\" + connectionPara.TAG + @"\c$\service\dms_output\collect_tp_reports.zip", false, out Exception copyExp))
+                {
+                    massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "Error while copying backup zip need maunal check");
+                    return;
+                }
+                try
+                {
+                    File.AppendAllText(@"\\" + connectionPara.TAG + @"\c$\service\scripts\MONITORING\Log\COLLECT_TP_REPORTS_" + DateTime.Today.ToString("yyyyMMdd") + ".log", "canda_omnipos_reports_ok|" + DateTime.Now.ToString("yyyyMMddHHmm") + "|" + "Local Reports zip was copied from ArchivedReports (" + Path.GetFileName(searchResult[0]) + ") to dms_output folder" + Environment.NewLine, System.Text.Encoding.ASCII);
+                }
+                catch (Exception appendExp)
+                {
+                    Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.Error, "Append log Error: " + appendExp.Message);
+                }
+                massFunctionForm.AddToLog(rownr, "[SUCCESS] - " + "Local Reports zip was copied from ArchivedReports (" + Path.GetFileName(searchResult[0]) + ") to dms_output folder");
+                massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
+                return;
+            }
+
+            int offset = -1;
+            if (connectionPara.country == "PT" || connectionPara.country == "ES")
+            {
+                offset = 0;
+            }
+            massFunctionForm.GridChange(rownr, "Regenerating reports");
+            if (!CtrlFunctions.RegenerateEoDReports(connectionPara, DateTime.Today.AddDays(offset - 1).ToString("yyyyMMdd"), DateTime.Today.AddDays(offset).ToString("yyyyMMdd"), out string regenOutput))
             {
                 massFunctionForm.ErrorLog(rownr, connectionPara.TAG, regenOutput);
                 return;
             }
-            massFunctionForm.AddToLog(rownr, "[SUCCESS] - " + regenOutput);
-
-            massFunctionForm.GridChange(rownr, "Executing collect_tp_reports.ps1");
+            massFunctionForm.GridChange(rownr, "Zipping reports");
             if (!CtrlFunctions.ZipEoDReports(connectionPara, out string zipOutput))
             {
                 massFunctionForm.ErrorLog(rownr, connectionPara.TAG, zipOutput);
                 return;
             }
-            massFunctionForm.AddToLog(rownr, "[SUCCESS] " + zipOutput);
+            try
+            {
+                File.AppendAllText(@"\\" + connectionPara.TAG + @"\c$\service\scripts\MONITORING\Log\COLLECT_TP_REPORTS_" + DateTime.Today.ToString("yyyyMMdd") + ".log", "canda_omnipos_reports_ok|" + DateTime.Now.ToString("yyyyMMddHHmm") + "|" + "Local Reports were recreated and collected manually by script on " + DateTime.Now.ToString("d/MM/yyyy HH:mm:ss") + Environment.NewLine, System.Text.Encoding.ASCII);
+            }
+            catch (Exception appendExp)
+            {
+                Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.Error, "Append log Error: " + appendExp.Message);
+            }
+            massFunctionForm.AddToLog(rownr, "[SUCCESS] - " + "Local Reports were recreated and collected manually by script on " + DateTime.Now.ToString("d/MM/yyyy HH:mm:ss"));
             massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
+
+            //massFunctionForm.GridChange(rownr, "Executing runeodreports.bat");
+            //if (!CtrlFunctions.RegenerateEoDReports(connectionPara, addInfo[0], addInfo[1], out string regenOutput))
+            //{
+            //    massFunctionForm.ErrorLog(rownr, connectionPara.TAG, regenOutput);
+            //    return;
+            //}
+            //massFunctionForm.AddToLog(rownr, "[SUCCESS] - " + regenOutput);
+
+            //massFunctionForm.GridChange(rownr, "Executing collect_tp_reports.ps1");
+            //if (!CtrlFunctions.ZipEoDReports(connectionPara, out string zipOutput))
+            //{
+            //    massFunctionForm.ErrorLog(rownr, connectionPara.TAG, zipOutput);
+            //    return;
+            //}
+            //massFunctionForm.AddToLog(rownr, "[SUCCESS] " + zipOutput);
+            //massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
         }
         public static void UpdatePackageInvalidCheck(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
