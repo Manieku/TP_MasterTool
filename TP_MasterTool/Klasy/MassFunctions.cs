@@ -903,23 +903,15 @@ namespace TP_MasterTool.Klasy
         }
         public static void AdhocFunction(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
-            massFunctionForm.GridChange(rownr, "Checking");
-            if(File.Exists(@"\\" + connectionPara.TAG + @"\c$\SMART\smart.lock"))
+            massFunctionForm.GridChange(rownr, "Reading service");
+            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c sc query apcpbeagent | find /i \"state\"");
+            if (cmdOutput.exitCode != 0)
             {
-                try
-                {
-                    File.Delete(@"\\" + connectionPara.TAG + @"\c$\SMART\smart.lock");
-                    massFunctionForm.GridChange(rownr, "Deleted", Globals.successColor);
-                }
-                catch
-                {
-                    massFunctionForm.ErrorLog(rownr, "Unable to delete lock");
-                }
+                massFunctionForm.ErrorLog(rownr, "Service not found or rcmd error");
+                return;
             }
-            else
-            {
-                massFunctionForm.GridChange(rownr, "Clear", Globals.successColor);
-            }
+            massFunctionForm.AddToLog(rownr, "[SUCCESS] - " + cmdOutput.outputText.Split(':').Last());
+            massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
         }
 
         //------------------------Moje wymysly------------------------------//

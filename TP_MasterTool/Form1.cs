@@ -121,24 +121,19 @@ namespace TP_MasterTool
         }
         private void Test_Button_Click(object sender, EventArgs e)
         {
-            string output = "";
-            CtrlFunctions.CmdOutput cmdOutput2 = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c powershell -command \"Get-WmiObject Win32_BaseBoard | format-list -property Product\"") ;
-            if (cmdOutput2.exitCode != 0)
-            {
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Command Execution Error", "RCMD encounter a error during execution:" + Environment.NewLine + cmdOutput2.errorOutputText);
-                return;
-            }
-            output += cmdOutput2.outputText.Split(':')[1].Trim().Replace('-', '_') + " - ";
-            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c powershell -command \"get-disk | format-list -property DiskNumber,FriendlyName,HealthStatus,IsBoot,IsSystem,Size\"");
+            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c sc query apcpbeagent | find /i \"state\"");
             if (cmdOutput.exitCode != 0)
             {
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Command Execution Error", "RCMD encounter a error during execution:" + Environment.NewLine + cmdOutput.errorOutputText);
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "RCMD Error", "Unable to get last boot time - RCMD exited with error:" +
+                    Environment.NewLine + cmdOutput.errorOutputText);
                 return;
             }
-            foreach(string line in cmdOutput.outputText.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries))
-            {
-                output += line.Split(':')[1].Trim() + " - ";
-            }
+            CustomMsgBox.Show(CustomMsgBox.MsgType.Info, "Last Boot Time Info", cmdOutput.outputText.Split(':').Last());
+
+
+
+
+
 
             //List<string> errors = new List<string>();
             //foreach (string line in File.ReadAllLines(@".\input.txt"))
@@ -179,15 +174,15 @@ namespace TP_MasterTool
             //    File.AppendAllText(@".\dates_tps.txt", Path.GetFileNameWithoutExtension(file) + Environment.NewLine);
             //}
 
-            //string output = "";
-            //foreach (string file in Directory.GetFiles(@".\Dates"))
-            //{
-            //    foreach (string line in File.ReadAllLines(file))
-            //    {
-            //        output += Path.GetFileNameWithoutExtension(file) + "," + line + Environment.NewLine;
-            //    }
-            //}
-            //File.WriteAllText(@".\output.csv", output);
+            string output = "";
+            foreach (string file in Directory.GetFiles(@".\Dates"))
+            {
+                foreach (string line in File.ReadAllLines(file))
+                {
+                    output += Path.GetFileNameWithoutExtension(file) + "," + line + Environment.NewLine;
+                }
+            }
+            File.WriteAllText(@".\output.csv", output);
 
 
             //CtrlFunctions.EncryptFile(@".\mojepasy.txt", "cycuszki", Globals.configPath + "credentials.crypt");
