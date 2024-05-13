@@ -947,7 +947,7 @@ namespace TP_MasterTool
             Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.GetDhcpScope, scope);
             try
             {
-                PowerShell.Create().AddCommand("Get-DhcpServerv4lease").AddParameter("ComputerName", "de04cua031dcw04").AddParameter("ScopeId", scope).AddCommand("Out-File").AddParameter("FilePath", Path.GetFullPath(outputPath)).Invoke();
+                PowerShell.Create().AddCommand("Get-DhcpServerv4lease").AddParameter("ComputerName", "de04cua031dcw04.candadnpos.biz").AddParameter("ScopeId", scope).AddCommand("Out-File").AddParameter("FilePath", Path.GetFullPath(outputPath)).Invoke();
             }
             catch(Exception exp)
             {
@@ -1795,11 +1795,11 @@ namespace TP_MasterTool
             }
 
             Main.ChangeTitle("TP MasterTool - " + connectionPara.TAG + " (" + connectionPara.IP + ")");
-            Main.SetTAG(connectionPara.TAG, Color.LightGreen);
+            Main.SetTAG(tempTAG, Color.LightGreen);
             EnableUI();
             Main.ChangeStatusBar("Ready");
             Telemetry.LogFunctionUsage(Globals.Funkcje.Initialization);
-            userSettings.AddNewRecent(connectionPara.TAG);
+            userSettings.AddNewRecent(tempTAG);
         } // INITIALIZE BUTTON
         private void Main_FormClosed(object sender, FormClosedEventArgs e)
         {

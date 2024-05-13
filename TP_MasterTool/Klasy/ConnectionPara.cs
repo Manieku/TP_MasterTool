@@ -22,7 +22,7 @@ namespace TP_MasterTool.Klasy
 
         public ConnectionPara(string tag, string dnsIP, bool ipMode)
         {
-            TAG = tag;
+            TAG = tag + ".candadnpos.biz";
             IPMode = ipMode;
 
             if (IPMode)

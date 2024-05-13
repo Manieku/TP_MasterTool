@@ -25,6 +25,7 @@ namespace TP_MasterTool.Klasy
         }
         public static void LogMachineAction(string host, Globals.Funkcje funkcja, string comments)
         {
+            host = host.Split('.')[0];
             string filePath = Globals.machineLogPath + host + ".csv";
             try
             {
@@ -45,6 +46,7 @@ namespace TP_MasterTool.Klasy
         }
         public static void LogUserAction(string host, Globals.Funkcje funkcja, string comments)
         {
+            host = host.Split('.')[0];
             string filePath = Globals.telemetryLogPath + Logger.EnvironmentVariables.activeUser + ".csv";
             try
             {

@@ -43,7 +43,7 @@ namespace TP_MasterTool.Klasy
         {
             try
             {
-                return Dns.GetHostEntry(tag).AddressList[0].ToString();
+                return Dns.GetHostEntry(tag + ".candadnpos.biz").AddressList[0].ToString();
             }
             catch
             {
