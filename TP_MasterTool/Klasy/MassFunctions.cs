@@ -148,7 +148,7 @@ namespace TP_MasterTool.Klasy
         }
         public static List<string> GetInfo_WinCrashReasonCheck()
         {
-            string date = Microsoft.VisualBasic.Interaction.InputBox("Provide start date to check till now (mm.dd.yyyy):", "Input data");
+            string date = Microsoft.VisualBasic.Interaction.InputBox("Provide start date to check till now (dd.mm.yyyy):", "Input data");
             if (date == "")
             {
                 return null;
