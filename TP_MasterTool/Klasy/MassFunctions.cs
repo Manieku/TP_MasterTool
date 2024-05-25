@@ -903,15 +903,29 @@ namespace TP_MasterTool.Klasy
         }
         public static void AdhocFunction(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
-            massFunctionForm.GridChange(rownr, "Reading service");
-            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c sc query apcpbeagent | find /i \"state\"");
-            if (cmdOutput.exitCode != 0)
+            massFunctionForm.GridChange(rownr, "Reading log");
+            try
             {
-                massFunctionForm.ErrorLog(rownr, "Service not found or rcmd error");
-                return;
+                string[] files = new DirectoryInfo(@"\\" + connectionPara.TAG + @"\c$\Program Files (x86)\APC\PowerChute Business Edition\agent\energylog").EnumerateFiles().OrderByDescending(file => file.CreationTime).Select(file => file.FullName).ToArray();
+                foreach (string file in files)
+                {
+                    string[] log = System.IO.File.ReadAllLines(file);
+                    foreach (string line in log)
+                    {
+                        if (line.StartsWith("# $firmware") && line.Split('=')[1] != "null")
+                        {
+                            massFunctionForm.AddToLog(rownr, "[SUCCESS] - " + Path.GetFileName(file) + " - " + line.Split('=')[1]);
+                            massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
+                            return;
+                        }
+                    }
+                }
+                massFunctionForm.ErrorLog(rownr, "null");
             }
-            massFunctionForm.AddToLog(rownr, "[SUCCESS] - " + cmdOutput.outputText.Split(':').Last());
-            massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
+            catch
+            {
+                massFunctionForm.ErrorLog(rownr, "Read log error");
+            }
         }
 
         //------------------------Moje wymysly------------------------------//

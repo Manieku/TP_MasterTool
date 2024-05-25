@@ -39,6 +39,7 @@ namespace TP_MasterTool
             //Logs//
             "Windows",
             "Minidump Folder",
+            "OEMInst Logs",
             "TP.Net Logs",
             //Diagnostics//
             "Get S.M.A.R.T",
@@ -64,7 +65,6 @@ namespace TP_MasterTool
             "Symantec Backup Logs",
             "TFTPD Logs",
             "Installation Logs",
-            "OEMInst Logs",
             "Get APC Logs",
             "PDCU Data Error Secure",
             //Diagnostics//
