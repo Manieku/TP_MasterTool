@@ -22,16 +22,17 @@ namespace TP_MasterTool.Klasy
 
         public ConnectionPara(string tag, string dnsIP, bool ipMode)
         {
-            TAG = tag + ".candadnpos.biz";
             IPMode = ipMode;
 
             if (IPMode)
             {
+                TAG = tag;
                 IP = tag;
                 IPbytes = IPAddress.Parse(IP).GetAddressBytes();
                 return;
             }
 
+            TAG = tag + ".candadnpos.biz";
             IP = dnsIP;
             try
             {
