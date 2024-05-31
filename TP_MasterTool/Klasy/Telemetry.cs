@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Xml.Linq;
 
 namespace TP_MasterTool.Klasy
@@ -25,7 +26,10 @@ namespace TP_MasterTool.Klasy
         }
         public static void LogMachineAction(string host, Globals.Funkcje funkcja, string comments)
         {
-            host = host.Split('.')[0];
+            if(!IPAddress.TryParse(host, out _))
+            {
+                host = host.Split('.')[0];
+            }
             string filePath = Globals.machineLogPath + host + ".csv";
             try
             {
@@ -46,7 +50,10 @@ namespace TP_MasterTool.Klasy
         }
         public static void LogUserAction(string host, Globals.Funkcje funkcja, string comments)
         {
-            host = host.Split('.')[0];
+            if (!IPAddress.TryParse(host, out _))
+            {
+                host = host.Split('.')[0];
+            }
             string filePath = Globals.telemetryLogPath + Logger.EnvironmentVariables.activeUser + ".csv";
             try
             {
