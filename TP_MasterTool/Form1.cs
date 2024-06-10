@@ -121,14 +121,14 @@ namespace TP_MasterTool
         }
         private void Test_Button_Click(object sender, EventArgs e)
         {
-            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c sc query apcpbeagent | find /i \"state\"");
-            if (cmdOutput.exitCode != 0)
-            {
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "RCMD Error", "Unable to get last boot time - RCMD exited with error:" +
-                    Environment.NewLine + cmdOutput.errorOutputText);
-                return;
-            }
-            CustomMsgBox.Show(CustomMsgBox.MsgType.Info, "Last Boot Time Info", cmdOutput.outputText.Split(':').Last());
+            //CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c sc query apcpbeagent | find /i \"state\"");
+            //if (cmdOutput.exitCode != 0)
+            //{
+            //    CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "RCMD Error", "Unable to get last boot time - RCMD exited with error:" +
+            //        Environment.NewLine + cmdOutput.errorOutputText);
+            //    return;
+            //}
+            //CustomMsgBox.Show(CustomMsgBox.MsgType.Info, "Output", cmdOutput.outputText.Split(':').Last());
 
 
 
@@ -168,21 +168,28 @@ namespace TP_MasterTool
             //}
             //File.AppendAllLines(@".\errors.txt", errors);
 
+            foreach (string line in File.ReadAllLines(@".\input.txt"))
+            {
+                string[] numbers = line.Split(new char[] { '\t' }, StringSplitOptions.RemoveEmptyEntries);
+                File.AppendAllText(@".\Dates\" + numbers[0] + ".txt", numbers[1] + Environment.NewLine);
+            }
 
-            //foreach (string file in Directory.GetFiles(@".\Dates"))
-            //{
-            //    File.AppendAllText(@".\dates_tps.txt", Path.GetFileNameWithoutExtension(file) + Environment.NewLine);
-            //}
 
-            string output = "";
+
             foreach (string file in Directory.GetFiles(@".\Dates"))
             {
-                foreach (string line in File.ReadAllLines(file))
-                {
-                    output += Path.GetFileNameWithoutExtension(file) + "," + line + Environment.NewLine;
-                }
+                File.AppendAllText(@".\dates_tps.txt", Path.GetFileNameWithoutExtension(file) + Environment.NewLine);
             }
-            File.WriteAllText(@".\output.csv", output);
+
+            //string output = "";
+            //foreach (string file in Directory.GetFiles(@".\Dates"))
+            //{
+            //    foreach (string line in File.ReadAllLines(file))
+            //    {
+            //        output += Path.GetFileNameWithoutExtension(file) + "," + line + Environment.NewLine;
+            //    }
+            //}
+            //File.WriteAllText(@".\output.csv", output);
 
 
             //CtrlFunctions.EncryptFile(@".\mojepasy.txt", "cycuszki", Globals.configPath + "credentials.crypt");

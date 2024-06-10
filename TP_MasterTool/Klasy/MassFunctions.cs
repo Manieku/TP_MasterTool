@@ -903,28 +903,110 @@ namespace TP_MasterTool.Klasy
         }
         public static void AdhocFunction(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
-            massFunctionForm.GridChange(rownr, "Reading log");
+            /*
+             * Gets dates (YYYYMMDD) in .\Dates folder 
+             * Create temp folder and collect_tp_reports.zip if not exist in dms_output
+             * For each date its look for backup archive in ArchivedReports, if found they are extracted to temp folder
+             * Then files from temp folder are packed into output zip and temp folder is deleted
+             * Log everything in dates txt, on reruns it skips [SUCCESS] and retry [ERROR]
+             * Stworzone na poczet odzyskiwania brakujacych raporow (Olga Dovgalova PM, Novotny Adrian)
+             */
+
+
+            massFunctionForm.GridChange(rownr, "Reading dates");
+            string[] dates = File.ReadAllLines(@".\Dates\" + connectionPara.TAG.Split('.')[0] + @".txt");
+            int iterator = -1;
             try
             {
-                string[] files = new DirectoryInfo(@"\\" + connectionPara.TAG + @"\c$\Program Files (x86)\APC\PowerChute Business Edition\agent\energylog").EnumerateFiles().OrderByDescending(file => file.CreationTime).Select(file => file.FullName).ToArray();
-                foreach (string file in files)
+                Directory.CreateDirectory(@"\\" + connectionPara.TAG + @"\c$\service\dms_output\temp");
+                if (!File.Exists(@"\\" + connectionPara.TAG + @"\c$\service\dms_output\collect_tp_reports.zip"))
                 {
-                    string[] log = System.IO.File.ReadAllLines(file);
-                    foreach (string line in log)
+                    File.Create(@"\\" + connectionPara.TAG + @"\c$\service\dms_output\collect_tp_reports.zip").Close();
+                }
+            }
+            catch (Exception exp)
+            {
+                massFunctionForm.ErrorLog(rownr, "Error creating output zip");
+                dates[iterator] += ",[ERROR],unable to create zip file or temp folder in output folder: " + exp.Message;
+                return;
+            }
+            try
+            {
+                foreach (string fuckDate in dates)
+                {
+                    iterator++;
+                    string date = fuckDate;
+                    if (date.Length > 8)
                     {
-                        if (line.StartsWith("# $firmware") && line.Split('=')[1] != "null")
+                        if (date.Contains("[ERROR]"))
                         {
-                            massFunctionForm.AddToLog(rownr, "[SUCCESS] - " + Path.GetFileName(file) + " - " + line.Split('=')[1]);
-                            massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
-                            return;
+                            dates[iterator] = date.Substring(0, 8);
+                            date = date.Substring(0, 8);
+                        }
+                        else
+                        {
+                            continue;
                         }
                     }
+                    massFunctionForm.GridChange(rownr, "Restoring date: " + date + "(" + (iterator + 1).ToString() + "/" + dates.Length + ")");
+
+                    string zipDate = (int.Parse(date) + 1).ToString();
+                    if (date == "20240131") { zipDate = "20240201"; }
+                    string[] zipFiles = Directory.GetFiles(@"\\" + connectionPara.TAG + @"\d$\ArchivedReports", "collect_tp_reports.zip." + zipDate + "030*");
+                    if (zipFiles.Length > 1)
+                    {
+                        massFunctionForm.ErrorLog(rownr, "Error check date txt");
+                        dates[iterator] += ",[ERROR],more than one zip file on this date need manual check";
+                    }
+                    else if (zipFiles.Length == 1)
+                    {
+                        try
+                        {
+                            using (ZipArchive backupArchive = ZipFile.OpenRead(zipFiles[0]))
+                            using (ZipArchive outputArchive = ZipFile.Open(@"\\" + connectionPara.TAG + @"\c$\service\dms_output\collect_tp_reports.zip", ZipArchiveMode.Update))
+                            {
+                                foreach (var zipedRaport in backupArchive.Entries)
+                                {
+                                    if (!zipedRaport.FullName.Contains(connectionPara.country + @"\"))
+                                    {
+
+                                        //long datePliku = long.Parse(zipedRaport.Name.Substring(zipedRaport.Name.IndexOf('_') + 1, 14))+1;
+                                        //string nazwaPliku = zipedRaport.Name.Substring(0, zipedRaport.Name.IndexOf('_') + 1) + datePliku + zipedRaport.Name.Substring(zipedRaport.Name.LastIndexOf('_'));
+                                        zipedRaport.ExtractToFile(@"\\" + connectionPara.TAG + @"\c$\service\dms_output\temp\" + zipedRaport.Name, true);
+                                        outputArchive.CreateEntryFromFile(@"\\" + connectionPara.TAG + @"\c$\service\dms_output\temp\" + zipedRaport.Name, zipedRaport.Name);
+                                    }
+                                }
+                            }
+                        }
+                        catch (Exception exp)
+                        {
+                            massFunctionForm.ErrorLog(rownr, "Error check date txt");
+                            dates[iterator] += ",[ERROR],unable to handle zip file check manually: " + exp.Message;
+                            continue;
+                        }
+                        dates[iterator] += ",[SUCCESS],reports found in ArchivedReports - copied to output zip";
+                        massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
+                    }
+                    else
+                    {
+                        massFunctionForm.ErrorLog(rownr, "Error check date txt");
+                        dates[iterator] += ",[FATAL],no reports found manual check needed";
+                    }
                 }
-                massFunctionForm.ErrorLog(rownr, "null");
+                File.WriteAllLines(@".\Dates\" + connectionPara.TAG.Split('.')[0] + @".txt", dates);
+                try
+                {
+                    Directory.Delete(@"\\" + connectionPara.TAG + @"\c$\service\dms_output\temp", true);
+                }
+                catch (Exception exp)
+                {
+                    massFunctionForm.ErrorLog(rownr, "Temp delete error");
+                    dates[iterator] += ",[ERROR],Can't delete some files in temp folder";
+                }
             }
-            catch
+            catch (Exception exp)
             {
-                massFunctionForm.ErrorLog(rownr, "Read log error");
+                massFunctionForm.ErrorLog(rownr, exp.ToString());
             }
         }
 
