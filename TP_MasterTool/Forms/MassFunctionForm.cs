@@ -71,7 +71,7 @@ namespace TP_MasterTool.Forms
             //here you enter your function to execution
             lock (logLock)
             {
-                Telemetry.LogCompleteTelemetryData(connectionPara.TAG, (Globals.Funkcje)Enum.Parse(typeof(Globals.Funkcje), functionName), String.Join(" | ", additionalInfo));
+                Telemetry.LogCompleteTelemetryData(connectionPara.hostname, (Globals.Funkcje)Enum.Parse(typeof(Globals.Funkcje), functionName), String.Join(" | ", additionalInfo));
             }
             Type type = Type.GetType("TP_MasterTool.Klasy.MassFunctions");
             MethodInfo methodInfo = type.GetMethod(functionName);

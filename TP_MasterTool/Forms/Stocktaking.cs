@@ -113,7 +113,7 @@ namespace TP_MasterTool.Forms
 
             lock (logLock)
             {
-                Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.Stocktaking, "");
+                Telemetry.LogCompleteTelemetryData(connectionPara.hostname, Globals.Funkcje.Stocktaking, "");
             }
         }
 
@@ -123,7 +123,7 @@ namespace TP_MasterTool.Forms
             gridChange(rownr, i, "None");
             try
             {
-                string[] files8E = System.IO.Directory.GetFiles(@"\\" + connectionPara.TAG + @"\d$\StoreApps\IOP\data\Out", "*.8E.TXT", SearchOption.AllDirectories);
+                string[] files8E = System.IO.Directory.GetFiles(@"\\" + connectionPara.fullNetworkName + @"\d$\StoreApps\IOP\data\Out", "*.8E.TXT", SearchOption.AllDirectories);
                 foreach (string file in files8E)
                 {
                     gridChange(rownr, i, System.IO.File.GetLastWriteTime(file).ToString());
@@ -142,7 +142,7 @@ namespace TP_MasterTool.Forms
             gridChange(rownr, i, "None");
             try
             {
-                string[] files8EDelivered = System.IO.Directory.GetFiles(@"\\" + connectionPara.TAG + @"\d$\StoreApps\IOP\data\Out", "*.8E.TXT.*.D", SearchOption.AllDirectories);
+                string[] files8EDelivered = System.IO.Directory.GetFiles(@"\\" + connectionPara.fullNetworkName + @"\d$\StoreApps\IOP\data\Out", "*.8E.TXT.*.D", SearchOption.AllDirectories);
                 foreach (string file in files8EDelivered)
                 {
                     gridChange(rownr, i, System.IO.File.GetLastWriteTime(file).ToString());

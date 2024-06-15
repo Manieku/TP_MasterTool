@@ -135,7 +135,7 @@ namespace TP_MasterTool.Klasy
         }
         public static bool MapEndpointDrive(ref ConnectionPara connectionPara, out CmdOutput cmdOutput)
         {
-            cmdOutput = CtrlFunctions.RunHiddenCmd("cmd.exe ", @"/c net use \\" + connectionPara.TAG + " " + connectionPara.password + " /user:" + connectionPara.userName);
+            cmdOutput = CtrlFunctions.RunHiddenCmd("cmd.exe ", @"/c net use \\" + connectionPara.fullNetworkName + " " + connectionPara.password + " /user:" + connectionPara.userName);
             if (cmdOutput.exitCode != 0)
             {
                 if (cmdOutput.errorOutputText.Contains("The user name or password is incorrect"))
@@ -144,9 +144,9 @@ namespace TP_MasterTool.Klasy
                 }
                 return false;
             }
-            if (!System.IO.Directory.Exists(@"\\" + connectionPara.TAG + @"\c$"))
+            if (!System.IO.Directory.Exists(@"\\" + connectionPara.fullNetworkName + @"\c$"))
             {
-                CtrlFunctions.RunHiddenCmd("cmd.exe", @"/c net use \\" + connectionPara.TAG + @" /delete");
+                CtrlFunctions.RunHiddenCmd("cmd.exe", @"/c net use \\" + connectionPara.fullNetworkName + @" /delete");
                 return ReMapDriveWithCredSwitch(ref connectionPara, out cmdOutput);
             }
             return true;
@@ -154,7 +154,7 @@ namespace TP_MasterTool.Klasy
         private static bool ReMapDriveWithCredSwitch(ref ConnectionPara connectionPara, out CmdOutput cmdOutput)
         {
             connectionPara.CredentialsSwitch();
-            cmdOutput = CtrlFunctions.RunHiddenCmd("cmd.exe", @"/c net use \\" + connectionPara.TAG + " " + connectionPara.password + " /user:" + connectionPara.userName);
+            cmdOutput = CtrlFunctions.RunHiddenCmd("cmd.exe", @"/c net use \\" + connectionPara.fullNetworkName + " " + connectionPara.password + " /user:" + connectionPara.userName);
             if (cmdOutput.exitCode != 0)
             {
                 //Main.SetTAG(connectionPara.TAG, Globals.errorColor);
@@ -253,13 +253,13 @@ namespace TP_MasterTool.Klasy
                 }
             }
         }
-        public static bool CheckCsvExportResult(string host, out string errorMsg)
+        public static bool CheckCsvExportResult(ConnectionPara connectionPara, out string errorMsg)
         {
             errorMsg = "";
             string[] log;
             try
             {
-                log = System.IO.File.ReadAllLines(@"\\" + host + @"\d$\TPDotnet\Log\" + host + "-CA.DE.BS.CSVExport.log");
+                log = System.IO.File.ReadAllLines(@"\\" + connectionPara.fullNetworkName + @"\d$\TPDotnet\Log\" + connectionPara.hostname + "-CA.DE.BS.CSVExport.log");
             }
             catch (Exception exp)
             {
@@ -286,9 +286,9 @@ namespace TP_MasterTool.Klasy
         public static bool Smarty(ConnectionPara connectionPara, out string errorMsg)
         {
             errorMsg = "";
-            Logger myLog = new Logger(Globals.Funkcje.GetSMART, "", connectionPara.TAG);
-            System.IO.Directory.CreateDirectory(@"\\" + connectionPara.TAG + @"\c$\SMART");
-            if (System.IO.File.Exists(@"\\" + connectionPara.TAG + @"\c$\SMART\smart.lock"))
+            Logger myLog = new Logger(Globals.Funkcje.GetSMART, "", connectionPara.hostname);
+            System.IO.Directory.CreateDirectory(@"\\" + connectionPara.fullNetworkName + @"\c$\SMART");
+            if (System.IO.File.Exists(@"\\" + connectionPara.fullNetworkName + @"\c$\SMART\smart.lock"))
             {
                 myLog.Add("CrystalDiskInfo is already running");
                 myLog.SaveLog("InfoLog");
@@ -297,7 +297,7 @@ namespace TP_MasterTool.Klasy
             }
             else
             {
-                if (!CreateLock(@"\\" + connectionPara.TAG + @"\c$\SMART\smart.lock", ref myLog))
+                if (!CreateLock(@"\\" + connectionPara.fullNetworkName + @"\c$\SMART\smart.lock", ref myLog))
                 {
                     myLog.SaveLog("ErrorLog");
                     errorMsg = @"ToolBox wasn't able to lock CrystalDiskInfo process. Please initialize it anew and try again";
@@ -305,7 +305,7 @@ namespace TP_MasterTool.Klasy
                 }
             }
 
-            if (!FileController.CopyFolder(Globals.toolsPath + @"CrystalDiskInfo", @"\\" + connectionPara.TAG + @"\c$\SMART", false, out Exception copyExp))
+            if (!FileController.CopyFolder(Globals.toolsPath + @"CrystalDiskInfo", @"\\" + connectionPara.fullNetworkName + @"\c$\SMART", false, out Exception copyExp))
             {
                 myLog.Add(copyExp.ToString());
                 myLog.SaveLog("ErrorLog");
@@ -314,7 +314,7 @@ namespace TP_MasterTool.Klasy
             }
 
             myLog.Add("Starting RCMD");
-            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + @" -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c C:\SMART\diskinfo64 /copyexit");
+            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.fullNetworkName + @" -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c C:\SMART\diskinfo64 /copyexit");
             if (cmdOutput.exitCode != 0)
             {
                 myLog.Add("RCMD encountered error: " + cmdOutput.errorOutputText);
@@ -325,23 +325,23 @@ namespace TP_MasterTool.Klasy
 
             return true;
         }
-        public static void GetWinLogs(string type, string host)
+        public static void GetWinLogs(string type, ConnectionPara connectionPara)
         {
-            Telemetry.LogCompleteTelemetryData(host, Globals.Funkcje.GetWinLogs, type);
-            Logger myLog = new Logger(Globals.Funkcje.GetWinLogs, type, host);
+            Telemetry.LogCompleteTelemetryData(connectionPara.hostname, Globals.Funkcje.GetWinLogs, type);
+            Logger myLog = new Logger(Globals.Funkcje.GetWinLogs, type, connectionPara.hostname);
             using (BackgroundWorker slave = new BackgroundWorker())
             {
                 slave.DoWork += (s, args) =>
                 {
-                    string fileName = host + " - " + type + " Log.evtx";
+                    string fileName = connectionPara.hostname + " - " + type + " Log.evtx";
                     myLog.Add("Copying: " + type + @".evtx");
-                    if (!FileController.CopyFile(@"\\" + host + @"\c$\Windows\System32\winevt\Logs\" + type + @".evtx", @".\Logs\Windows\" + fileName, true, out Exception copyExp))
+                    if (!FileController.CopyFile(@"\\" + connectionPara.fullNetworkName + @"\c$\Windows\System32\winevt\Logs\" + type + @".evtx", @".\Logs\Windows\" + fileName, true, out Exception copyExp))
                     {
                         if (copyExp != null)
                         {
                             myLog.Add("Failed:" + Environment.NewLine + copyExp.ToString());
                             myLog.SaveLog("ErrorLog");
-                            Telemetry.LogMachineAction(host, Globals.Funkcje.Error, "Error during copying");
+                            Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.Error, "Error during copying");
                             CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Downloading Error", "ToolBox encountered error during downloading logs:" + Environment.NewLine + copyExp.Message);
                         }
                         return;
@@ -360,7 +360,7 @@ namespace TP_MasterTool.Klasy
                         myLog.Add("Error trying open log file - " + @".\Logs\Windows\" + fileName);
                         myLog.Add(exp.ToString());
                         myLog.SaveLog("ErrorLog");
-                        Telemetry.LogMachineAction(host, Globals.Funkcje.Error, "Log file open error");
+                        Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.Error, "Log file open error");
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Log file open error", @"System encouter a problem while trying to open log file: " + Environment.NewLine + exp.Message);
                     }
                 };
@@ -370,7 +370,7 @@ namespace TP_MasterTool.Klasy
         public static bool KillMobilePos(ConnectionPara connectionPara, out string errorMsg)
         {
             errorMsg = "";
-            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c taskkill /im TP.UI.MobilePOS.exe /f");
+            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.fullNetworkName + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c taskkill /im TP.UI.MobilePOS.exe /f");
             if (cmdOutput.exitCode != 0 && cmdOutput.exitCode != 128)
             {
                 errorMsg = cmdOutput.errorOutputText;
@@ -380,7 +380,7 @@ namespace TP_MasterTool.Klasy
         }
         public static string GetDiskSpaceInfo(string drive, ConnectionPara connectionPara, out ulong TotalNumberOfFreeBytes, out ulong TotalNumberOfBytes)
         {
-            if (!GetDiskFreeSpaceEx(@"\\" + connectionPara.TAG + @"\" + drive + @"$\", out _, out TotalNumberOfBytes, out TotalNumberOfFreeBytes))
+            if (!GetDiskFreeSpaceEx(@"\\" + connectionPara.fullNetworkName + @"\" + drive + @"$\", out _, out TotalNumberOfBytes, out TotalNumberOfFreeBytes))
             {
                 return " - Error reading disc space";
             }
@@ -391,15 +391,15 @@ namespace TP_MasterTool.Klasy
         }
         public static bool RegenerateEoDReports(ConnectionPara connectionPara, string startDate, string endDate, out string regerOutput)
         {
-            if (!System.IO.File.Exists(@"\\" + connectionPara.TAG + @"\c$\temp\runeodreports.bat"))
+            if (!System.IO.File.Exists(@"\\" + connectionPara.fullNetworkName + @"\c$\temp\runeodreports.bat"))
             {
-                if(!FileController.CopyFile(Globals.toolsPath + "runeodreports.bat", @"\\" + connectionPara.TAG + @"\c$\temp\runeodreports.bat", false, out Exception copyExp))
+                if(!FileController.CopyFile(Globals.toolsPath + "runeodreports.bat", @"\\" + connectionPara.fullNetworkName + @"\c$\temp\runeodreports.bat", false, out Exception copyExp))
                 {
                     regerOutput = "Unable to copy script -> " + copyExp.Message;
                     return false;
                 }
             }
-            if(RunHiddenCmdWitoutOutput("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd" +
+            if(RunHiddenCmdWitoutOutput("psexec.exe", @"\\" + connectionPara.fullNetworkName + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd" +
                 @" /c cd C:\temp && runeodreports.bat " + startDate + " " + endDate, true) != 0)
             {
                 regerOutput = "Error with execution of runeodreports.bat";
@@ -410,7 +410,7 @@ namespace TP_MasterTool.Klasy
         }
         public static bool ZipEoDReports(ConnectionPara connectionPara, out string output)
         {
-            if(RunHiddenCmdWitoutOutput("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd" +
+            if(RunHiddenCmdWitoutOutput("psexec.exe", @"\\" + connectionPara.fullNetworkName + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd" +
                 @" /c cd C:\service\qem\collect_tp_reports && powershell -ExecutionPolicy Bypass -File collect_tp_reports.ps1", true) != 0)
             {
                 output = "Error with execute PowerShell script";
@@ -471,8 +471,8 @@ namespace TP_MasterTool.Klasy
         }
         public static bool CsvExport(ConnectionPara connectionPara, string arguments, out string errorMsg)
         {
-            RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c D:\TPDotnet\bin\CA.DE.BS.CSVExport.exe" + arguments);
-            return CheckCsvExportResult(connectionPara.TAG, out errorMsg);
+            RunHiddenCmd("psexec.exe", @"\\" + connectionPara.fullNetworkName + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c D:\TPDotnet\bin\CA.DE.BS.CSVExport.exe" + arguments);
+            return CheckCsvExportResult(connectionPara, out errorMsg);
         }
         public static bool SqlGetInfo(string tag, string database, string sqlQuery, out string output)
         {

@@ -21,7 +21,7 @@ namespace TP_MasterTool
         private void EndpointsScan_Shown(object sender, EventArgs e)
         {
             connectionPara = Main.interfejs.connectionPara;
-            Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.EndpointScan, "");
+            Telemetry.LogCompleteTelemetryData(connectionPara.hostname, Globals.Funkcje.EndpointScan, "");
             backgroundWorker1.RunWorkerAsync();
         }
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)

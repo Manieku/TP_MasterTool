@@ -208,7 +208,7 @@ namespace TP_MasterTool
             {
                 slave.DoWork += (s, args) =>
                 {
-                    CtrlFunctions.CmdOutput macCmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c powershell -command \"Get-WmiObject win32_networkadapterconfiguration | where {$_.ipaddress -like '" + connectionPara.IP + "*'} | select macaddress | ft -hidetableheaders\"");
+                    CtrlFunctions.CmdOutput macCmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.fullNetworkName + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c powershell -command \"Get-WmiObject win32_networkadapterconfiguration | where {$_.ipaddress -like '" + connectionPara.IP + "*'} | select macaddress | ft -hidetableheaders\"");
                     if(macCmdOutput.exitCode != 0 || macCmdOutput.outputText == "")
                     {
                         textBox_MAC.Text = "ERROR";
@@ -225,11 +225,11 @@ namespace TP_MasterTool
                     }
                     catch(Exception exp)
                     {
-                        Logger.QuickLog(Globals.Funkcje.GetMAC, connectionPara.IP, connectionPara.TAG, "WarningLog", "Get DHCP info error:" + Environment.NewLine + exp.ToString());
+                        Logger.QuickLog(Globals.Funkcje.GetMAC, connectionPara.IP, connectionPara.hostname, "WarningLog", "Get DHCP info error:" + Environment.NewLine + exp.ToString());
                     }
                     textBox_MAC.Text = macCmdOutput.outputText.Replace(":", "-").Trim();
                     getMAC_button.Enabled = true;
-                    Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.GetMAC, macCmdOutput.outputText.Replace(":", "-").Trim().ToUpper());
+                    Telemetry.LogCompleteTelemetryData(connectionPara.hostname, Globals.Funkcje.GetMAC, macCmdOutput.outputText.Replace(":", "-").Trim().ToUpper());
                 };
                 slave.RunWorkerAsync();
             }
@@ -261,12 +261,12 @@ namespace TP_MasterTool
         //--------------------/PING BUTTONS/---------------------------
         private void PingButton_Click(object sender, EventArgs e)
         {
-            Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.PingButton, (sender as Button).Text);
+            Telemetry.LogCompleteTelemetryData(connectionPara.hostname, Globals.Funkcje.PingButton, (sender as Button).Text);
             Process.Start("cmd.exe", "/c ping " + String.Join(".", connectionPara.IPbytes[0], connectionPara.IPbytes[1], connectionPara.IPbytes[2], (sender as Button).Tag.ToString()) + " && pause");
         }
         private void PRNPingButton_Click(object sender, EventArgs e)
         {
-            Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.PingButton, (sender as Button).Text);
+            Telemetry.LogCompleteTelemetryData(connectionPara.hostname, Globals.Funkcje.PingButton, (sender as Button).Text);
             Process.Start("cmd.exe", "/c ping " + String.Join(".", connectionPara.IPbytes[0], connectionPara.IPbytes[1], (connectionPara.IPbytes[2] + 1).ToString(), (sender as Button).Tag.ToString()) + " && pause");
         }
 
@@ -275,45 +275,45 @@ namespace TP_MasterTool
         //---------------------RemoteCMDs ToolBarMenu-----------------------
         private void RCMDMenuItem_Click(object sender, EventArgs e)
         {
-            Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.RCMD, "");
-            Process.Start("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd");
+            Telemetry.LogCompleteTelemetryData(connectionPara.hostname, Globals.Funkcje.RCMD, "");
+            Process.Start("psexec.exe", @"\\" + connectionPara.fullNetworkName + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd");
         }
         private void RebootDeviceMenuItem_Click(object sender, EventArgs e)
         {
-            if (CustomMsgBox.Show(CustomMsgBox.MsgType.Decision, "CAUTION", "Are you sure you want to RESTART device: " + connectionPara.TAG + "?") == DialogResult.Cancel)
+            if (CustomMsgBox.Show(CustomMsgBox.MsgType.Decision, "CAUTION", "Are you sure you want to RESTART device: " + connectionPara.hostname + "?") == DialogResult.Cancel)
             {
                 return;
             }
-            Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.RemoteRestart, "");
-            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c shutdown /r");
+            Telemetry.LogCompleteTelemetryData(connectionPara.hostname, Globals.Funkcje.RemoteRestart, "");
+            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.fullNetworkName + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c shutdown /r");
             if (cmdOutput.exitCode != 0)
             {
                 CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Command Execution Error", "RCMD encounter a error during execution:" + Environment.NewLine + cmdOutput.errorOutputText);
-                Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "CMD Failed to restart host");
-                Logger.QuickLog(Globals.Funkcje.RemoteRestart, "", connectionPara.TAG, "ErrorLog", cmdOutput.errorOutputText);
+                Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.Error, "CMD Failed to restart host");
+                Logger.QuickLog(Globals.Funkcje.RemoteRestart, "", connectionPara.hostname, "ErrorLog", cmdOutput.errorOutputText);
                 return;
             }
             CustomMsgBox.Show(CustomMsgBox.MsgType.Done, "Success", "Command was successful send to remote host");
         }
         private void TracertMenuItem_Click(object sender, EventArgs e)
         {
-            Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.Tracert, "");
-            Process.Start("cmd.exe", "/c tracert " + connectionPara.TAG + "&& pause");
+            Telemetry.LogCompleteTelemetryData(connectionPara.hostname, Globals.Funkcje.Tracert, "");
+            Process.Start("cmd.exe", "/c tracert " + connectionPara.fullNetworkName + "&& pause");
         }
         private void DNSRestoreMenuItem_Click(object sender, EventArgs e)
         {
             using (BackgroundWorker slave = new BackgroundWorker())
             {
-                Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.DNSRestore, "");
+                Telemetry.LogCompleteTelemetryData(connectionPara.hostname, Globals.Funkcje.DNSRestore, "");
                 slave.DoWork += (s, args) =>
                 {
                     ChangeStatusBar("Restoring DNS");
-                    CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c ipconfig /flushdns && ipconfig /renew && ipconfig /registerdns && gpupdate /force");
+                    CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.fullNetworkName + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c ipconfig /flushdns && ipconfig /renew && ipconfig /registerdns && gpupdate /force");
                     ChangeStatusBar("Ready");
                     if (cmdOutput.exitCode != 0)
                     {
-                        Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "RCMD exited with code: " + cmdOutput.exitCode);
-                        Logger.QuickLog(Globals.Funkcje.DNSRestore, "", connectionPara.TAG, "ErrorLog", "RCMD exited with code: " + cmdOutput.exitCode + "\n" + cmdOutput.errorOutputText);
+                        Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.Error, "RCMD exited with code: " + cmdOutput.exitCode);
+                        Logger.QuickLog(Globals.Funkcje.DNSRestore, "", connectionPara.hostname, "ErrorLog", "RCMD exited with code: " + cmdOutput.exitCode + "\n" + cmdOutput.errorOutputText);
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Execution Error", "RCMD exited with error while executing commands:\n" + cmdOutput.errorOutputText);
                         return;
                     }
@@ -338,25 +338,25 @@ namespace TP_MasterTool
         //------------------Drives--------------------
         private void DriveMenuItem_Click(object sender, EventArgs e)
         {
-            CtrlFunctions.OpenFolder(connectionPara.TAG, (sender as ToolStripMenuItem).Tag.ToString());
+            CtrlFunctions.OpenFolder(connectionPara.fullNetworkName, (sender as ToolStripMenuItem).Tag.ToString());
         }
 
         //------------------APC--------------------
         private void APCMenuItem_Click(object sender, EventArgs e)
         {
-            Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.OpenWebAPC, "");
+            Telemetry.LogCompleteTelemetryData(connectionPara.hostname, Globals.Funkcje.OpenWebAPC, "");
             Process.Start(@"Https://" + connectionPara.IP + @":6547/");
         }
         private void ServerRTMenuItem_Click(object sender, EventArgs e)
         {
-            Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.OpenServerRT, "");
+            Telemetry.LogCompleteTelemetryData(connectionPara.hostname, Globals.Funkcje.OpenServerRT, "");
             Process.Start(@"Https://" + String.Join(".", connectionPara.IPbytes[0], connectionPara.IPbytes[1], connectionPara.IPbytes[2]) + @".178/");
         }
 
         //------------------TP Raports--------------------
         private void LocalStorageTillMenuItem_Click(object sender, EventArgs e)
         {
-            CtrlFunctions.OpenFolder(connectionPara.TAG, @"c$\Users\" + connectionPara.country + connectionPara.storeNr + connectionPara.storeType + @".AL\AppData\Local\Diebold_Nixdorf\mobile_cache\Local Storage");
+            CtrlFunctions.OpenFolder(connectionPara.fullNetworkName, @"c$\Users\" + connectionPara.country + connectionPara.storeNr + connectionPara.storeType + @".AL\AppData\Local\Diebold_Nixdorf\mobile_cache\Local Storage");
         } //dont support IP MODE
 
         /**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**/
@@ -365,7 +365,7 @@ namespace TP_MasterTool
         //------------Windows Logs------------------
         private void WindowsLogsMenuItem_Click(object sender, EventArgs e)
         {
-            CtrlFunctions.GetWinLogs((sender as ToolStripMenuItem).Text, connectionPara.TAG);
+            CtrlFunctions.GetWinLogs((sender as ToolStripMenuItem).Text, connectionPara);
         }
 
         //-----------EPOS Logs-----------------
@@ -381,12 +381,12 @@ namespace TP_MasterTool
                     {
                         return;
                     }
-                    if(!FileController.ZipAndStealFolder(tixnr, "TPLogs", @"\\" + connectionPara.TAG + @"\d$\TPDotnet\Log", @"D:\TPDotnet\Log", connectionPara, out string outputFilePath))
+                    if(!FileController.ZipAndStealFolder(tixnr, "TPLogs", @"\\" + connectionPara.fullNetworkName + @"\d$\TPDotnet\Log", @"D:\TPDotnet\Log", connectionPara, out string outputFilePath))
                     {
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Secure Log Error", outputFilePath);
                         return;
                     }
-                    if (CustomMsgBox.Show(CustomMsgBox.MsgType.Decision, connectionPara.TAG + " - Logs secured", "Log files were successfully zipped and secured in WNI folder." + Environment.NewLine + "Do you want to download then on your drive?") == DialogResult.OK)
+                    if (CustomMsgBox.Show(CustomMsgBox.MsgType.Decision, connectionPara.hostname + " - Logs secured", "Log files were successfully zipped and secured in WNI folder." + Environment.NewLine + "Do you want to download then on your drive?") == DialogResult.OK)
                     {
                         if (!System.IO.File.Exists(outputFilePath))
                         {
@@ -397,7 +397,7 @@ namespace TP_MasterTool
                         {
                             if (copyExp != null)
                             {
-                                Logger.QuickLog(Globals.Funkcje.ZipAndSteal, "TPLogs", connectionPara.TAG, "ErrorLog", copyExp.ToString());
+                                Logger.QuickLog(Globals.Funkcje.ZipAndSteal, "TPLogs", connectionPara.hostname, "ErrorLog", copyExp.ToString());
                                 CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Downloading Error", "ToolBox encountered error during downloading logs:" + Environment.NewLine + copyExp.Message);
                             }
                         }
@@ -413,12 +413,12 @@ namespace TP_MasterTool
         {
             ConnectionPara connectionPara = Main.interfejs.connectionPara;
 
-            if (!System.IO.Directory.Exists(@"\\" + connectionPara.TAG + @"\c$\Program Files (x86)\Service Plus"))
+            if (!System.IO.Directory.Exists(@"\\" + connectionPara.fullNetworkName + @"\c$\Program Files (x86)\Service Plus"))
             {
                 CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "No S4 folder found", "Can't find any S4 folder on target host");
                 return;
             }
-            string[] directories = System.IO.Directory.GetDirectories(@"\\" + connectionPara.TAG + @"\c$\Program Files (x86)\Service Plus", "S4Fiscal???", System.IO.SearchOption.TopDirectoryOnly);
+            string[] directories = System.IO.Directory.GetDirectories(@"\\" + connectionPara.fullNetworkName + @"\c$\Program Files (x86)\Service Plus", "S4Fiscal???", System.IO.SearchOption.TopDirectoryOnly);
             if (directories.Length == 0)
             {
                 CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "No S4 folder found", "Can't find any S4 folder on target host");
@@ -439,12 +439,12 @@ namespace TP_MasterTool
                     {
                         return;
                     }
-                    if (!FileController.ZipAndStealFolder(tixnr, "S4Fiscal", @"\\" + connectionPara.TAG + @"\c$\Program Files (x86)\Service Plus\" + Path.GetFileNameWithoutExtension(directories[0]), @"C:\Program Files (x86)\Service Plus\" + System.IO.Path.GetFileNameWithoutExtension(directories[0]), connectionPara, out string outputFilePath))
+                    if (!FileController.ZipAndStealFolder(tixnr, "S4Fiscal", @"\\" + connectionPara.fullNetworkName + @"\c$\Program Files (x86)\Service Plus\" + Path.GetFileNameWithoutExtension(directories[0]), @"C:\Program Files (x86)\Service Plus\" + System.IO.Path.GetFileNameWithoutExtension(directories[0]), connectionPara, out string outputFilePath))
                     {
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Secure Log Error", outputFilePath);
                         return;
                     }
-                    if (CustomMsgBox.Show(CustomMsgBox.MsgType.Decision, connectionPara.TAG + " - Logs secured", "Log files were successfully zipped and secured in WNI folder." + Environment.NewLine + "Do you want to download then on your drive?") == DialogResult.OK)
+                    if (CustomMsgBox.Show(CustomMsgBox.MsgType.Decision, connectionPara.hostname + " - Logs secured", "Log files were successfully zipped and secured in WNI folder." + Environment.NewLine + "Do you want to download then on your drive?") == DialogResult.OK)
                     {
                         if (!System.IO.File.Exists(outputFilePath))
                         {
@@ -455,7 +455,7 @@ namespace TP_MasterTool
                         {
                             if (copyExp != null)
                             {
-                                Logger.QuickLog(Globals.Funkcje.ZipAndSteal, "S4Fiscal", connectionPara.TAG, "ErrorLog", copyExp.ToString());
+                                Logger.QuickLog(Globals.Funkcje.ZipAndSteal, "S4Fiscal", connectionPara.hostname, "ErrorLog", copyExp.ToString());
                                 CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Downloading Error", "ToolBox encountered error during downloading logs:" + Environment.NewLine + copyExp.Message);
                             }
                         }
@@ -478,12 +478,12 @@ namespace TP_MasterTool
                     {
                         return;
                     }
-                    if (!FileController.ZipAndStealFolder(tixnr, "TSELogs", @"\\" + connectionPara.TAG + @"\c$\ProgramData\DieboldNixdorf\TSE-Webservice\log", @"C:\ProgramData\DieboldNixdorf\TSE-Webservice\log", connectionPara, out string outputFilePath))
+                    if (!FileController.ZipAndStealFolder(tixnr, "TSELogs", @"\\" + connectionPara.fullNetworkName + @"\c$\ProgramData\DieboldNixdorf\TSE-Webservice\log", @"C:\ProgramData\DieboldNixdorf\TSE-Webservice\log", connectionPara, out string outputFilePath))
                     {
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Secure Log Error", outputFilePath);
                         return;
                     }
-                    if (CustomMsgBox.Show(CustomMsgBox.MsgType.Decision, connectionPara.TAG + " - Logs secured", "Log files were successfully zipped and secured in WNI folder." + Environment.NewLine + "Do you want to download then on your drive?") == DialogResult.OK)
+                    if (CustomMsgBox.Show(CustomMsgBox.MsgType.Decision, connectionPara.hostname + " - Logs secured", "Log files were successfully zipped and secured in WNI folder." + Environment.NewLine + "Do you want to download then on your drive?") == DialogResult.OK)
                     {
                         if (!System.IO.File.Exists(outputFilePath))
                         {
@@ -494,7 +494,7 @@ namespace TP_MasterTool
                         {
                             if (copyExp != null)
                             {
-                                Logger.QuickLog(Globals.Funkcje.ZipAndSteal, "TSELogs", connectionPara.TAG, "ErrorLog", copyExp.ToString());
+                                Logger.QuickLog(Globals.Funkcje.ZipAndSteal, "TSELogs", connectionPara.hostname, "ErrorLog", copyExp.ToString());
                                 CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Downloading Error", "ToolBox encountered error during downloading logs:" + Environment.NewLine + copyExp.Message);
                             }
                         }
@@ -512,7 +512,7 @@ namespace TP_MasterTool
             {
                 slave.DoWork += (s, args) =>
                 {
-                    if (Directory.GetFiles(@"\\" + connectionPara.TAG + @"\d$\StoreApps\CarsData\Cars\pdcudata\error").Length == 0)
+                    if (Directory.GetFiles(@"\\" + connectionPara.fullNetworkName + @"\d$\StoreApps\CarsData\Cars\pdcudata\error").Length == 0)
                     {
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "PDCU Data Secure Error", "No error files found in folder");
                         return;
@@ -523,12 +523,12 @@ namespace TP_MasterTool
                     {
                         return;
                     }
-                    if (!FileController.ZipAndStealFolder(tixnr, "PdcuError", @"\\" + connectionPara.TAG + @"\d$\StoreApps\CarsData\Cars\pdcudata\error", @"D:\StoreApps\CarsData\Cars\pdcudata\error", connectionPara, out string outputFilePath))
+                    if (!FileController.ZipAndStealFolder(tixnr, "PdcuError", @"\\" + connectionPara.fullNetworkName + @"\d$\StoreApps\CarsData\Cars\pdcudata\error", @"D:\StoreApps\CarsData\Cars\pdcudata\error", connectionPara, out string outputFilePath))
                     {
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Secure Log Error", outputFilePath);
                         return;
                     }
-                    if (CustomMsgBox.Show(CustomMsgBox.MsgType.Decision, connectionPara.TAG + " - Logs secured", "Log files were successfully zipped and secured in WNI folder." + Environment.NewLine + "Do you want to download then on your drive?") == DialogResult.OK)
+                    if (CustomMsgBox.Show(CustomMsgBox.MsgType.Decision, connectionPara.hostname + " - Logs secured", "Log files were successfully zipped and secured in WNI folder." + Environment.NewLine + "Do you want to download then on your drive?") == DialogResult.OK)
                     {
                         if (!System.IO.File.Exists(outputFilePath))
                         {
@@ -539,7 +539,7 @@ namespace TP_MasterTool
                         {
                             if (copyExp != null)
                             {
-                                Logger.QuickLog(Globals.Funkcje.ZipAndSteal, "PdcuError", connectionPara.TAG, "ErrorLog", copyExp.ToString());
+                                Logger.QuickLog(Globals.Funkcje.ZipAndSteal, "PdcuError", connectionPara.hostname, "ErrorLog", copyExp.ToString());
                                 CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Downloading Error", "ToolBox encountered error during downloading logs:" + Environment.NewLine + copyExp.Message);
                             }
                         }
@@ -567,36 +567,36 @@ namespace TP_MasterTool
             }
             catch (Exception exp)
             {
-                Logger.QuickLog(Globals.Funkcje.GetApcLogs, "Dictionary Creation", connectionPara.TAG, "CriticalError", exp.ToString());
+                Logger.QuickLog(Globals.Funkcje.GetApcLogs, "Dictionary Creation", connectionPara.hostname, "CriticalError", exp.ToString());
                 CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Dictionary Creation Error", "Toolbox wasn't able to map Apc events IDs to dictionary:" + Environment.NewLine + exp.Message);
                 Main.ChangeStatusBar("Ready");
                 return;
             }
-            Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.GetApcLogs, "");
-            if(!File.Exists(@"\\" + connectionPara.TAG + @"\c$\Program Files (x86)\APC\PowerChute Business Edition\agent\DataLog"))
+            Telemetry.LogCompleteTelemetryData(connectionPara.hostname, Globals.Funkcje.GetApcLogs, "");
+            if(!File.Exists(@"\\" + connectionPara.fullNetworkName + @"\c$\Program Files (x86)\APC\PowerChute Business Edition\agent\DataLog"))
             {
                 CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "No logs found", "No logs found, please check if software is properly installed.");
-                Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.Error, "No logs found");
+                Telemetry.LogCompleteTelemetryData(connectionPara.hostname, Globals.Funkcje.Error, "No logs found");
                 return;
             }
-            if (!FileController.CopyFile(@"\\" + connectionPara.TAG + @"\c$\Program Files (x86)\APC\PowerChute Business Edition\agent\DataLog", @".\Logs\" + connectionPara.TAG + " - APC DataLog.txt", false, out Exception copyExp))
+            if (!FileController.CopyFile(@"\\" + connectionPara.fullNetworkName + @"\c$\Program Files (x86)\APC\PowerChute Business Edition\agent\DataLog", @".\Logs\" + connectionPara.hostname + " - APC DataLog.txt", false, out Exception copyExp))
             {
-                Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "DataLogs: " + copyExp.Message);
-                Logger.QuickLog(Globals.Funkcje.GetApcLogs, "DataLog", connectionPara.TAG, "ErrorLog", copyExp.ToString());
+                Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.Error, "DataLogs: " + copyExp.Message);
+                Logger.QuickLog(Globals.Funkcje.GetApcLogs, "DataLog", connectionPara.hostname, "ErrorLog", copyExp.ToString());
                 CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Downloading Error", "Failed to download Data logs with error: " + copyExp.Message);
             }
-            if (!FileController.CopyFile(@"\\" + connectionPara.TAG + @"\c$\Windows\System32\winevt\Logs\Application.evtx", @".\Logs\Windows\" + connectionPara.TAG + " - Application Log.evtx", true, out copyExp))
+            if (!FileController.CopyFile(@"\\" + connectionPara.fullNetworkName + @"\c$\Windows\System32\winevt\Logs\Application.evtx", @".\Logs\Windows\" + connectionPara.hostname + " - Application Log.evtx", true, out copyExp))
             {
                 if (copyExp != null)
                 {
-                    Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "EventLogs: " + copyExp.Message);
-                    Logger.QuickLog(Globals.Funkcje.GetApcLogs, "EventLog", connectionPara.TAG, "ErrorLog", copyExp.ToString());
+                    Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.Error, "EventLogs: " + copyExp.Message);
+                    Logger.QuickLog(Globals.Funkcje.GetApcLogs, "EventLog", connectionPara.hostname, "ErrorLog", copyExp.ToString());
                     CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Downloading Error", "ToolBox encountered error during downloading logs:" + Environment.NewLine + copyExp.Message);
                 }
                 Main.ChangeStatusBar("Ready");
                 return;
             }
-            EventLogQuery eventsQuery = new EventLogQuery(@".\Logs\Windows\" + connectionPara.TAG + " - Application Log.evtx", PathType.FilePath, "*[System/Provider/@Name=\"APCPBEAgent\"]");
+            EventLogQuery eventsQuery = new EventLogQuery(@".\Logs\Windows\" + connectionPara.hostname + " - Application Log.evtx", PathType.FilePath, "*[System/Provider/@Name=\"APCPBEAgent\"]");
             using (var reader = new EventLogReader(eventsQuery))
             {
                 string output = "";
@@ -605,10 +605,10 @@ namespace TP_MasterTool
                 {
                     output += record.TimeCreated + "\t" + idMapping[record.Id] + Environment.NewLine;
                 }
-                if (!FileController.SaveTxtToFile(@".\Logs\" + connectionPara.TAG + " - APC EventLog.txt", output, out Exception saveExp))
+                if (!FileController.SaveTxtToFile(@".\Logs\" + connectionPara.hostname + " - APC EventLog.txt", output, out Exception saveExp))
                 {
-                    Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Save EventLog: " + saveExp.Message);
-                    Logger.QuickLog(Globals.Funkcje.GetApcLogs, "Save EventLog", connectionPara.TAG, "ErrorLog", saveExp.ToString());
+                    Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.Error, "Save EventLog: " + saveExp.Message);
+                    Logger.QuickLog(Globals.Funkcje.GetApcLogs, "Save EventLog", connectionPara.hostname, "ErrorLog", saveExp.ToString());
                     CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Downloading Error", "ToolBox encountered while saving logs:" + Environment.NewLine + saveExp.Message);
                     return;
                 }
@@ -659,34 +659,34 @@ namespace TP_MasterTool
                 ConnectionPara connectionPara = Main.interfejs.connectionPara;
                 slave.DoWork += (s, args) =>
                 {
-                    Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.GetSMART, "");
+                    Telemetry.LogCompleteTelemetryData(connectionPara.hostname, Globals.Funkcje.GetSMART, "");
                     sMARTToolStripMenuItem.Enabled = false;
                     ChangeStatusBar("Reading SMART values");
                     if (!CtrlFunctions.Smarty(connectionPara, out string errorMsg))
                     {
-                        Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, errorMsg);
+                        Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.Error, errorMsg);
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "SMART Function Error", errorMsg);
                     }
                     else
                     {
-                        if (!FileController.MoveFile(@"\\" + connectionPara.TAG + @"\c$\SMART\DiskInfo.txt", @".\Logs\SMART\SMART - " + connectionPara.TAG + ".txt", false, out Exception moveExp))
+                        if (!FileController.MoveFile(@"\\" + connectionPara.fullNetworkName + @"\c$\SMART\DiskInfo.txt", @".\Logs\SMART\SMART - " + connectionPara.hostname + ".txt", false, out Exception moveExp))
                         {
-                            Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.GetSMART, "Retrieving result error");
-                            Logger.QuickLog(Globals.Funkcje.GetSMART, @"\\" + connectionPara.TAG + @"\c$\SMART\DiskInfo.txt | " + @".\Logs\SMART\SMART - " + connectionPara.TAG + ".txt", connectionPara.TAG, "WarningLog", "ToolBox wasn't able to copy command output back from targeted host." + Environment.NewLine + moveExp.ToString());
-                            CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Retrieving result error", @"ToolBox wasn't able to copy command output back from targeted host. You can check it manually at \\" + connectionPara.TAG + @"\C$\SMART\DiskInfo.txt");
+                            Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.GetSMART, "Retrieving result error");
+                            Logger.QuickLog(Globals.Funkcje.GetSMART, @"\\" + connectionPara.hostname + @"\c$\SMART\DiskInfo.txt | " + @".\Logs\SMART\SMART - " + connectionPara.hostname + ".txt", connectionPara.hostname, "WarningLog", "ToolBox wasn't able to copy command output back from targeted host." + Environment.NewLine + moveExp.ToString());
+                            CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Retrieving result error", @"ToolBox wasn't able to copy command output back from targeted host. You can check it manually at \\" + connectionPara.hostname + @"\C$\SMART\DiskInfo.txt");
                         }
                         else
                         {
-                            CustomMsgBox.Show(CustomMsgBox.MsgType.Done, "SMART Values Saved", @"Disc SMART values successfully saved at .\Logs\SMART\SMART - " + connectionPara.TAG + ".txt");
-                            Process.Start(@".\Logs\SMART\SMART - " + connectionPara.TAG + ".txt");
+                            CustomMsgBox.Show(CustomMsgBox.MsgType.Done, "SMART Values Saved", @"Disc SMART values successfully saved at .\Logs\SMART\SMART - " + connectionPara.hostname + ".txt");
+                            Process.Start(@".\Logs\SMART\SMART - " + connectionPara.hostname + ".txt");
                         }
                     }
 
                     if(!CtrlFunctions.MapEndpointDrive(ref connectionPara, out CtrlFunctions.CmdOutput cmdOutput))
                     {
-                        Logger.QuickLog(Globals.Funkcje.DeleteLock, @"\\" + connectionPara.TAG + @"\c$\SMART\smart.lock", connectionPara.TAG, "CriticalLog", "Error Deleting lock: Unable to map drive before delete");
+                        Logger.QuickLog(Globals.Funkcje.DeleteLock, @"\\" + connectionPara.hostname + @"\c$\SMART\smart.lock", connectionPara.hostname, "CriticalLog", "Error Deleting lock: Unable to map drive before delete");
                     }
-                    CtrlFunctions.DeleteLock(@"\\" + connectionPara.TAG + @"\c$\SMART\smart.lock");
+                    CtrlFunctions.DeleteLock(@"\\" + connectionPara.fullNetworkName + @"\c$\SMART\smart.lock");
 
                     ChangeStatusBar("Ready");
                     sMARTToolStripMenuItem.Enabled = true;
@@ -698,7 +698,7 @@ namespace TP_MasterTool
         //------------Disc managment--------------------------
         private void DrivesSpaceInfoMenuItem_Click(object sender, EventArgs e)
         {
-            Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.DiscSpaceInfo, "");
+            Telemetry.LogCompleteTelemetryData(connectionPara.hostname, Globals.Funkcje.DiscSpaceInfo, "");
             using (BackgroundWorker slave = new BackgroundWorker())
             {
                 slave.DoWork += (s, args) =>
@@ -707,14 +707,14 @@ namespace TP_MasterTool
                     string output = "";
                     foreach (string letter in drives)
                     {
-                        if (System.IO.Directory.Exists(@"\\" + connectionPara.TAG + @"\" + letter + @"$"))
+                        if (System.IO.Directory.Exists(@"\\" + connectionPara.fullNetworkName + @"\" + letter + @"$"))
                         {
                             output += "Drive " + letter.ToUpper() + ":\\ Informations:" + "\n" + CtrlFunctions.GetDiskSpaceInfo(letter, connectionPara, out _, out _) + "\n\n";
                         }
                     }
                     if (output == "")
                     {
-                        Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Disc Connection Error");
+                        Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.Error, "Disc Connection Error");
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Disc Connection Error", @"Couldn't establish connection to any disc. Please check if target machine is online or initialize it anew and try again.");
                         return;
                     }
@@ -725,16 +725,16 @@ namespace TP_MasterTool
         }
         private void InstallWinDirStatMenuItem_Click(object sender, EventArgs e)
         {
-            if (File.Exists(@"\\" + connectionPara.TAG + @"\c$\temp\windirstat.exe"))
+            if (File.Exists(@"\\" + connectionPara.fullNetworkName + @"\c$\temp\windirstat.exe"))
             {
                 return;
             }
             ChangeStatusBar("Copying...");
-            Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.WinDirStatInstall, "");
-            if (!FileController.CopyFile(Globals.toolsPath + "windirstat.exe", @"\\" + connectionPara.TAG + @"\c$\temp\windirstat.exe", false, out Exception copyExp))
+            Telemetry.LogCompleteTelemetryData(connectionPara.hostname, Globals.Funkcje.WinDirStatInstall, "");
+            if (!FileController.CopyFile(Globals.toolsPath + "windirstat.exe", @"\\" + connectionPara.fullNetworkName + @"\c$\temp\windirstat.exe", false, out Exception copyExp))
             {
-                Logger.QuickLog(Globals.Funkcje.WinDirStatInstall, "Copying exe to host", connectionPara.TAG, "ErrorLog", copyExp.ToString());
-                Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Copying windirstat failed");
+                Logger.QuickLog(Globals.Funkcje.WinDirStatInstall, "Copying exe to host", connectionPara.hostname, "ErrorLog", copyExp.ToString());
+                Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.Error, "Copying windirstat failed");
                 CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Copying Error", "ToolBox encountered error while trying to copy winDirStat:" + Environment.NewLine + copyExp.Message);
             }
             ChangeStatusBar("Ready");
@@ -749,16 +749,16 @@ namespace TP_MasterTool
         //------------------BootTime--------------------
         private void SystemBootTimeMenuItem_Click(object sender, EventArgs e)
         {
-            Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.GetSystemBootTime, "");
+            Telemetry.LogCompleteTelemetryData(connectionPara.hostname, Globals.Funkcje.GetSystemBootTime, "");
             using (BackgroundWorker slave = new BackgroundWorker())
             {
                 slave.DoWork += (s, args) =>
                 {
                     ChangeStatusBar("Working");
-                    CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c systeminfo | find /i \"Boot Time\"");
+                    CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.fullNetworkName + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c systeminfo | find /i \"Boot Time\"");
                     if (cmdOutput.exitCode != 0)
                     {
-                        Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "RCMD Error");
+                        Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.Error, "RCMD Error");
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "RCMD Error", "Unable to get last boot time - RCMD exited with error:" +
                             Environment.NewLine + cmdOutput.errorOutputText);
                         ChangeStatusBar("Ready");
@@ -781,12 +781,12 @@ namespace TP_MasterTool
         private void EoDCheckerMenuItem_Click(object sender, EventArgs e)
         {
             ConnectionPara connectionPara = Main.interfejs.connectionPara;
-            Logger myLog = new Logger(Globals.Funkcje.EodCheck, "None", connectionPara.TAG);
+            Logger myLog = new Logger(Globals.Funkcje.EodCheck, "None", connectionPara.hostname);
             string[] files;
             try
             {
                 myLog.Add("Reading log files");
-                files = new DirectoryInfo(@"\\" + connectionPara.TAG + @"\d$\TPDotnet\Log").EnumerateFiles("LOG_*_" + connectionPara.TAG + "_????????_??????_MANUALEOD.xml").OrderByDescending(file => file.CreationTime).Select(file => file.FullName).ToArray();
+                files = new DirectoryInfo(@"\\" + connectionPara.fullNetworkName + @"\d$\TPDotnet\Log").EnumerateFiles("LOG_*_" + connectionPara.hostname + "_????????_??????_MANUALEOD.xml").OrderByDescending(file => file.CreationTime).Select(file => file.FullName).ToArray();
             }
             catch (Exception exp)
             {
@@ -827,7 +827,7 @@ namespace TP_MasterTool
                 selectedFile = dropDownSelect.ReturnValue1;            //values preserved after close
             }
             myLog.Add("Selected file: " + selectedFile);
-            Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.EodCheck, selectedFile);
+            Telemetry.LogCompleteTelemetryData(connectionPara.hostname, Globals.Funkcje.EodCheck, selectedFile);
             if(selectedFile.Contains("Error"))
             {
                 CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Faulty file selected", "Selected file can't be read, please check manually");
@@ -837,7 +837,7 @@ namespace TP_MasterTool
             string output = "";
             try
             {
-                eodXml = XDocument.Load(@"\\" + connectionPara.TAG + @"\d$\TPDotnet\Log\" + selectedFile.Split(' ')[0]);
+                eodXml = XDocument.Load(@"\\" + connectionPara.fullNetworkName + @"\d$\TPDotnet\Log\" + selectedFile.Split(' ')[0]);
                 foreach (XElement node in eodXml.Root.Elements("ACTIVITYLOG"))
                 {
                     if (node.Element("szFinalResult").Value == "AbortedCancel" || node.Element("szFinalResult").Value == "Failure")
@@ -852,7 +852,7 @@ namespace TP_MasterTool
                 myLog.Add("Error reading log file");
                 myLog.Add(exp.ToString());
                 myLog.SaveLog("ErrorLog");
-                Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Error reading log file");
+                Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.Error, "Error reading log file");
                 CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Error reading log file", "ToolBox wasn't able to read log file:" + Environment.NewLine + exp.Message);
                 return;
             }
@@ -866,11 +866,11 @@ namespace TP_MasterTool
             ConnectionPara connectionPara = Main.interfejs.connectionPara;
 
             System.IO.FileInfo[] files;
-            Logger myLog = new Logger(Globals.Funkcje.MiniDumpAnalyser, "", connectionPara.TAG);
+            Logger myLog = new Logger(Globals.Funkcje.MiniDumpAnalyser, "", connectionPara.hostname);
 
             try
             {
-                files = new System.IO.DirectoryInfo(@"\\" + connectionPara.TAG + @"\c$\Windows\Minidump").GetFiles("*.dmp").OrderBy(p => p.CreationTime).ToArray();
+                files = new System.IO.DirectoryInfo(@"\\" + connectionPara.fullNetworkName + @"\c$\Windows\Minidump").GetFiles("*.dmp").OrderBy(p => p.CreationTime).ToArray();
             }
             catch (Exception exp)
             {
@@ -895,23 +895,23 @@ namespace TP_MasterTool
                 selectedMinidump = dropDownSelect.ReturnValue1;            //values preserved after close
 
             }
-            Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.MiniDumpAnalyser, selectedMinidump);
+            Telemetry.LogCompleteTelemetryData(connectionPara.hostname, Globals.Funkcje.MiniDumpAnalyser, selectedMinidump);
 
-            if (!CtrlFunctions.AnalyseMiniDump(selectedMinidump, @".\Logs\" + connectionPara.TAG + " - DumpFile " + System.IO.Path.GetFileNameWithoutExtension(selectedMinidump) + @".txt", out string errorMsg))
+            if (!CtrlFunctions.AnalyseMiniDump(selectedMinidump, @".\Logs\" + connectionPara.hostname + " - DumpFile " + System.IO.Path.GetFileNameWithoutExtension(selectedMinidump) + @".txt", out string errorMsg))
             {
                 CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Error while analysing minidump", "Toolbox encountered problem while processing minidump:" + Environment.NewLine + errorMsg);
                 return;
             }
 
-            CustomMsgBox.Show(CustomMsgBox.MsgType.Done, "Analysis has been completed", @"Minidump file successful processed and saved at .\Logs\" + connectionPara.TAG + " - DumpFile " + System.IO.Path.GetFileNameWithoutExtension(selectedMinidump) + @".txt");
-            Process.Start(@".\Logs\" + connectionPara.TAG + " - DumpFile " + System.IO.Path.GetFileNameWithoutExtension(selectedMinidump) + @".txt");
+            CustomMsgBox.Show(CustomMsgBox.MsgType.Done, "Analysis has been completed", @"Minidump file successful processed and saved at .\Logs\" + connectionPara.hostname + " - DumpFile " + System.IO.Path.GetFileNameWithoutExtension(selectedMinidump) + @".txt");
+            Process.Start(@".\Logs\" + connectionPara.hostname + " - DumpFile " + System.IO.Path.GetFileNameWithoutExtension(selectedMinidump) + @".txt");
         }
 
         //-----------------SQL-----------------------------------
         private void lastTxRollOverMenuItem_Click(object sender, EventArgs e)
         {
-            Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.GetSqlInfo, (sender as ToolStripMenuItem).Text);
-            if (!CtrlFunctions.SqlGetInfo(connectionPara.TAG, "TPPosDB", "select lLastTaNmbr, lRolloverTransactionNmbrAt from TxControlTransactionNmbr", out string output))
+            Telemetry.LogCompleteTelemetryData(connectionPara.hostname, Globals.Funkcje.GetSqlInfo, (sender as ToolStripMenuItem).Text);
+            if (!CtrlFunctions.SqlGetInfo(connectionPara.fullNetworkName, "TPPosDB", "select lLastTaNmbr, lRolloverTransactionNmbrAt from TxControlTransactionNmbr", out string output))
             {
                 CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "SQL Query Error", output);
                 return;
@@ -921,8 +921,8 @@ namespace TP_MasterTool
         }
         private void missingTxMenuItem_Click(object sender, EventArgs e)
         {
-            Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.GetSqlInfo, (sender as ToolStripMenuItem).Text);
-            if (!CtrlFunctions.SqlGetInfo(connectionPara.TAG, "TPCentralDB", "select lTaNmbr, lWorkstationNmbr, szDate, szTime from TxMissings", out string output))
+            Telemetry.LogCompleteTelemetryData(connectionPara.hostname, Globals.Funkcje.GetSqlInfo, (sender as ToolStripMenuItem).Text);
+            if (!CtrlFunctions.SqlGetInfo(connectionPara.fullNetworkName, "TPCentralDB", "select lTaNmbr, lWorkstationNmbr, szDate, szTime from TxMissings", out string output))
             {
                 CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "SQL Query Error", output);
                 return;
@@ -932,7 +932,7 @@ namespace TP_MasterTool
         }
         private void showLastSignOffFromYesterdayMenuItem_Click(object sender, EventArgs e)
         {
-            Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.GetSqlInfo, (sender as ToolStripMenuItem).Text);
+            Telemetry.LogCompleteTelemetryData(connectionPara.hostname, Globals.Funkcje.GetSqlInfo, (sender as ToolStripMenuItem).Text);
             string data = DateTime.Now.AddDays(-1).ToString("yyyyMMdd");
             if (!CtrlFunctions.SqlGetInfo(String.Join(".", connectionPara.IPbytes[0], connectionPara.IPbytes[1], connectionPara.IPbytes[2], "180"), "TPCentralDB", "select top 1 lWorkstationNmbr, szType, szDate, szTime, bIsDeclaration from TxSignOnOff where lWorkstationNmbr=" + connectionPara.deviceNr.TrimStart('0') + " and szDate=" + data + " and szType='SIGN_OFF' Order By szTime DESC", out string output))
             {
@@ -951,7 +951,7 @@ namespace TP_MasterTool
             string scope = String.Join(".", connectionPara.IPbytes[0], connectionPara.IPbytes[1], connectionPara.IPbytes[2], "0");
             string outputPath = @".\Logs\DhcpScope " + connectionPara.country + connectionPara.storeNr + " (" + scope + ") " + Logger.Datownik() + ".txt";
 
-            Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.GetDhcpScope, scope);
+            Telemetry.LogCompleteTelemetryData(connectionPara.hostname, Globals.Funkcje.GetDhcpScope, scope);
             try
             {
                 PowerShell.Create().AddCommand("Get-DhcpServerv4lease").AddParameter("ComputerName", "de04cua031dcw04.candadnpos.biz").AddParameter("ScopeId", scope).AddCommand("Out-File").AddParameter("FilePath", Path.GetFullPath(outputPath)).Invoke();
@@ -959,7 +959,7 @@ namespace TP_MasterTool
             catch(Exception exp)
             {
                 CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "PowerShell Error", "ToolBox wasn't able to retrieve information from DHCP: " + Environment.NewLine + exp.Message);
-                Logger.QuickLog(Globals.Funkcje.GetDhcpScope, scope, connectionPara.TAG, "ErrorLog", exp.ToString());
+                Logger.QuickLog(Globals.Funkcje.GetDhcpScope, scope, connectionPara.hostname, "ErrorLog", exp.ToString());
             }
             ChangeStatusBar("Ready");
             Process.Start(outputPath);
@@ -971,14 +971,14 @@ namespace TP_MasterTool
         private void ColonFixMenuItem_Click(object sender, EventArgs e)
         {
             ConnectionPara connectionPara = Main.interfejs.connectionPara;
-            Logger colonFixLog = new Logger(Globals.Funkcje.ColonFix, "None", connectionPara.TAG);
-            Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.ColonFix, "");
+            Logger colonFixLog = new Logger(Globals.Funkcje.ColonFix, "None", connectionPara.hostname);
+            Telemetry.LogCompleteTelemetryData(connectionPara.hostname, Globals.Funkcje.ColonFix, "");
 
             ChangeStatusBar("Killing MobilePOS");
             colonFixLog.Add("Killing MobilePOS");
             if (!CtrlFunctions.KillMobilePos(connectionPara, out string errorMsg))
             {
-                Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "MobilePOS Kill Failed");
+                Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.Error, "MobilePOS Kill Failed");
                 CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "MobilePOS Kill Failed", errorMsg);
                 colonFixLog.Add(errorMsg);
                 colonFixLog.SaveLog("ErrorLog");
@@ -988,11 +988,11 @@ namespace TP_MasterTool
             ChangeStatusBar("Copying posDB...");
 
             colonFixLog.Add("Copying localstorage from till");
-            if (!FileController.CopyFile(@"\\" + connectionPara.TAG + @"\c$\Users\" + connectionPara.country + connectionPara.storeNr + connectionPara.storeType + @".AL\AppData\Local\Diebold_Nixdorf\mobile_cache\Local Storage\http_localhost_8088.localstorage", @".\http_localhost_8088.localstorage", false, out Exception copyExp))
+            if (!FileController.CopyFile(@"\\" + connectionPara.fullNetworkName + @"\c$\Users\" + connectionPara.country + connectionPara.storeNr + connectionPara.storeType + @".AL\AppData\Local\Diebold_Nixdorf\mobile_cache\Local Storage\http_localhost_8088.localstorage", @".\http_localhost_8088.localstorage", false, out Exception copyExp))
             {
                 colonFixLog.wasError = true;
                 colonFixLog.Add(copyExp.ToString());
-                Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "localstorage file copy error");
+                Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.Error, "localstorage file copy error");
                 CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Localstorage copy error", "ToolBox encountered error while copying localstorage file:" + Environment.NewLine + copyExp.Message);
             }
             colonFixLog.Add("Copying ActOperatorID");
@@ -1000,7 +1000,7 @@ namespace TP_MasterTool
             {
                 colonFixLog.wasError = true;
                 colonFixLog.Add(copyExp.ToString());
-                Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "ActOperatorID file copy error");
+                Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.Error, "ActOperatorID file copy error");
                 CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "ActOperatorID copy error", "ToolBox encountered error while copying ActOperatorID file:" + Environment.NewLine + copyExp.Message);
             }
             if(colonFixLog.wasError)
@@ -1012,17 +1012,17 @@ namespace TP_MasterTool
             ChangeStatusBar("Waiting for confirmation");
             if (CustomMsgBox.Show(CustomMsgBox.MsgType.Info, "Waiting for file repair and confirmation", "Please repair database file and press OK to copy file back to the till.") != DialogResult.OK)
             {
-                Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Canceled by user");
+                Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.Error, "Canceled by user");
                 ChangeStatusBar("Ready");
                 return;
             }
             ChangeStatusBar("Copying DB back to till...");
             colonFixLog.Add("Copying DB back to till");
-            if (!FileController.MoveFile(@".\http_localhost_8088.localstorage", @"\\" + connectionPara.TAG + @"\c$\Users\" + connectionPara.country + connectionPara.storeNr + connectionPara.storeType + @".AL\AppData\Local\Diebold_Nixdorf\mobile_cache\Local Storage\http_localhost_8088.localstorage", false, out Exception moveExp))
+            if (!FileController.MoveFile(@".\http_localhost_8088.localstorage", @"\\" + connectionPara.fullNetworkName + @"\c$\Users\" + connectionPara.country + connectionPara.storeNr + connectionPara.storeType + @".AL\AppData\Local\Diebold_Nixdorf\mobile_cache\Local Storage\http_localhost_8088.localstorage", false, out Exception moveExp))
             {
                 colonFixLog.Add(moveExp.ToString());
                 colonFixLog.SaveLog("ErrorLog");
-                Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, @"Copying localstorage file back error");
+                Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.Error, @"Copying localstorage file back error");
                 ChangeStatusBar("Ready");
                 CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Copying localstorage file back error", "ToolBox encountered error trying to copy localstorage file back to till:" + Environment.NewLine + moveExp.Message);
                 return;
@@ -1049,14 +1049,14 @@ namespace TP_MasterTool
                         return;
                     }
 
-                    Logger myLog = new Logger(Globals.Funkcje.LocalCacheClear, "", connectionPara.TAG);
-                    Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.LocalCacheClear, "");
+                    Logger myLog = new Logger(Globals.Funkcje.LocalCacheClear, "", connectionPara.hostname);
+                    Telemetry.LogCompleteTelemetryData(connectionPara.hostname, Globals.Funkcje.LocalCacheClear, "");
 
                     ChangeStatusBar("Killing MobilePOS");
                     myLog.Add("Killing MobilePOS");
                     if (!CtrlFunctions.KillMobilePos(connectionPara, out string errorMsg))
                     {
-                        Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "MobilePOS app kill failed");
+                        Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.Error, "MobilePOS app kill failed");
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "MobilePOS Kill Failed", errorMsg);
                         myLog.Add(errorMsg);
                         myLog.SaveLog("ErrorLog");
@@ -1066,9 +1066,9 @@ namespace TP_MasterTool
 
                     ChangeStatusBar("Clearing Cache");
                     myLog.Add("Clearing Cache");
-                    if(!FileController.ClearFolder(@"\\" + connectionPara.TAG + @"\c$\Users\" + connectionPara.country + connectionPara.storeNr + connectionPara.storeType + @".AL\AppData\Local\Diebold_Nixdorf\mobile_cache\Local Storage", false, out string errorList))
+                    if(!FileController.ClearFolder(@"\\" + connectionPara.fullNetworkName + @"\c$\Users\" + connectionPara.country + connectionPara.storeNr + connectionPara.storeType + @".AL\AppData\Local\Diebold_Nixdorf\mobile_cache\Local Storage", false, out string errorList))
                     {
-                        Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Unable to delete files");
+                        Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.Error, "Unable to delete files");
                         myLog.Add(errorList);
                         myLog.SaveLog("ErrorLog");
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Clearing Folder Error", "ToolBox was unable to delete files in folder:" + Environment.NewLine + errorList);
@@ -1090,14 +1090,14 @@ namespace TP_MasterTool
                         return;
                     }
 
-                    Logger myLog = new Logger(Globals.Funkcje.ParkedTxMove, "", connectionPara.TAG);
-                    Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.ParkedTxMove, "");
+                    Logger myLog = new Logger(Globals.Funkcje.ParkedTxMove, "", connectionPara.hostname);
+                    Telemetry.LogCompleteTelemetryData(connectionPara.hostname, Globals.Funkcje.ParkedTxMove, "");
 
                     myLog.Add("Killing MobilePOS");
                     ChangeStatusBar("Killing MobilePOS");
                     if (!CtrlFunctions.KillMobilePos(connectionPara, out string errorMsg))
                     {
-                        Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "MobilePOS app kill failed");
+                        Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.Error, "MobilePOS app kill failed");
                         myLog.Add(errorMsg);
                         myLog.SaveLog("ErrorLog");
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "MobilePOS Kill Failed", errorMsg);
@@ -1111,11 +1111,11 @@ namespace TP_MasterTool
                         ChangeStatusBar("Ready");
                         return;
                     }
-                    string outputFolderName = @"\\" + connectionPara.TAG + @"\d$\WNI\4GSS\Parked - " + tixnr + "(" + connectionPara.TAG + ") " + Logger.Datownik();
+                    string outputFolderName = @"\\" + connectionPara.fullNetworkName + @"\d$\WNI\4GSS\Parked - " + tixnr + "(" + connectionPara.hostname + ") " + Logger.Datownik();
                     myLog.Add("Creating folder: " + outputFolderName);
                     if (!FileController.MakeFolder(outputFolderName, out Exception makeExp))
                     {
-                        Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Creating folder error");
+                        Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.Error, "Creating folder error");
                         myLog.Add(makeExp.ToString());
                         myLog.SaveLog("ErrorLog");
                         ChangeStatusBar("Ready");
@@ -1123,13 +1123,13 @@ namespace TP_MasterTool
                         return;
                     }
                     myLog.Add("Moving Files");
-                    foreach (string file in Directory.GetFiles(@"\\" + connectionPara.TAG + @"\d$\TPDotnet\Pos\Transactions\Parked"))
+                    foreach (string file in Directory.GetFiles(@"\\" + connectionPara.fullNetworkName + @"\d$\TPDotnet\Pos\Transactions\Parked"))
                     {
                         if(!FileController.MoveFile(file, outputFolderName + @"\" + Path.GetFileName(file), false, out Exception moveExp))
                         {
                             myLog.Add(moveExp.Message);
                             myLog.wasError = true;
-                            Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, moveExp.Message);
+                            Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.Error, moveExp.Message);
                             CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Move File Error", "ToolBox was unable to move " + file + Environment.NewLine + moveExp.Message);
                         }
                     }
@@ -1144,26 +1144,26 @@ namespace TP_MasterTool
         }
         private void TSEWebserviceRestartMenuItem_Click(object sender, EventArgs e)
         {
-            Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.TSEWebserviceRestart, "");
-            Process.Start("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c ""cd C:\Program Files (x86)\DieboldNixdorf\TSE-Webservice\bin"" && dn_tsetool.bat restart && pause");
+            Telemetry.LogCompleteTelemetryData(connectionPara.hostname, Globals.Funkcje.TSEWebserviceRestart, "");
+            Process.Start("psexec.exe", @"\\" + connectionPara.fullNetworkName + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c ""cd C:\Program Files (x86)\DieboldNixdorf\TSE-Webservice\bin"" && dn_tsetool.bat restart && pause");
         }
         private void SignatorResetMenuItem_Click(object sender, EventArgs e)
         {
             ConnectionPara connectionPara = Main.interfejs.connectionPara;
-            Logger myLog = new Logger(Globals.Funkcje.SignatorReset, "", connectionPara.TAG);
+            Logger myLog = new Logger(Globals.Funkcje.SignatorReset, "", connectionPara.hostname);
             using (BackgroundWorker slave = new BackgroundWorker())
             {
                 slave.DoWork += (s, args) =>
                 {
                     ChangeStatusBar("Killing MobilePOS");
                     myLog.Add("Killing MobilePOS");
-                    Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.SignatorReset, "");
+                    Telemetry.LogCompleteTelemetryData(connectionPara.hostname, Globals.Funkcje.SignatorReset, "");
 
                     if (!CtrlFunctions.KillMobilePos(connectionPara, out string errorMsg))
                     {
                         myLog.Add(errorMsg);
                         myLog.SaveLog("ErrorLog");
-                        Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "MobilePOS app kill failed");
+                        Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.Error, "MobilePOS app kill failed");
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "MobilePOS Kill Failed", errorMsg);
                         return;
                     }
@@ -1176,10 +1176,10 @@ namespace TP_MasterTool
                         deviceID = (int.Parse(connectionPara.deviceNr) + 49).ToString();
                     }
                     string cashBoxID = "0000" + "43" + connectionPara.storeNr + "00000000" + deviceID;
-                    CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c cd c:\Program Files (x86)\signator && signatorhelper -closecashbox cashboxid=" + cashBoxID + " reason=7 && net stop signator");
+                    CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.fullNetworkName + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c cd c:\Program Files (x86)\signator && signatorhelper -closecashbox cashboxid=" + cashBoxID + " reason=7 && net stop signator");
                     if (cmdOutput.exitCode != 0)
                     {
-                        Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Unable to Reset Signator or stop service");
+                        Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.Error, "Unable to Reset Signator or stop service");
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Unable to reset Signator or stop service", "PSEXEC encountered some problems trying to Unable to reset Signator or stop it service and exited with error:" + Environment.NewLine + cmdOutput.errorOutputText);
                         ChangeStatusBar("Ready");
                         myLog.Add("Resetting Signator Error: " + cmdOutput.exitCode);
@@ -1190,8 +1190,8 @@ namespace TP_MasterTool
 
                     ChangeStatusBar("Creating Signator backup folder");
                     myLog.Add("Creating Signator backup folder");
-                    string signatorPath = @"\\" + connectionPara.TAG + @"\c$\ProgramData\signator";
-                    string backupPath = @"\\" + connectionPara.TAG + @"\c$\ProgramData\signator_backup";
+                    string signatorPath = @"\\" + connectionPara.fullNetworkName + @"\c$\ProgramData\signator";
+                    string backupPath = @"\\" + connectionPara.fullNetworkName + @"\c$\ProgramData\signator_backup";
                     if (System.IO.Directory.Exists(backupPath))
                     {
                         myLog.Add("Detected old backup folder - deleting");
@@ -1201,7 +1201,7 @@ namespace TP_MasterTool
                         }
                         catch (Exception exp)
                         {
-                            Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Unable to delete old signator backup folder");
+                            Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.Error, "Unable to delete old signator backup folder");
                             CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Unable to delete old signator backup folder", "Toolbox was unable to delete old signator backup folder. Error:" + Environment.NewLine + exp.Message);
                             ChangeStatusBar("Ready");
                             myLog.Add("Unable to delete backup folder");
@@ -1219,7 +1219,7 @@ namespace TP_MasterTool
                     }
                     catch (Exception exp)
                     {
-                        Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Unable to create signator backup folder");
+                        Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.Error, "Unable to create signator backup folder");
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Unable to create signator backup folder", "Toolbox was unable to create signator backup folder. Error:" + Environment.NewLine + exp.Message);
                         ChangeStatusBar("Ready");
                         myLog.Add(exp.ToString());
@@ -1230,10 +1230,10 @@ namespace TP_MasterTool
 
                     ChangeStatusBar("Starting Signator service");
                     myLog.Add("Starting Signator service");
-                    cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c net start signator");
+                    cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.fullNetworkName + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c net start signator");
                     if (cmdOutput.exitCode != 0)
                     {
-                        Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Unable to start Signator service");
+                        Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.Error, "Unable to start Signator service");
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Unable to start Signator service", "PSEXEC encountered some problems trying to start Signator service and exited with error:" + Environment.NewLine + cmdOutput.errorOutputText);
                         ChangeStatusBar("Ready");
                         myLog.Add("Unable to start service: " + cmdOutput.exitCode);
@@ -1255,14 +1255,14 @@ namespace TP_MasterTool
                 slave.DoWork += (s, args) =>
                 {
                     ConnectionPara connectionPara = Main.interfejs.connectionPara;
-                    Logger myLog = new Logger(Globals.Funkcje.ApcServiceFix, "", connectionPara.TAG);
+                    Logger myLog = new Logger(Globals.Funkcje.ApcServiceFix, "", connectionPara.hostname);
 
-                    Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.ApcServiceFix, "");
+                    Telemetry.LogCompleteTelemetryData(connectionPara.hostname, Globals.Funkcje.ApcServiceFix, "");
                     Main.ChangeStatusBar("Copying config file");
                     myLog.Add("Copying config file");
-                    if (!FileController.CopyFile(Globals.toolsPath + "m11.cfg", @"\\" + connectionPara.TAG + @"\c$\Program Files (x86)\APC\PowerChute Business Edition\agent\m11.cfg", false, out Exception copyExp))
+                    if (!FileController.CopyFile(Globals.toolsPath + "m11.cfg", @"\\" + connectionPara.fullNetworkName + @"\c$\Program Files (x86)\APC\PowerChute Business Edition\agent\m11.cfg", false, out Exception copyExp))
                     {
-                        Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Copying config file error");
+                        Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.Error, "Copying config file error");
                         myLog.Add(copyExp.ToString());
                         myLog.SaveLog("ErrorLog");
                         Main.ChangeStatusBar("Ready");
@@ -1272,10 +1272,10 @@ namespace TP_MasterTool
 
                     myLog.Add("Starting APC Agent");
                     Main.ChangeStatusBar("Starting APC Agent");
-                    CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c net start apcpbeagent");
+                    CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.fullNetworkName + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c net start apcpbeagent");
                     if (cmdOutput.exitCode != 0)
                     {
-                        Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Unable to start APC Agent");
+                        Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.Error, "Unable to start APC Agent");
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Unable to start APC Agent", "Error occured while starting APC Agent Service:" + Environment.NewLine + cmdOutput.errorOutputText);
                         myLog.Add("Cmd error: " + cmdOutput.exitCode + Environment.NewLine + cmdOutput.errorOutputText);
                         myLog.SaveLog("ErrorLog");
@@ -1297,14 +1297,14 @@ namespace TP_MasterTool
                 {
                     ChangeStatusBar("Reseting Veritas Jobs");
                     ConnectionPara connectionPara = Main.interfejs.connectionPara;
-                    Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.BackupJobsReset, "");
-                    CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c powershell -ep Bypass c:\service\tools\backup\RemoveImageJob.ps1 && powershell -ep Bypass c:\service\tools\backup\AddImageJob.ps1");
+                    Telemetry.LogCompleteTelemetryData(connectionPara.hostname, Globals.Funkcje.BackupJobsReset, "");
+                    CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.fullNetworkName + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c powershell -ep Bypass c:\service\tools\backup\RemoveImageJob.ps1 && powershell -ep Bypass c:\service\tools\backup\AddImageJob.ps1");
                     ChangeStatusBar("Ready");
                     if (cmdOutput.exitCode != 0)
                     {
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Commands Execution Failed", "CMD exited with error code: " + cmdOutput.exitCode + Environment.NewLine + "Error log will be shown on next popup");
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Backup Job Reset Error Log", cmdOutput.outputText);
-                        Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "CMD exited with error code: " + cmdOutput.exitCode);
+                        Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.Error, "CMD exited with error code: " + cmdOutput.exitCode);
                         return;
                     }
                     CustomMsgBox.Show(CustomMsgBox.MsgType.Done, "Backup Jobs Reset Successful", "Veritas Backup Jobs has been reset to proper values");
@@ -1369,16 +1369,16 @@ namespace TP_MasterTool
             {
                 slave.DoWork += (s, args) =>
                 {
-                    Logger myLog = new Logger(Globals.Funkcje.MobilePosKill, "", connectionPara.TAG);
+                    Logger myLog = new Logger(Globals.Funkcje.MobilePosKill, "", connectionPara.hostname);
                     ChangeStatusBar("Killing MobilePOS");
                     myLog.Add("Killing MobilePOS");
-                    Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.MobilePosKill, "");
+                    Telemetry.LogCompleteTelemetryData(connectionPara.hostname, Globals.Funkcje.MobilePosKill, "");
 
                     if (!CtrlFunctions.KillMobilePos(connectionPara, out string errorMsg))
                     {
                         myLog.Add(errorMsg);
                         myLog.SaveLog("ErrorLog");
-                        Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "MobilePOS app kill failed");
+                        Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.Error, "MobilePOS app kill failed");
                         CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "MobilePOS Kill Failed", errorMsg);
                         return;
                     }
@@ -1426,15 +1426,15 @@ namespace TP_MasterTool
         }
         private void MiniLoggerDataCollectMenuItem_Click(object sender, EventArgs e)
         {
-            Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.CucDataCollect, "");
-            if (!FileController.CopyFile(Globals.toolsPath + @"mccs.run", @"\\" + connectionPara.TAG + @"\d$\StoreApps\pfm\programs\mccs.run", false, out Exception copyExp))
+            Telemetry.LogCompleteTelemetryData(connectionPara.hostname, Globals.Funkcje.CucDataCollect, "");
+            if (!FileController.CopyFile(Globals.toolsPath + @"mccs.run", @"\\" + connectionPara.fullNetworkName + @"\d$\StoreApps\pfm\programs\mccs.run", false, out Exception copyExp))
             {
-                Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, copyExp.Message);
-                Logger.QuickLog(Globals.Funkcje.CucDataCollect, "", connectionPara.TAG, "ErrorLog", copyExp.ToString());
+                Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.Error, copyExp.Message);
+                Logger.QuickLog(Globals.Funkcje.CucDataCollect, "", connectionPara.hostname, "ErrorLog", copyExp.ToString());
                 CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Mccs.run Copy Error", "ToolBox was unable to copy file to targeted host." + Environment.NewLine + copyExp.Message);
                 return;
             }
-            Process.Start("explorer.exe", @"\\" + connectionPara.TAG + @"\d$\StoreApps\pfm\programs");
+            Process.Start("explorer.exe", @"\\" + connectionPara.fullNetworkName + @"\d$\StoreApps\pfm\programs");
         }
 
 
@@ -1765,7 +1765,7 @@ namespace TP_MasterTool
             {
                 Main.SetIP("DNS ERROR", Globals.errorColor);
                 Telemetry.LogMachineAction(tempTAG, Globals.Funkcje.Error, Main.GetIP());
-                if (CustomMsgBox.Show(CustomMsgBox.MsgType.Decision, connectionPara.TAG + " - DNS Error", "Would you like to connect to this host via IP?") != DialogResult.OK)
+                if (CustomMsgBox.Show(CustomMsgBox.MsgType.Decision, connectionPara.hostname + " - DNS Error", "Would you like to connect to this host via IP?") != DialogResult.OK)
                 {
                     Main.ChangeStatusBar("Ready");
                     return;
@@ -1794,14 +1794,14 @@ namespace TP_MasterTool
             CtrlFunctions.SubNetScan(connectionPara);
             if (!CtrlFunctions.MapEndpointDrive(ref connectionPara, out CtrlFunctions.CmdOutput cmdOutput))
             {
-                Main.SetTAG(connectionPara.TAG, Globals.errorColor);
+                Main.SetTAG(connectionPara.hostname, Globals.errorColor);
                 CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Connection Error", "Unable to map host drive through net use:" + Environment.NewLine + cmdOutput.errorOutputText);
-                Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Unable to map host drive");
+                Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.Error, "Unable to map host drive");
                 Main.ChangeStatusBar("Ready");
                 return;
             }
 
-            Main.ChangeTitle("TP MasterTool - " + connectionPara.TAG + " (" + connectionPara.IP + ")");
+            Main.ChangeTitle("TP MasterTool - " + connectionPara.hostname + " (" + connectionPara.IP + ")");
             Main.SetTAG(tempTAG, Color.LightGreen);
             EnableUI();
             Main.ChangeStatusBar("Ready");

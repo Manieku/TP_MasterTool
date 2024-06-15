@@ -26,8 +26,8 @@ namespace TP_MasterTool.Forms
         }
         private void CheckBackups()
         {
-            Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.BackupCheck, "");
-            myLog = new Logger(Globals.Funkcje.BackupCheck, "None", connectionPara.TAG);
+            Telemetry.LogCompleteTelemetryData(connectionPara.hostname, Globals.Funkcje.BackupCheck, "");
+            myLog = new Logger(Globals.Funkcje.BackupCheck, "None", connectionPara.hostname);
             using (BackgroundWorker slave = new BackgroundWorker())
             {
                 slave.DoWork += (s, args) =>
@@ -35,17 +35,17 @@ namespace TP_MasterTool.Forms
                     rescanButton.Enabled = false;
                     saveButton.Enabled = false;
                     GetDiskSpaceInfo();
-                    GetBackupFiles(ref cBackupFilesDataGrid, connectionPara.TAG + "_C*.v2i");
-                    GetBackupFiles(ref dBackupFilesDataGrid, connectionPara.TAG + "_D*.v2i");
+                    GetBackupFiles(ref cBackupFilesDataGrid, connectionPara.hostname + "_C*.v2i");
+                    GetBackupFiles(ref dBackupFilesDataGrid, connectionPara.hostname + "_D*.v2i");
                     cFilesStatusLabel.Text += AnalizeFiles(ref cBackupFilesDataGrid, ref cSummaryLabel);
                     dFilesStatusLabel.Text += AnalizeFiles(ref dBackupFilesDataGrid, ref dSummaryLabel);
                     try
                     {
-                        VeritasLogTextBox.Lines = File.ReadAllLines(@"\\" + connectionPara.TAG + @"\c$\ProgramData\Veritas\VERITAS SYSTEM RECOVERY\LOGS\Veritas System Recovery.log.txt");
+                        VeritasLogTextBox.Lines = File.ReadAllLines(@"\\" + connectionPara.fullNetworkName + @"\c$\ProgramData\Veritas\VERITAS SYSTEM RECOVERY\LOGS\Veritas System Recovery.log.txt");
                     }
                     catch (Exception exp)
                     {
-                        Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Error reading log file");
+                        Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.Error, "Error reading log file");
                         VeritasLogTextBox.Text = "Error reading log file" + Environment.NewLine + exp.Message;
                     }
                     rescanButton.Enabled = true;
@@ -81,7 +81,7 @@ namespace TP_MasterTool.Forms
             myLog.Add("Looking for backup files: " + filter);
             try
             {
-                string[] files = Directory.GetFiles(@"\\" + connectionPara.TAG + @"\f$\Backup\TPBackup", filter);
+                string[] files = Directory.GetFiles(@"\\" + connectionPara.fullNetworkName + @"\f$\Backup\TPBackup", filter);
                 if (files == null)
                 {
                     myLog.Add("No files found");
@@ -95,7 +95,7 @@ namespace TP_MasterTool.Forms
             }
             catch (Exception exp)
             {
-                Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.Error, "Error reading files: " + filter);
+                Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.Error, "Error reading files: " + filter);
                 myLog.Add("Error reading files");
                 myLog.Add(exp.ToString());
                 myLog.wasError = true;
@@ -202,7 +202,7 @@ namespace TP_MasterTool.Forms
             }
             output += dFilesStatusLabel.Text + dSummaryLabel.Text + Environment.NewLine;
 
-            string fileName = "BackupCheck(" + connectionPara.TAG + ") - " + Logger.Datownik() + ".txt";
+            string fileName = "BackupCheck(" + connectionPara.hostname + ") - " + Logger.Datownik() + ".txt";
             if (!FileController.SaveTxtToFile(@".\Logs\" + fileName, output, out Exception saveExp))
             {
                 CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "File Save Error", "ToolBox encountered error while trying to save file:" + Environment.NewLine + saveExp.Message);

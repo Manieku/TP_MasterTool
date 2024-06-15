@@ -171,27 +171,27 @@ namespace TP_MasterTool.Klasy
         public static void GetMAC(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
             massFunctionForm.GridChange(rownr, "Stealing MAC");
-            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c powershell -command \"Get-WmiObject win32_networkadapterconfiguration | where {$_.ipaddress -like '" + connectionPara.IP + "*'} | select macaddress | ft -hidetableheaders\"");
+            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.fullNetworkName + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c powershell -command \"Get-WmiObject win32_networkadapterconfiguration | where {$_.ipaddress -like '" + connectionPara.IP + "*'} | select macaddress | ft -hidetableheaders\"");
             if (cmdOutput.exitCode != 0)
             {
-                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "Failed to steal MAC");
+                massFunctionForm.ErrorLog(rownr, connectionPara.hostname, "Failed to steal MAC");
                 return;
             }
             string output = cmdOutput.outputText.Replace("\n", "").Replace("\r", "").ToUpper();
             massFunctionForm.AddToLog(rownr, "[SUCCESS] - " + output);
             massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
-            Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.GetMAC, output);
+            Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.GetMAC, output);
         }
         public static void InvalidTransfer(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
             string[] files;
             try
             {
-                files = Directory.GetFiles(@"\\" + connectionPara.TAG + @"\d$\TPDotnet\Server\Transactions\InValid", @"*_0_*.xml", SearchOption.AllDirectories);
+                files = Directory.GetFiles(@"\\" + connectionPara.fullNetworkName + @"\d$\TPDotnet\Server\Transactions\InValid", @"*_0_*.xml", SearchOption.AllDirectories);
             }
             catch (Exception exp)
             {
-                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "Error while searching files: " + exp.Message);
+                massFunctionForm.ErrorLog(rownr, connectionPara.hostname, "Error while searching files: " + exp.Message);
                 return;
             }
 
@@ -202,19 +202,19 @@ namespace TP_MasterTool.Klasy
                 return;
             }
 
-            if (!FileController.MakeFolder(@"\\" + connectionPara.TAG + @"\d$\WNI\Invalid_Transfer", out Exception makeExp))
+            if (!FileController.MakeFolder(@"\\" + connectionPara.fullNetworkName + @"\d$\WNI\Invalid_Transfer", out Exception makeExp))
             {
-                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, @"Unable to create folder \d$\WNI\Invalid_Transfer: " + makeExp.Message);
+                massFunctionForm.ErrorLog(rownr, connectionPara.hostname, @"Unable to create folder \d$\WNI\Invalid_Transfer: " + makeExp.Message);
                 return;
             }
 
             bool error = false;
             foreach (string file in files)
             {
-                if (!FileController.MoveFile(file, @"\\" + connectionPara.TAG + @"\d$\WNI\Invalid_Transfer\" + Path.GetFileName(file), false, out Exception moveExp))
+                if (!FileController.MoveFile(file, @"\\" + connectionPara.fullNetworkName + @"\d$\WNI\Invalid_Transfer\" + Path.GetFileName(file), false, out Exception moveExp))
                 {
                     error = true;
-                    massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "Unable to move file: " + file + ": " + moveExp.Message);
+                    massFunctionForm.ErrorLog(rownr, connectionPara.hostname, "Unable to move file: " + file + ": " + moveExp.Message);
                     continue;
                 }
             }
@@ -228,44 +228,44 @@ namespace TP_MasterTool.Klasy
         public static void TpReportsRegenAndZip(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
             massFunctionForm.GridChange(rownr, "Checking files");
-            if (File.Exists(@"\\" + connectionPara.TAG + @"\c$\service\dms_output\collect_tp_reports.zip"))
+            if (File.Exists(@"\\" + connectionPara.fullNetworkName + @"\c$\service\dms_output\collect_tp_reports.zip"))
             {
                 massFunctionForm.AddToLog(rownr, "[SUCCESS] - " + "Zip present in output folder ready to be picked up after next successful run");
                 try
                 {
-                    File.AppendAllText(@"\\" + connectionPara.TAG + @"\c$\service\scripts\MONITORING\Log\COLLECT_TP_REPORTS_" + DateTime.Today.ToString("yyyyMMdd") + ".log", "canda_omnipos_reports_ok|" + DateTime.Now.ToString("yyyyMMddHHmm") + "|" + "Local Reports zip was present in output folder - no action needed" + Environment.NewLine, System.Text.Encoding.ASCII);
+                    File.AppendAllText(@"\\" + connectionPara.fullNetworkName + @"\c$\service\scripts\MONITORING\Log\COLLECT_TP_REPORTS_" + DateTime.Today.ToString("yyyyMMdd") + ".log", "canda_omnipos_reports_ok|" + DateTime.Now.ToString("yyyyMMddHHmm") + "|" + "Local Reports zip was present in output folder - no action needed" + Environment.NewLine, System.Text.Encoding.ASCII);
                 }
                 catch(Exception appendExp)
                 {
-                    Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.Error, "Append log Error: " + appendExp.Message);
+                    Telemetry.LogCompleteTelemetryData(connectionPara.hostname, Globals.Funkcje.Error, "Append log Error: " + appendExp.Message);
                 }
                 massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
                 return;
             }
 
             massFunctionForm.GridChange(rownr, "Checking for backup zip");
-            string[] searchResult = Directory.GetFiles(@"\\" + connectionPara.TAG + @"\d$\ArchivedReports", "collect_tp_reports.zip." + DateTime.Today.ToString("yyyyMMdd") + "030*");
+            string[] searchResult = Directory.GetFiles(@"\\" + connectionPara.fullNetworkName + @"\d$\ArchivedReports", "collect_tp_reports.zip." + DateTime.Today.ToString("yyyyMMdd") + "030*");
             if (searchResult.Length > 1)
             {
-                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "More than one backup archive found need manual check");
+                massFunctionForm.ErrorLog(rownr, connectionPara.hostname, "More than one backup archive found need manual check");
                 return;
             }
 
             if (searchResult.Length == 1)
             {
                 massFunctionForm.GridChange(rownr, "Copying backup zip");
-                if (!FileController.CopyFile(searchResult[0], @"\\" + connectionPara.TAG + @"\c$\service\dms_output\collect_tp_reports.zip", false, out Exception copyExp))
+                if (!FileController.CopyFile(searchResult[0], @"\\" + connectionPara.fullNetworkName + @"\c$\service\dms_output\collect_tp_reports.zip", false, out Exception copyExp))
                 {
-                    massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "Error while copying backup zip need maunal check");
+                    massFunctionForm.ErrorLog(rownr, connectionPara.hostname, "Error while copying backup zip need maunal check");
                     return;
                 }
                 try
                 {
-                    File.AppendAllText(@"\\" + connectionPara.TAG + @"\c$\service\scripts\MONITORING\Log\COLLECT_TP_REPORTS_" + DateTime.Today.ToString("yyyyMMdd") + ".log", "canda_omnipos_reports_ok|" + DateTime.Now.ToString("yyyyMMddHHmm") + "|" + "Local Reports zip was copied from ArchivedReports (" + Path.GetFileName(searchResult[0]) + ") to dms_output folder" + Environment.NewLine, System.Text.Encoding.ASCII);
+                    File.AppendAllText(@"\\" + connectionPara.fullNetworkName + @"\c$\service\scripts\MONITORING\Log\COLLECT_TP_REPORTS_" + DateTime.Today.ToString("yyyyMMdd") + ".log", "canda_omnipos_reports_ok|" + DateTime.Now.ToString("yyyyMMddHHmm") + "|" + "Local Reports zip was copied from ArchivedReports (" + Path.GetFileName(searchResult[0]) + ") to dms_output folder" + Environment.NewLine, System.Text.Encoding.ASCII);
                 }
                 catch (Exception appendExp)
                 {
-                    Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.Error, "Append log Error: " + appendExp.Message);
+                    Telemetry.LogCompleteTelemetryData(connectionPara.hostname, Globals.Funkcje.Error, "Append log Error: " + appendExp.Message);
                 }
                 massFunctionForm.AddToLog(rownr, "[SUCCESS] - " + "Local Reports zip was copied from ArchivedReports (" + Path.GetFileName(searchResult[0]) + ") to dms_output folder");
                 massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
@@ -280,22 +280,22 @@ namespace TP_MasterTool.Klasy
             massFunctionForm.GridChange(rownr, "Regenerating reports");
             if (!CtrlFunctions.RegenerateEoDReports(connectionPara, DateTime.Today.AddDays(offset - 1).ToString("yyyyMMdd"), DateTime.Today.AddDays(offset).ToString("yyyyMMdd"), out string regenOutput))
             {
-                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, regenOutput);
+                massFunctionForm.ErrorLog(rownr, connectionPara.hostname, regenOutput);
                 return;
             }
             massFunctionForm.GridChange(rownr, "Zipping reports");
             if (!CtrlFunctions.ZipEoDReports(connectionPara, out string zipOutput))
             {
-                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, zipOutput);
+                massFunctionForm.ErrorLog(rownr, connectionPara.hostname, zipOutput);
                 return;
             }
             try
             {
-                File.AppendAllText(@"\\" + connectionPara.TAG + @"\c$\service\scripts\MONITORING\Log\COLLECT_TP_REPORTS_" + DateTime.Today.ToString("yyyyMMdd") + ".log", "canda_omnipos_reports_ok|" + DateTime.Now.ToString("yyyyMMddHHmm") + "|" + "Local Reports were recreated and collected manually by script on " + DateTime.Now.ToString("d/MM/yyyy HH:mm:ss") + Environment.NewLine, System.Text.Encoding.ASCII);
+                File.AppendAllText(@"\\" + connectionPara.fullNetworkName + @"\c$\service\scripts\MONITORING\Log\COLLECT_TP_REPORTS_" + DateTime.Today.ToString("yyyyMMdd") + ".log", "canda_omnipos_reports_ok|" + DateTime.Now.ToString("yyyyMMddHHmm") + "|" + "Local Reports were recreated and collected manually by script on " + DateTime.Now.ToString("d/MM/yyyy HH:mm:ss") + Environment.NewLine, System.Text.Encoding.ASCII);
             }
             catch (Exception appendExp)
             {
-                Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.Error, "Append log Error: " + appendExp.Message);
+                Telemetry.LogCompleteTelemetryData(connectionPara.hostname, Globals.Funkcje.Error, "Append log Error: " + appendExp.Message);
             }
             massFunctionForm.AddToLog(rownr, "[SUCCESS] - " + "Local Reports were recreated and collected manually by script on " + DateTime.Now.ToString("d/MM/yyyy HH:mm:ss"));
             massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
@@ -320,27 +320,27 @@ namespace TP_MasterTool.Klasy
         public static void UpdatePackageInvalidCheck(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
             massFunctionForm.GridChange(rownr, "Looking for files");
-            if (!System.IO.Directory.Exists(@"\\" + connectionPara.TAG + @"\d$\TPDotnet\Server\UpdatePackages\InValid\" + addInfo[0]))
+            if (!System.IO.Directory.Exists(@"\\" + connectionPara.fullNetworkName + @"\d$\TPDotnet\Server\UpdatePackages\InValid\" + addInfo[0]))
             {
                 massFunctionForm.GridChange(rownr, "Clear", Globals.successColor);
                 massFunctionForm.AddToLog(rownr, "[SUCCESS] - Clear");
                 return;
             }
-            string[] files = System.IO.Directory.GetFiles(@"\\" + connectionPara.TAG + @"\d$\TPDotnet\Server\UpdatePackages\InValid\" + addInfo[0], "*.xml", SearchOption.AllDirectories);
+            string[] files = System.IO.Directory.GetFiles(@"\\" + connectionPara.fullNetworkName + @"\d$\TPDotnet\Server\UpdatePackages\InValid\" + addInfo[0], "*.xml", SearchOption.AllDirectories);
             if (files.Length == 0)
             {
                 massFunctionForm.GridChange(rownr, "Clear", Globals.successColor);
                 massFunctionForm.AddToLog(rownr, "[SUCCESS] - Clear");
                 return;
             }
-            string output = Environment.NewLine + connectionPara.TAG + " Example items:" + Environment.NewLine;
+            string output = Environment.NewLine + connectionPara.hostname + " Example items:" + Environment.NewLine;
             XDocument tempXml = XDocument.Load(files[0]);
 
             massFunctionForm.GridChange(rownr, "Scaning XML");
             var nodes = tempXml.Root.Elements("Transaction");
             if (nodes.Count() == 0)
             {
-                Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.UpdatePackageInvalidCheck, "Found Invalid Items");
+                Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.UpdatePackageInvalidCheck, "Found Invalid Items");
                 massFunctionForm.ErrorLog(rownr, "Other Invalid xml found, please check manually and include it in note to MMS team");
                 return;
             }
@@ -361,7 +361,7 @@ namespace TP_MasterTool.Klasy
             }
             catch
             {
-                Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.UpdatePackageInvalidCheck, "Found Invalid Items");
+                Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.UpdatePackageInvalidCheck, "Found Invalid Items");
                 massFunctionForm.ErrorLog(rownr, "Other Invalid xml found, please check manually and include it in note to MMS team");
                 return;
             }
@@ -371,29 +371,29 @@ namespace TP_MasterTool.Klasy
             {
                 massFunctionForm.log = massFunctionForm.log.Concat(output.Split(new string[] { Environment.NewLine }, StringSplitOptions.None)).ToArray();
             }
-            Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.UpdatePackageInvalidCheck, "Found Invalid Items");
+            Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.UpdatePackageInvalidCheck, "Found Invalid Items");
             massFunctionForm.GridChange(rownr, "Found Invalid", Globals.errorColor);
         }
         public static void BulkFileMove(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
             massFunctionForm.GridChange(rownr, "Looking for files");
-            string source = @"\\" + connectionPara.TAG + @"\" + addInfo[0];
-            string destination = @"\\" + connectionPara.TAG + @"\" + addInfo[1];
-            Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.BulkFileMove, source + " -> " + destination + " filter: " + addInfo[2]);
+            string source = @"\\" + connectionPara.fullNetworkName + @"\" + addInfo[0];
+            string destination = @"\\" + connectionPara.fullNetworkName + @"\" + addInfo[1];
+            Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.BulkFileMove, source + " -> " + destination + " filter: " + addInfo[2]);
             if (!Directory.Exists(source))
             {
-                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "Source folder not found");
+                massFunctionForm.ErrorLog(rownr, connectionPara.hostname, "Source folder not found");
                 return;
             }
             if (!FileController.MakeFolder(destination, out Exception makeExp))
             {
-                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "Unable to create destination folder: " + makeExp.Message);
+                massFunctionForm.ErrorLog(rownr, connectionPara.hostname, "Unable to create destination folder: " + makeExp.Message);
                 return;
             }
             string[] files = Directory.GetFiles(source, addInfo[2]);
             if (files.Length == 0)
             {
-                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "No file matching the criteria is found");
+                massFunctionForm.ErrorLog(rownr, connectionPara.hostname, "No file matching the criteria is found");
                 return;
             }
             int licznik = 1;
@@ -402,7 +402,7 @@ namespace TP_MasterTool.Klasy
                 massFunctionForm.GridChange(rownr, "Moving " + licznik + " out of " + files.Length + " files");
                 if (!FileController.MoveFile(file, destination + @"\" + Path.GetFileName(file), false, out Exception moveExp))
                 {
-                    massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "Operation cancelled, Unable to move file: " + moveExp);
+                    massFunctionForm.ErrorLog(rownr, connectionPara.hostname, "Operation cancelled, Unable to move file: " + moveExp);
                     return;
                 }
                 licznik++;
@@ -413,10 +413,10 @@ namespace TP_MasterTool.Klasy
         public static void EsfClientRestart(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
             massFunctionForm.GridChange(rownr, "Restarting Client");
-            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c net stop esfclient && net start esfclient");
+            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.fullNetworkName + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c net stop esfclient && net start esfclient");
             if (cmdOutput.exitCode != 0)
             {
-                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "CMD exited with error code: " + cmdOutput.exitCode);
+                massFunctionForm.ErrorLog(rownr, connectionPara.hostname, "CMD exited with error code: " + cmdOutput.exitCode);
                 return;
             }
             massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
@@ -425,10 +425,10 @@ namespace TP_MasterTool.Klasy
         public static void EsfClientReinit(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
             massFunctionForm.GridChange(rownr, "Running script");
-            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c cd c:\service\agents\esfclient && reinit_esfclient.cmd");
+            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.fullNetworkName + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c cd c:\service\agents\esfclient && reinit_esfclient.cmd");
             if (cmdOutput.exitCode != 0)
             {
-                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "CMD exited with error code: " + cmdOutput.exitCode);
+                massFunctionForm.ErrorLog(rownr, connectionPara.hostname, "CMD exited with error code: " + cmdOutput.exitCode);
                 return;
             }
             massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
@@ -446,53 +446,53 @@ namespace TP_MasterTool.Klasy
                 logFileName = "jniwrapper-diagnostics.log";
             }
             massFunctionForm.GridChange(rownr, "Looking for files");
-            string[] files = Directory.GetFiles(@"\\" + connectionPara.TAG + remotePath, logFileName);
+            string[] files = Directory.GetFiles(@"\\" + connectionPara.fullNetworkName + remotePath, logFileName);
             if (files.Length == 0)
             {
-                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "No JPOS logs found");
+                massFunctionForm.ErrorLog(rownr, connectionPara.hostname, "No JPOS logs found");
                 return;
             }
 
-            if (Directory.Exists(@"\\" + connectionPara.TAG + remotePath + @"\JPOSLogs"))
+            if (Directory.Exists(@"\\" + connectionPara.fullNetworkName + remotePath + @"\JPOSLogs"))
             {
                 massFunctionForm.GridChange(rownr, "Deleting old zip");
                 try
                 {
-                    Directory.Delete(@"\\" + connectionPara.TAG + remotePath + @"\JPOSLogs", true);
+                    Directory.Delete(@"\\" + connectionPara.fullNetworkName + remotePath + @"\JPOSLogs", true);
                 }
                 catch (Exception exp)
                 {
-                    massFunctionForm.ErrorLog(rownr, connectionPara.TAG, @"Can't delete folder with old logs, Please delete D:\TPDotnet\DeviceService\JPOSLogs manually and try again: " + exp.Message);
+                    massFunctionForm.ErrorLog(rownr, connectionPara.hostname, @"Can't delete folder with old logs, Please delete D:\TPDotnet\DeviceService\JPOSLogs manually and try again: " + exp.Message);
                     return;
                 }
             }
 
             massFunctionForm.GridChange(rownr, "Gathering Logs");
             System.Threading.Thread.Sleep(150);
-            if (!FileController.MakeFolder(@"\\" + connectionPara.TAG + remotePath + @"\JPOSLogs", out Exception makeExp))
+            if (!FileController.MakeFolder(@"\\" + connectionPara.fullNetworkName + remotePath + @"\JPOSLogs", out Exception makeExp))
             {
-                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "Unable to create folder for logs: " + makeExp.Message);
+                massFunctionForm.ErrorLog(rownr, connectionPara.hostname, "Unable to create folder for logs: " + makeExp.Message);
                 return;
             }
 
             foreach (string file in files)
             {
-                if (!FileController.CopyFile(file, @"\\" + connectionPara.TAG + remotePath + @"\JPOSLogs\" + Path.GetFileName(file), false, out Exception copyExp))
+                if (!FileController.CopyFile(file, @"\\" + connectionPara.fullNetworkName + remotePath + @"\JPOSLogs\" + Path.GetFileName(file), false, out Exception copyExp))
                 {
-                    massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "Unable to copy " + file + ": " + copyExp.Message);
+                    massFunctionForm.ErrorLog(rownr, connectionPara.hostname, "Unable to copy " + file + ": " + copyExp.Message);
                     return;
                 }
             }
             massFunctionForm.GridChange(rownr, "Securing Logs");
-            if (!FileController.ZipAndStealFolder(addInfo[0], "JposLogs", @"\\" + connectionPara.TAG + remotePath + @"\JPOSLogs", localPath + @"\JPOSLogs", connectionPara, out string outputFilePath))
+            if (!FileController.ZipAndStealFolder(addInfo[0], "JposLogs", @"\\" + connectionPara.fullNetworkName + remotePath + @"\JPOSLogs", localPath + @"\JPOSLogs", connectionPara, out string outputFilePath))
             {
-                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, outputFilePath);
+                massFunctionForm.ErrorLog(rownr, connectionPara.hostname, outputFilePath);
                 return;
             }
             massFunctionForm.GridChange(rownr, "Downloading Logs");
             if (!FileController.CopyFile(outputFilePath, Globals.userTempLogsPath + Path.GetFileName(outputFilePath), false, out Exception copyExp2))
             {
-                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "Unable to copy log: " + copyExp2.Message);
+                massFunctionForm.ErrorLog(rownr, connectionPara.hostname, "Unable to copy log: " + copyExp2.Message);
                 return;
             }
             massFunctionForm.AddToLog(rownr, "[SUCCESS] - JposLogs Downloaded");
@@ -501,10 +501,10 @@ namespace TP_MasterTool.Klasy
         public static void TpProcessManagerRestart(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
             massFunctionForm.GridChange(rownr, "Restarting Process");
-            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c net stop ""TPDotnet Process Manager"" && net start ""TPDotnet Process Manager""");
+            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.fullNetworkName + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c net stop ""TPDotnet Process Manager"" && net start ""TPDotnet Process Manager""");
             if (cmdOutput.exitCode != 0)
             {
-                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "CMD exited with error code: " + cmdOutput.exitCode);
+                massFunctionForm.ErrorLog(rownr, connectionPara.hostname, "CMD exited with error code: " + cmdOutput.exitCode);
                 return;
             }
             massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
@@ -514,9 +514,9 @@ namespace TP_MasterTool.Klasy
         public static void JposLogsCheck(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
             massFunctionForm.GridChange(rownr, "Looking for logs");
-            if (Directory.GetFiles(@"\\" + connectionPara.TAG + @"\d$\TPDotnet\DeviceService", "JPOSRFIDScannerLogs*").Length == 0)
+            if (Directory.GetFiles(@"\\" + connectionPara.fullNetworkName + @"\d$\TPDotnet\DeviceService", "JPOSRFIDScannerLogs*").Length == 0)
             {
-                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "No logs found");
+                massFunctionForm.ErrorLog(rownr, connectionPara.hostname, "No logs found");
                 return;
             }
             massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
@@ -529,30 +529,30 @@ namespace TP_MasterTool.Klasy
             string[] dFiles;
             try
             {
-                cFiles = Directory.GetFiles(@"\\" + connectionPara.TAG + @"\f$\Backup\TPBackup", connectionPara.TAG + "_C*.v2i");
-                dFiles = Directory.GetFiles(@"\\" + connectionPara.TAG + @"\f$\Backup\TPBackup", connectionPara.TAG + "_D*.v2i");
+                cFiles = Directory.GetFiles(@"\\" + connectionPara.fullNetworkName + @"\f$\Backup\TPBackup", connectionPara.hostname + "_C*.v2i");
+                dFiles = Directory.GetFiles(@"\\" + connectionPara.fullNetworkName + @"\f$\Backup\TPBackup", connectionPara.hostname + "_D*.v2i");
             }
             catch (Exception exp)
             {
-                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "Error while gathering backup files: " + exp.Message);
+                massFunctionForm.ErrorLog(rownr, connectionPara.hostname, "Error while gathering backup files: " + exp.Message);
                 return;
             }
             if (cFiles.Length != 2 && dFiles.Length != 2)
             {
-                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, cFiles.Length + " - " + dFiles.Length);
+                massFunctionForm.ErrorLog(rownr, connectionPara.hostname, cFiles.Length + " - " + dFiles.Length);
                 return;
             }
             massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
             massFunctionForm.AddToLog(rownr, "[SUCCESS] - " + cFiles.Length + " - " + dFiles.Length);
-            Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.BackupJobsCheck, cFiles.Length + " - " + dFiles.Length);
+            Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.BackupJobsCheck, cFiles.Length + " - " + dFiles.Length);
         }
         public static void BackupJobsReset(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
             massFunctionForm.GridChange(rownr, "Resetting Jobs");
-            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c powershell -ep Bypass c:\service\tools\backup\RemoveImageJob.ps1 && powershell -ep Bypass c:\service\tools\backup\AddImageJob.ps1");
+            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.fullNetworkName + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c powershell -ep Bypass c:\service\tools\backup\RemoveImageJob.ps1 && powershell -ep Bypass c:\service\tools\backup\AddImageJob.ps1");
             if (cmdOutput.exitCode != 0)
             {
-                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "CMD Exited with error code: " + cmdOutput.exitCode);
+                massFunctionForm.ErrorLog(rownr, connectionPara.hostname, "CMD Exited with error code: " + cmdOutput.exitCode);
                 return;
             }
             massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
@@ -565,7 +565,7 @@ namespace TP_MasterTool.Klasy
                 massFunctionForm.GridChange(rownr, "Looking for old backup files");
                 try
                 {
-                    string[] files = Directory.GetFiles(@"\\" + connectionPara.TAG + @"\f$\Backup\TPBackup", connectionPara.TAG + drive);
+                    string[] files = Directory.GetFiles(@"\\" + connectionPara.fullNetworkName + @"\f$\Backup\TPBackup", connectionPara.hostname + drive);
                     massFunctionForm.GridChange(rownr, "Deleting files");
                     foreach (string file in files)
                     {
@@ -574,13 +574,13 @@ namespace TP_MasterTool.Klasy
                             string msg = file + " > " + File.GetCreationTime(file);
                             File.Delete(file);
                             massFunctionForm.AddToLog(rownr, msg + " (Deleted) | ");
-                            Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.DeleteOldBackupFiles, msg + " Deleted");
+                            Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.DeleteOldBackupFiles, msg + " Deleted");
                         }
                     }
                 }
                 catch (Exception exp)
                 {
-                    massFunctionForm.ErrorLog(rownr, connectionPara.TAG, exp.Message);
+                    massFunctionForm.ErrorLog(rownr, connectionPara.hostname, exp.Message);
                     return;
                 }
             }
@@ -588,9 +588,9 @@ namespace TP_MasterTool.Klasy
         }
         public static void IsBackupDriveAccessible(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
-            if (!Directory.Exists(@"\\" + connectionPara.TAG + @"\f$\Backup"))
+            if (!Directory.Exists(@"\\" + connectionPara.fullNetworkName + @"\f$\Backup"))
             {
-                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "Unable to access Backup Drive");
+                massFunctionForm.ErrorLog(rownr, connectionPara.hostname, "Unable to access Backup Drive");
                 return;
             }
             massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
@@ -602,30 +602,30 @@ namespace TP_MasterTool.Klasy
             massFunctionForm.GridChange(rownr, "Looking for files");
             try
             {
-                files = Directory.GetFiles(@"\\" + connectionPara.TAG + @"\c$\ProgramData\javapos\wn\log", "javapos.log*");
+                files = Directory.GetFiles(@"\\" + connectionPara.fullNetworkName + @"\c$\ProgramData\javapos\wn\log", "javapos.log*");
             }
             catch (Exception exp)
             {
-                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "Failed to get files: " + exp.Message);
+                massFunctionForm.ErrorLog(rownr, connectionPara.hostname, "Failed to get files: " + exp.Message);
                 return;
             }
             if (files.Length == 0)
             {
-                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "No logs found");
+                massFunctionForm.ErrorLog(rownr, connectionPara.hostname, "No logs found");
                 return;
             }
-            if (!FileController.MakeFolder(@".\Logs\JavaPosLogs\" + connectionPara.TAG, out Exception makeExp))
+            if (!FileController.MakeFolder(@".\Logs\JavaPosLogs\" + connectionPara.hostname, out Exception makeExp))
             {
-                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, @"Unable to create folder in .\Logs: " + makeExp.Message);
+                massFunctionForm.ErrorLog(rownr, connectionPara.hostname, @"Unable to create folder in .\Logs: " + makeExp.Message);
                 return;
             }
             int i = 1;
             foreach (string file in files)
             {
                 massFunctionForm.GridChange(rownr, "Copying " + i + " of " + files.Length + " files");
-                if (!FileController.CopyFile(file, @".\Logs\JavaPosLogs\" + connectionPara.TAG + @"\" + Path.GetFileName(file), false, out Exception copyExp))
+                if (!FileController.CopyFile(file, @".\Logs\JavaPosLogs\" + connectionPara.hostname + @"\" + Path.GetFileName(file), false, out Exception copyExp))
                 {
-                    massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "Error during copy: " + copyExp.Message);
+                    massFunctionForm.ErrorLog(rownr, connectionPara.hostname, "Error during copy: " + copyExp.Message);
                     return;
                 }
                 i++;
@@ -636,57 +636,57 @@ namespace TP_MasterTool.Klasy
         public static void CheckForKB(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
             massFunctionForm.GridChange(rownr, "Searching KB");
-            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c powershell -command \"Get-HotFix -Id " + addInfo[0] + "\"");
+            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.fullNetworkName + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c powershell -command \"Get-HotFix -Id " + addInfo[0] + "\"");
             if (cmdOutput.exitCode != 0)
             {
-                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, addInfo[0] + " Not Installed");
+                massFunctionForm.ErrorLog(rownr, connectionPara.hostname, addInfo[0] + " Not Installed");
                 return;
             }
             massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
             massFunctionForm.AddToLog(rownr, "[SUCCESS] - " + addInfo[0] + " Installed");
-            Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.CheckForKB, addInfo[0] + " Installed");
+            Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.CheckForKB, addInfo[0] + " Installed");
         }
         public static void DeployAndExecute(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
             massFunctionForm.GridChange(rownr, "Copying file");
-            if (!FileController.CopyFile(Globals.toolsPath + addInfo[0], @"\\" + connectionPara.TAG + @"\c$\temp\" + addInfo[0], false, out Exception copyExp))
+            if (!FileController.CopyFile(Globals.toolsPath + addInfo[0], @"\\" + connectionPara.fullNetworkName + @"\c$\temp\" + addInfo[0], false, out Exception copyExp))
             {
-                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "Unable to copy " + addInfo[0] + " : " + copyExp.Message);
+                massFunctionForm.ErrorLog(rownr, connectionPara.hostname, "Unable to copy " + addInfo[0] + " : " + copyExp.Message);
                 return;
             }
             massFunctionForm.GridChange(rownr, "Executing cmd");
-            int exitCode = CtrlFunctions.RunHiddenCmdWitoutOutput("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c C:\temp\" + addInfo[0], Boolean.Parse(addInfo[1]));
+            int exitCode = CtrlFunctions.RunHiddenCmdWitoutOutput("psexec.exe", @"\\" + connectionPara.fullNetworkName + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c C:\temp\" + addInfo[0], Boolean.Parse(addInfo[1]));
             if (exitCode != 0)
             {
-                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "Script exited with error code: " + exitCode);
+                massFunctionForm.ErrorLog(rownr, connectionPara.hostname, "Script exited with error code: " + exitCode);
                 return;
             }
-            Telemetry.LogMachineAction(connectionPara.TAG, Globals.Funkcje.DeployAndExecute, addInfo[0] + " Executed");
+            Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.DeployAndExecute, addInfo[0] + " Executed");
             massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
             massFunctionForm.AddToLog(rownr, "[SUCCESS] - " + addInfo[0] + " Executed");
         }
         public static void DismAndSFC(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
             massFunctionForm.GridChange(rownr, "Starting commands");
-            CtrlFunctions.RunHiddenCmdWitoutOutput("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c Dism /Online /Cleanup-Image /RestoreHealth && sfc /scannow", false);
+            CtrlFunctions.RunHiddenCmdWitoutOutput("psexec.exe", @"\\" + connectionPara.fullNetworkName + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c Dism /Online /Cleanup-Image /RestoreHealth && sfc /scannow", false);
             massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
             massFunctionForm.AddToLog(rownr, "[SUCCESS] - Commands started");
         }
         public static void CDriveClean(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
             massFunctionForm.GridChange(rownr, @"Clearing C:\Windows\Temp");
-            CtrlFunctions.RunHiddenCmdWitoutOutput("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c del /q /f /S C:\Windows\Temp", false);
+            CtrlFunctions.RunHiddenCmdWitoutOutput("psexec.exe", @"\\" + connectionPara.fullNetworkName + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c del /q /f /S C:\Windows\Temp", false);
             massFunctionForm.GridChange(rownr, @"Clearing C:\Windows\CbsTemp");
-            CtrlFunctions.RunHiddenCmdWitoutOutput("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c del /q /f /S C:\Windows\CbsTemp", false);
+            CtrlFunctions.RunHiddenCmdWitoutOutput("psexec.exe", @"\\" + connectionPara.fullNetworkName + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c del /q /f /S C:\Windows\CbsTemp", false);
             massFunctionForm.GridChange(rownr, @"Clearing C:\Windows\WinSxS");
-            CtrlFunctions.RunHiddenCmdWitoutOutput("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c del /q /f /S C:\Windows\WinSxS", false);
+            CtrlFunctions.RunHiddenCmdWitoutOutput("psexec.exe", @"\\" + connectionPara.fullNetworkName + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c del /q /f /S C:\Windows\WinSxS", false);
             massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
             massFunctionForm.AddToLog(rownr, "[SUCCESS] - Commands started");
         }
         public static void BackstoreCsvExport(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
             massFunctionForm.GridChange(rownr, "Reading input file");
-            string inputFile = addInfo[0] + @"\" + connectionPara.TAG + ".txt";
+            string inputFile = addInfo[0] + @"\" + connectionPara.hostname + ".txt";
             string[] inputDates;
             try
             {
@@ -694,24 +694,24 @@ namespace TP_MasterTool.Klasy
             }
             catch (Exception exp)
             {
-                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "Unable to read input file: " + exp.Message);
+                massFunctionForm.ErrorLog(rownr, connectionPara.hostname, "Unable to read input file: " + exp.Message);
                 return;
             }
             if (inputDates.Length == 0)
             {
-                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "No data found in input file");
+                massFunctionForm.ErrorLog(rownr, connectionPara.hostname, "No data found in input file");
                 return;
             }
 
             massFunctionForm.GridChange(rownr, "Installing modded CA.DE.BS.CSVExport.exe");
-            if (!FileController.MoveFile(@"\\" + connectionPara.TAG + @"\d$\TPDotnet\bin\CA.DE.BS.CSVExport.exe", @"\\" + connectionPara.TAG + @"\d$\TPDotnet\bin\CA.DE.BS.CSVExport_backup.exe", false, out Exception moveExp))
+            if (!FileController.MoveFile(@"\\" + connectionPara.fullNetworkName + @"\d$\TPDotnet\bin\CA.DE.BS.CSVExport.exe", @"\\" + connectionPara.fullNetworkName + @"\d$\TPDotnet\bin\CA.DE.BS.CSVExport_backup.exe", false, out Exception moveExp))
             {
-                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "Unable to rename CA.DE.BS.CSVExport.exe: " + moveExp.Message + " - Please check if CA.DE.BS.CSVExport.exe is ok");
+                massFunctionForm.ErrorLog(rownr, connectionPara.hostname, "Unable to rename CA.DE.BS.CSVExport.exe: " + moveExp.Message + " - Please check if CA.DE.BS.CSVExport.exe is ok");
                 return;
             }
-            if (!FileController.CopyFile(Globals.toolsPath + "CA.DE.BS.CSVExport.exe", @"\\" + connectionPara.TAG + @"\d$\TPDotnet\bin\CA.DE.BS.CSVExport.exe", false, out Exception copyExp))
+            if (!FileController.CopyFile(Globals.toolsPath + "CA.DE.BS.CSVExport.exe", @"\\" + connectionPara.fullNetworkName + @"\d$\TPDotnet\bin\CA.DE.BS.CSVExport.exe", false, out Exception copyExp))
             {
-                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "Unable to copy modded CA.DE.BS.CSVExport.exe on to the host: " + copyExp.Message + " - Please rename original CA.DE.BS.CSVExport.exe");
+                massFunctionForm.ErrorLog(rownr, connectionPara.hostname, "Unable to copy modded CA.DE.BS.CSVExport.exe on to the host: " + copyExp.Message + " - Please rename original CA.DE.BS.CSVExport.exe");
                 return;
             }
             bool wasError = false;
@@ -744,17 +744,17 @@ namespace TP_MasterTool.Klasy
             }
             if (!FileController.SaveTxtToFile(inputFile, String.Join(Environment.NewLine, inputDates), out Exception saveExp))
             {
-                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "Unable to save result: " + saveExp.Message);
+                massFunctionForm.ErrorLog(rownr, connectionPara.hostname, "Unable to save result: " + saveExp.Message);
             }
             massFunctionForm.GridChange(rownr, "Restoring original CA.DE.BS.CSVExport.exe");
-            if (!FileController.MoveFile(@"\\" + connectionPara.TAG + @"\d$\TPDotnet\bin\CA.DE.BS.CSVExport_backup.exe", @"\\" + connectionPara.TAG + @"\d$\TPDotnet\bin\CA.DE.BS.CSVExport.exe", false, out moveExp))
+            if (!FileController.MoveFile(@"\\" + connectionPara.fullNetworkName + @"\d$\TPDotnet\bin\CA.DE.BS.CSVExport_backup.exe", @"\\" + connectionPara.fullNetworkName + @"\d$\TPDotnet\bin\CA.DE.BS.CSVExport.exe", false, out moveExp))
             {
-                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "Unable to restore CA.DE.BS.CSVExport.exe: " + moveExp.Message + " - Please restore CA.DE.BS.CSVExport.exe manually");
+                massFunctionForm.ErrorLog(rownr, connectionPara.hostname, "Unable to restore CA.DE.BS.CSVExport.exe: " + moveExp.Message + " - Please restore CA.DE.BS.CSVExport.exe manually");
                 return;
             }
             if (wasError)
             {
-                massFunctionForm.ErrorLog(rownr, connectionPara.TAG, "CSV Export for some dates wasn't successful");
+                massFunctionForm.ErrorLog(rownr, connectionPara.hostname, "CSV Export for some dates wasn't successful");
                 return;
             }
             massFunctionForm.AddToLog(rownr, "[SUCCESS] - All CSV Export was successful");
@@ -789,7 +789,7 @@ namespace TP_MasterTool.Klasy
             * Na zyczenie Olga Dovgalova (Problem manager)
             */
             massFunctionForm.GridChange(rownr, "Reading DB");
-            if (!CtrlFunctions.SqlGetInfo(connectionPara.TAG, "TPCentralDB", "select szStartDateEOD from RetailStoreEODJournal where szStartDateEOD > " + addInfo[0] + " and szComment = 'MANUALEOD - Final result: Aborted'", out string sqlOutput)) // query do DB z data
+            if (!CtrlFunctions.SqlGetInfo(connectionPara.fullNetworkName, "TPCentralDB", "select szStartDateEOD from RetailStoreEODJournal where szStartDateEOD > " + addInfo[0] + " and szComment = 'MANUALEOD - Final result: Aborted'", out string sqlOutput)) // query do DB z data
             {
                 massFunctionForm.ErrorLog(rownr, "SQL read error");
                 return;
@@ -800,8 +800,8 @@ namespace TP_MasterTool.Klasy
             foreach (string tempDate in dates)
             {
                 string date = tempDate.Split(':')[1].Substring(1, 8);
-                string output = connectionPara.TAG + "," + date + ",";
-                string[] logFiles = Directory.GetFiles(@"\\" + connectionPara.TAG + @"\d$\TPDotnet\Log", "*TSBatchActWorkstationStatus*.log"); // logi EoD
+                string output = connectionPara.hostname + "," + date + ",";
+                string[] logFiles = Directory.GetFiles(@"\\" + connectionPara.fullNetworkName + @"\d$\TPDotnet\Log", "*TSBatchActWorkstationStatus*.log"); // logi EoD
                 foreach (string file in logFiles)
                 {
                     try
@@ -839,9 +839,9 @@ namespace TP_MasterTool.Klasy
              * Na prosbe Gogarowski Petre (ADV)
              */
             massFunctionForm.GridChange(rownr, "Downloading Log");
-            string fileName = connectionPara.TAG + ".evtx";
+            string fileName = connectionPara.hostname + ".evtx";
             string output = "";
-            if (!FileController.CopyFile(@"\\" + connectionPara.TAG + @"\c$\Windows\System32\winevt\Logs\System.evtx", @".\Logs\Windows\" + fileName, false, out Exception copyExp))
+            if (!FileController.CopyFile(@"\\" + connectionPara.fullNetworkName + @"\c$\Windows\System32\winevt\Logs\System.evtx", @".\Logs\Windows\" + fileName, false, out Exception copyExp))
             {
                 massFunctionForm.ErrorLog(rownr, copyExp.Message);
                 return;
@@ -856,7 +856,7 @@ namespace TP_MasterTool.Klasy
                 EventRecord entry;
                 while ((entry = logReader.ReadEvent()) != null)
                 {
-                    output += connectionPara.TAG + "," + entry.TimeCreated.ToString() + ",";
+                    output += connectionPara.hostname + "," + entry.TimeCreated.ToString() + ",";
                     XDocument logEntry = XDocument.Parse(entry.ToXml());
                     string bugcheck = "0";
                     string powerbutton = "0";
@@ -903,111 +903,7 @@ namespace TP_MasterTool.Klasy
         }
         public static void AdhocFunction(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
-            /*
-             * Gets dates (YYYYMMDD) in .\Dates folder 
-             * Create temp folder and collect_tp_reports.zip if not exist in dms_output
-             * For each date its look for backup archive in ArchivedReports, if found they are extracted to temp folder
-             * Then files from temp folder are packed into output zip and temp folder is deleted
-             * Log everything in dates txt, on reruns it skips [SUCCESS] and retry [ERROR]
-             * Stworzone na poczet odzyskiwania brakujacych raporow (Olga Dovgalova PM, Novotny Adrian)
-             */
-
-
-            massFunctionForm.GridChange(rownr, "Reading dates");
-            string[] dates = File.ReadAllLines(@".\Dates\" + connectionPara.TAG.Split('.')[0] + @".txt");
-            int iterator = -1;
-            try
-            {
-                Directory.CreateDirectory(@"\\" + connectionPara.TAG + @"\c$\service\dms_output\temp");
-                if (!File.Exists(@"\\" + connectionPara.TAG + @"\c$\service\dms_output\collect_tp_reports.zip"))
-                {
-                    File.Create(@"\\" + connectionPara.TAG + @"\c$\service\dms_output\collect_tp_reports.zip").Close();
-                }
-            }
-            catch (Exception exp)
-            {
-                massFunctionForm.ErrorLog(rownr, "Error creating output zip");
-                dates[iterator] += ",[ERROR],unable to create zip file or temp folder in output folder: " + exp.Message;
-                return;
-            }
-            try
-            {
-                foreach (string fuckDate in dates)
-                {
-                    iterator++;
-                    string date = fuckDate;
-                    if (date.Length > 8)
-                    {
-                        if (date.Contains("[ERROR]"))
-                        {
-                            dates[iterator] = date.Substring(0, 8);
-                            date = date.Substring(0, 8);
-                        }
-                        else
-                        {
-                            continue;
-                        }
-                    }
-                    massFunctionForm.GridChange(rownr, "Restoring date: " + date + "(" + (iterator + 1).ToString() + "/" + dates.Length + ")");
-
-                    string zipDate = (int.Parse(date) + 1).ToString();
-                    if (date == "20240131") { zipDate = "20240201"; }
-                    string[] zipFiles = Directory.GetFiles(@"\\" + connectionPara.TAG + @"\d$\ArchivedReports", "collect_tp_reports.zip." + zipDate + "030*");
-                    if (zipFiles.Length > 1)
-                    {
-                        massFunctionForm.ErrorLog(rownr, "Error check date txt");
-                        dates[iterator] += ",[ERROR],more than one zip file on this date need manual check";
-                    }
-                    else if (zipFiles.Length == 1)
-                    {
-                        try
-                        {
-                            using (ZipArchive backupArchive = ZipFile.OpenRead(zipFiles[0]))
-                            using (ZipArchive outputArchive = ZipFile.Open(@"\\" + connectionPara.TAG + @"\c$\service\dms_output\collect_tp_reports.zip", ZipArchiveMode.Update))
-                            {
-                                foreach (var zipedRaport in backupArchive.Entries)
-                                {
-                                    if (!zipedRaport.FullName.Contains(connectionPara.country + @"\"))
-                                    {
-
-                                        //long datePliku = long.Parse(zipedRaport.Name.Substring(zipedRaport.Name.IndexOf('_') + 1, 14))+1;
-                                        //string nazwaPliku = zipedRaport.Name.Substring(0, zipedRaport.Name.IndexOf('_') + 1) + datePliku + zipedRaport.Name.Substring(zipedRaport.Name.LastIndexOf('_'));
-                                        zipedRaport.ExtractToFile(@"\\" + connectionPara.TAG + @"\c$\service\dms_output\temp\" + zipedRaport.Name, true);
-                                        outputArchive.CreateEntryFromFile(@"\\" + connectionPara.TAG + @"\c$\service\dms_output\temp\" + zipedRaport.Name, zipedRaport.Name);
-                                    }
-                                }
-                            }
-                        }
-                        catch (Exception exp)
-                        {
-                            massFunctionForm.ErrorLog(rownr, "Error check date txt");
-                            dates[iterator] += ",[ERROR],unable to handle zip file check manually: " + exp.Message;
-                            continue;
-                        }
-                        dates[iterator] += ",[SUCCESS],reports found in ArchivedReports - copied to output zip";
-                        massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
-                    }
-                    else
-                    {
-                        massFunctionForm.ErrorLog(rownr, "Error check date txt");
-                        dates[iterator] += ",[FATAL],no reports found manual check needed";
-                    }
-                }
-                File.WriteAllLines(@".\Dates\" + connectionPara.TAG.Split('.')[0] + @".txt", dates);
-                try
-                {
-                    Directory.Delete(@"\\" + connectionPara.TAG + @"\c$\service\dms_output\temp", true);
-                }
-                catch (Exception exp)
-                {
-                    massFunctionForm.ErrorLog(rownr, "Temp delete error");
-                    dates[iterator] += ",[ERROR],Can't delete some files in temp folder";
-                }
-            }
-            catch (Exception exp)
-            {
-                massFunctionForm.ErrorLog(rownr, exp.ToString());
-            }
+            
         }
 
         //------------------------Moje wymysly------------------------------//
@@ -1023,7 +919,7 @@ namespace TP_MasterTool.Klasy
             massFunctionForm.GridChange(rownr, "Reading log");
             try
             {
-                string[] files = new DirectoryInfo(@"\\" + connectionPara.TAG + @"\c$\Program Files (x86)\APC\PowerChute Business Edition\agent\energylog").EnumerateFiles().OrderByDescending(file => file.CreationTime).Select(file => file.FullName).ToArray();
+                string[] files = new DirectoryInfo(@"\\" + connectionPara.fullNetworkName + @"\c$\Program Files (x86)\APC\PowerChute Business Edition\agent\energylog").EnumerateFiles().OrderByDescending(file => file.CreationTime).Select(file => file.FullName).ToArray();
                 foreach (string file in files)
                 {
                     string[] log = System.IO.File.ReadAllLines(file);
@@ -1055,7 +951,7 @@ namespace TP_MasterTool.Klasy
             string[] lines;
             try
             {
-                lines = System.IO.File.ReadAllLines(@"\\" + connectionPara.TAG + @"\c$\Retail\Software\dlrmus\logs\dlslog.txt");
+                lines = System.IO.File.ReadAllLines(@"\\" + connectionPara.fullNetworkName + @"\c$\Retail\Software\dlrmus\logs\dlslog.txt");
             }
             catch (Exception findExp)
             {
@@ -1081,7 +977,7 @@ namespace TP_MasterTool.Klasy
              */
 
             massFunctionForm.GridChange(rownr, "Checking");
-            if (Directory.Exists(@"\\" + connectionPara.TAG + @"\c$\oeminst\ALL_LOGS\SWAT\Edge_Icon_Delete"))
+            if (Directory.Exists(@"\\" + connectionPara.fullNetworkName + @"\c$\oeminst\ALL_LOGS\SWAT\Edge_Icon_Delete"))
             {
                 massFunctionForm.GridChange(rownr, "Good", Globals.successColor);
                 massFunctionForm.AddToLog(rownr, "[SUCCESS] - Folder exist");
@@ -1107,8 +1003,8 @@ namespace TP_MasterTool.Klasy
             else
             {
                 massFunctionForm.GridChange(rownr, "Reading SMART");
-                string output = connectionPara.TAG + "\t";
-                string[] smartLog = File.ReadAllLines(@"\\" + connectionPara.TAG + @"\c$\SMART\DiskInfo.txt");
+                string output = connectionPara.hostname + "\t";
+                string[] smartLog = File.ReadAllLines(@"\\" + connectionPara.fullNetworkName + @"\c$\SMART\DiskInfo.txt");
                 foreach (string line in smartLog)
                 {
                     if (line.Contains("Model") || line.Contains("Disk Size") || line.Contains("Health Status"))
@@ -1120,7 +1016,7 @@ namespace TP_MasterTool.Klasy
                 File.AppendAllText(@".\Logs\SmartCheck.txt", output);
             }
             massFunctionForm.GridChange(rownr, "Deleting Lock");
-            if (!CtrlFunctions.DeleteLock(@"\\" + connectionPara.TAG + @"\c$\SMART\smart.lock"))
+            if (!CtrlFunctions.DeleteLock(@"\\" + connectionPara.fullNetworkName + @"\c$\SMART\smart.lock"))
             {
                 massFunctionForm.GridChange(rownr, "Lock delete error");
                 return;
@@ -1139,10 +1035,10 @@ namespace TP_MasterTool.Klasy
                 {
                     continue;
                 }
-                if (Directory.Exists(@"\\" + connectionPara.TAG + @"\c$\Windows\WinSxS\" + folders[i]))
+                if (Directory.Exists(@"\\" + connectionPara.fullNetworkName + @"\c$\Windows\WinSxS\" + folders[i]))
                 {
                     massFunctionForm.GridChange(rownr, "Copying folder");
-                    if (!FileController.CopyFolder(@"\\" + connectionPara.TAG + @"\c$\Windows\WinSxS\" + folders[i], @".\Foldery\" + folders[i], false, out Exception copyExp))
+                    if (!FileController.CopyFolder(@"\\" + connectionPara.fullNetworkName + @"\c$\Windows\WinSxS\" + folders[i], @".\Foldery\" + folders[i], false, out Exception copyExp))
                     {
                         massFunctionForm.ErrorLog(rownr, copyExp.Message);
                     }
@@ -1166,10 +1062,10 @@ namespace TP_MasterTool.Klasy
             string errorToFind = "Bad file descriptor in nativeavailable";
 
             massFunctionForm.GridChange(rownr, "Reading log");
-            string sciezka = @"\\" + connectionPara.TAG + @"\c$\ProgramData\javapos\wn\log\jniwrapper-diagnostics.log";
+            string sciezka = @"\\" + connectionPara.fullNetworkName + @"\c$\ProgramData\javapos\wn\log\jniwrapper-diagnostics.log";
             if (!File.Exists(sciezka))
             {
-                sciezka = @"\\" + connectionPara.TAG + @"\d$\TPDotnet\DeviceService\JPOSRFIDScannerLogs.log";
+                sciezka = @"\\" + connectionPara.fullNetworkName + @"\d$\TPDotnet\DeviceService\JPOSRFIDScannerLogs.log";
             }
             string sciezka2 = sciezka + "bak";
 
@@ -1212,7 +1108,7 @@ namespace TP_MasterTool.Klasy
              * Na zyczenie Petre Gogarowski (ADV)
              */
             massFunctionForm.GridChange(rownr, "Reading BIOS Version");
-            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c systeminfo | find /i \"BIOS Version\"");
+            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.fullNetworkName + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c systeminfo | find /i \"BIOS Version\"");
             if (cmdOutput.exitCode != 0)
             {
                 massFunctionForm.GridChange(rownr, "Error", Globals.errorColor);
@@ -1225,10 +1121,10 @@ namespace TP_MasterTool.Klasy
                 massFunctionForm.AddToLog(rownr, "[SUCCESS] - BIOS version is up to date");
                 return;
             }
-            if (!Directory.Exists(@"\\" + connectionPara.TAG + @"\c$\temp\R12_UEFI_0608_new")) // folder z updatem na dysku
+            if (!Directory.Exists(@"\\" + connectionPara.fullNetworkName + @"\c$\temp\R12_UEFI_0608_new")) // folder z updatem na dysku
             {
                 massFunctionForm.GridChange(rownr, "Copying files");
-                if (!FileController.CopyFolder(@".\R12_UEFI_0608_new", @"\\" + connectionPara.TAG + @"\c$\temp\R12_UEFI_0608_new", false, out _)) // sciezki do kopiowania
+                if (!FileController.CopyFolder(@".\R12_UEFI_0608_new", @"\\" + connectionPara.fullNetworkName + @"\c$\temp\R12_UEFI_0608_new", false, out _)) // sciezki do kopiowania
                 {
                     massFunctionForm.GridChange(rownr, "Error", Globals.errorColor);
                     massFunctionForm.ErrorLog(rownr, "Can't copy update files");
@@ -1236,7 +1132,7 @@ namespace TP_MasterTool.Klasy
                 }
             }
             massFunctionForm.GridChange(rownr, "Updating BIOS");
-            cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c C:\temp\R12_UEFI_0608_new\R12_UEFI_0608_Win\UEFI_Update.cmd"); // sciezka do cmd
+            cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.fullNetworkName + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c C:\temp\R12_UEFI_0608_new\R12_UEFI_0608_Win\UEFI_Update.cmd"); // sciezka do cmd
             if (cmdOutput.exitCode != 0)
             {
                 massFunctionForm.GridChange(rownr, "Error", Globals.errorColor);
@@ -1260,14 +1156,14 @@ namespace TP_MasterTool.Klasy
 
 
             massFunctionForm.GridChange(rownr, "Reading dates");
-            string[] dates = File.ReadAllLines(@".\Dates\" + connectionPara.TAG + @".txt");
+            string[] dates = File.ReadAllLines(@".\Dates\" + connectionPara.hostname + @".txt");
             int iterator = -1;
             try
             {
-                Directory.CreateDirectory(@"\\" + connectionPara.TAG + @"\c$\service\dms_output\temp");
-                if (!File.Exists(@"\\" + connectionPara.TAG + @"\c$\service\dms_output\collect_tp_reports.zip"))
+                Directory.CreateDirectory(@"\\" + connectionPara.fullNetworkName + @"\c$\service\dms_output\temp");
+                if (!File.Exists(@"\\" + connectionPara.fullNetworkName + @"\c$\service\dms_output\collect_tp_reports.zip"))
                 {
-                    File.Create(@"\\" + connectionPara.TAG + @"\c$\service\dms_output\collect_tp_reports.zip").Close();
+                    File.Create(@"\\" + connectionPara.fullNetworkName + @"\c$\service\dms_output\collect_tp_reports.zip").Close();
                 }
             }
             catch (Exception exp)
@@ -1298,7 +1194,7 @@ namespace TP_MasterTool.Klasy
 
                     string zipDate = (int.Parse(date) + 1).ToString();
                     if (date == "20240131") { zipDate = "20240201"; }
-                    string[] zipFiles = Directory.GetFiles(@"\\" + connectionPara.TAG + @"\d$\ArchivedReports", "collect_tp_reports.zip." + zipDate + "030*");
+                    string[] zipFiles = Directory.GetFiles(@"\\" + connectionPara.fullNetworkName + @"\d$\ArchivedReports", "collect_tp_reports.zip." + zipDate + "030*");
                     if (zipFiles.Length > 1)
                     {
                         massFunctionForm.ErrorLog(rownr, "Error check date txt");
@@ -1309,7 +1205,7 @@ namespace TP_MasterTool.Klasy
                         try
                         {
                             using (ZipArchive backupArchive = ZipFile.OpenRead(zipFiles[0]))
-                            using (ZipArchive outputArchive = ZipFile.Open(@"\\" + connectionPara.TAG + @"\c$\service\dms_output\collect_tp_reports.zip", ZipArchiveMode.Update))
+                            using (ZipArchive outputArchive = ZipFile.Open(@"\\" + connectionPara.fullNetworkName + @"\c$\service\dms_output\collect_tp_reports.zip", ZipArchiveMode.Update))
                             {
                                 foreach (var zipedRaport in backupArchive.Entries)
                                 {
@@ -1318,8 +1214,8 @@ namespace TP_MasterTool.Klasy
 
                                         //long datePliku = long.Parse(zipedRaport.Name.Substring(zipedRaport.Name.IndexOf('_') + 1, 14))+1;
                                         //string nazwaPliku = zipedRaport.Name.Substring(0, zipedRaport.Name.IndexOf('_') + 1) + datePliku + zipedRaport.Name.Substring(zipedRaport.Name.LastIndexOf('_'));
-                                        zipedRaport.ExtractToFile(@"\\" + connectionPara.TAG + @"\c$\service\dms_output\temp\" + zipedRaport.Name, true);
-                                        outputArchive.CreateEntryFromFile(@"\\" + connectionPara.TAG + @"\c$\service\dms_output\temp\" + zipedRaport.Name, zipedRaport.Name);
+                                        zipedRaport.ExtractToFile(@"\\" + connectionPara.fullNetworkName + @"\c$\service\dms_output\temp\" + zipedRaport.Name, true);
+                                        outputArchive.CreateEntryFromFile(@"\\" + connectionPara.fullNetworkName + @"\c$\service\dms_output\temp\" + zipedRaport.Name, zipedRaport.Name);
                                     }
                                 }
                             }
@@ -1339,10 +1235,10 @@ namespace TP_MasterTool.Klasy
                         dates[iterator] += ",[FATAL],no reports found manual check needed";
                     }
                 }
-                File.WriteAllLines(@".\Dates\" + connectionPara.TAG + @".txt", dates);
+                File.WriteAllLines(@".\Dates\" + connectionPara.hostname + @".txt", dates);
                 try
                 {
-                    Directory.Delete(@"\\" + connectionPara.TAG + @"\c$\service\dms_output\temp", true);
+                    Directory.Delete(@"\\" + connectionPara.fullNetworkName + @"\c$\service\dms_output\temp", true);
                 }
                 catch (Exception exp)
                 {
@@ -1359,7 +1255,7 @@ namespace TP_MasterTool.Klasy
         {
             massFunctionForm.GridChange(rownr, "Reading MB Model");
             string output = "";
-            CtrlFunctions.CmdOutput cmdOutput2 = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c powershell -command \"Get-WmiObject Win32_BaseBoard | format-list -property Product\"");
+            CtrlFunctions.CmdOutput cmdOutput2 = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.fullNetworkName + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c powershell -command \"Get-WmiObject Win32_BaseBoard | format-list -property Product\"");
             if (cmdOutput2.exitCode != 0)
             {
                 massFunctionForm.ErrorLog(rownr, "Unable to read MB model (Psexec error)");
@@ -1368,7 +1264,7 @@ namespace TP_MasterTool.Klasy
             output += cmdOutput2.outputText.Split(':')[1].Trim().Replace('-', '_') + " - ";
 
             massFunctionForm.GridChange(rownr, "Reading volume information");
-            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c powershell -command \"get-disk | format-list -property DiskNumber,FriendlyName,HealthStatus,IsBoot,IsSystem,Size\"");
+            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.fullNetworkName + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c powershell -command \"get-disk | format-list -property DiskNumber,FriendlyName,HealthStatus,IsBoot,IsSystem,Size\"");
             if (cmdOutput.exitCode != 0)
             {
                 massFunctionForm.ErrorLog(rownr, "Unable to read volume information (Psexec error)");

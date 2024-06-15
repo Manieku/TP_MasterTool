@@ -222,22 +222,22 @@ namespace TP_MasterTool
         {
             tixnr = tixnr.Trim();
             outputFilePath = "";
-            Logger myLog = new Logger(Globals.Funkcje.ZipAndSteal, prefix + " " + remotePath + " " + absolutePath, connectionPara.TAG);
+            Logger myLog = new Logger(Globals.Funkcje.ZipAndSteal, prefix + " " + remotePath + " " + absolutePath, connectionPara.hostname);
             if (!System.IO.Directory.Exists(remotePath))
             {
                 outputFilePath = "Can't find " + prefix + " folder on targeted host";
                 return false;
             }
 
-            string outputFolderName = prefix + " - " + tixnr + "(" + connectionPara.TAG + ") " + Logger.Datownik();
-            if(!FileController.MakeFolder(@"\\" + connectionPara.TAG + @"\d$\WNI\4GSS\" + tixnr, out Exception makeExp))
+            string outputFolderName = prefix + " - " + tixnr + "(" + connectionPara.hostname + ") " + Logger.Datownik();
+            if(!FileController.MakeFolder(@"\\" + connectionPara.fullNetworkName + @"\d$\WNI\4GSS\" + tixnr, out Exception makeExp))
             {
                 outputFilePath = @"Unable to create \d$\WNI\4GSS\" + tixnr + " folder. " + makeExp.Message;
                 myLog.Add(@"Unable to create \d$\WNI\4GSS\" + tixnr + " folder. " + makeExp.ToString());
                 myLog.SaveLog("ErrorLog");
                 return false;
             }
-            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c Xcopy /i /e /h /y """ + absolutePath + @""" ""D:\WNI\4GSS\" + tixnr + @"\Log"" && powershell -command ""Compress-Archive 'D:\WNI\4GSS\" + tixnr + @"\Log' 'D:\WNI\4GSS\" + tixnr + @"\" + outputFolderName + @".zip'"" && rmdir /s /q ""D:\WNI\4GSS\" + tixnr + @"\Log""");
+            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.fullNetworkName + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c Xcopy /i /e /h /y """ + absolutePath + @""" ""D:\WNI\4GSS\" + tixnr + @"\Log"" && powershell -command ""Compress-Archive 'D:\WNI\4GSS\" + tixnr + @"\Log' 'D:\WNI\4GSS\" + tixnr + @"\" + outputFolderName + @".zip'"" && rmdir /s /q ""D:\WNI\4GSS\" + tixnr + @"\Log""");
             if (cmdOutput.exitCode != 0)
             {
                 outputFilePath = "While executing cmd encounter error and exited with code: " + cmdOutput.exitCode.ToString() + Environment.NewLine + "Error message: " + cmdOutput.errorOutputText;
@@ -246,8 +246,8 @@ namespace TP_MasterTool
                 return false;
             }
 
-            outputFilePath = @"\\" + connectionPara.TAG + @"\d$\WNI\4GSS\" + tixnr + @"\" + outputFolderName + @".zip";
-            Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.ZipAndSteal, prefix + " | " + tixnr);
+            outputFilePath = @"\\" + connectionPara.fullNetworkName + @"\d$\WNI\4GSS\" + tixnr + @"\" + outputFolderName + @".zip";
+            Telemetry.LogCompleteTelemetryData(connectionPara.hostname, Globals.Funkcje.ZipAndSteal, prefix + " | " + tixnr);
             return true;
         }
     }

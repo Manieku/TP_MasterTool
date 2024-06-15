@@ -6,7 +6,8 @@ namespace TP_MasterTool.Klasy
 {
     public class ConnectionPara
     {
-        public string TAG;
+        public string fullNetworkName;
+        public string hostname;
         public string IP;
         public byte[] IPbytes;
         public bool IPMode;
@@ -26,13 +27,15 @@ namespace TP_MasterTool.Klasy
 
             if (IPMode)
             {
-                TAG = tag;
+                fullNetworkName = tag;
+                hostname = tag;
                 IP = tag;
                 IPbytes = IPAddress.Parse(IP).GetAddressBytes();
                 return;
             }
 
-            TAG = tag + ".candadnpos.biz";
+            fullNetworkName = tag + ".candadnpos.biz";
+            hostname = tag;
             IP = dnsIP;
             try
             {

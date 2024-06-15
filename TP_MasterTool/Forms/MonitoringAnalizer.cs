@@ -139,49 +139,49 @@ namespace TP_MasterTool.Forms
             {
                 output += AddToLog("Found procedure in database -> Host_Offline_1h");
                 HostOffline1h(rownr, connectionPara, ref output);
-                Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.MonitoringSlayer, "System Connection lost since 1 hour");
+                Telemetry.LogCompleteTelemetryData(connectionPara.hostname, Globals.Funkcje.MonitoringSlayer, "System Connection lost since 1 hour");
             }
             else if ((string)dataGridView1.Rows[rownr].Cells[2].Value == dataGridView1.Rows[rownr].Cells[1].Value + ";[Canda OmniPOS] System-TS_ERR_BUILD_ARCHIVE_FAILURE")
             {
                 output += AddToLog("Found procedure in database -> Archive_Build_Failure");
                 ArchiveBuildFailure(rownr, ref output);
-                Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.MonitoringSlayer, "System-TS_ERR_BUILD_ARCHIVE_FAILURE");
+                Telemetry.LogCompleteTelemetryData(connectionPara.hostname, Globals.Funkcje.MonitoringSlayer, "System-TS_ERR_BUILD_ARCHIVE_FAILURE");
             }
             else if ((string)dataGridView1.Rows[rownr].Cells[2].Value == dataGridView1.Rows[rownr].Cells[1].Value + ";[Canda OmniPOS] The service TPDotnet Process Manager is down")
             {
                 output += AddToLog("Found procedure in database -> TPDotnet_Process_Manager_Down");
                 TPDotnetProcessManagerDown(rownr, connectionPara, ref output);
-                Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.MonitoringSlayer, "The service TPDotnet Process Manager is down");
+                Telemetry.LogCompleteTelemetryData(connectionPara.hostname, Globals.Funkcje.MonitoringSlayer, "The service TPDotnet Process Manager is down");
             }
             else if (dataGridView1.Rows[rownr].Cells[2].Value.ToString().StartsWith(dataGridView1.Rows[rownr].Cells[1].Value + ";[Canda OmniPOS] Minilogger no. ") && dataGridView1.Rows[rownr].Cells[2].Value.ToString().Contains(" is Offline"))
             {
                 output += AddToLog("Found procedure in database -> CUC_Offline");
                 CUCOffline(rownr, dataGridView1.Rows[rownr].Cells[2].Value.ToString().Substring(44, 1), connectionPara, ref output);
-                Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.MonitoringSlayer, "Minilogger no. " + dataGridView1.Rows[rownr].Cells[2].Value.ToString().Substring(44, 1) + " is Offline");
+                Telemetry.LogCompleteTelemetryData(connectionPara.hostname, Globals.Funkcje.MonitoringSlayer, "Minilogger no. " + dataGridView1.Rows[rownr].Cells[2].Value.ToString().Substring(44, 1) + " is Offline");
             }
             else if ((string)dataGridView1.Rows[rownr].Cells[2].Value == dataGridView1.Rows[rownr].Cells[1].Value + @";[Canda OmniPOS] Msg from InfoDaemon drive C:\ state has been changed to critical")
             {
                 output += AddToLog("Found procedure in database -> C_Drive_Critical");
                 CDriveCritical(rownr, connectionPara, ref output);
-                Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.MonitoringSlayer, @"Msg from InfoDaemon drive C:\ state has been changed to critical");
+                Telemetry.LogCompleteTelemetryData(connectionPara.hostname, Globals.Funkcje.MonitoringSlayer, @"Msg from InfoDaemon drive C:\ state has been changed to critical");
             }
             else if ((string)dataGridView1.Rows[rownr].Cells[2].Value == dataGridView1.Rows[rownr].Cells[1].Value + @";[Canda OmniPOS] Central Collection Process for TP.Report failed")
             {
                 output += AddToLog("Found procedure in database -> CollectionFailed");
                 CollectionFailed(rownr, connectionPara, ref output);
-                Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.MonitoringSlayer, "*TPNAPP* Central Collection Process for TP.Report failed");
+                Telemetry.LogCompleteTelemetryData(connectionPara.hostname, Globals.Funkcje.MonitoringSlayer, "*TPNAPP* Central Collection Process for TP.Report failed");
             }
             else if (dataGridView1.Rows[rownr].Cells[2].Value.ToString().StartsWith(dataGridView1.Rows[rownr].Cells[1].Value + ";[Canda OmniPOS] Missing TA") && dataGridView1.Rows[rownr].Cells[2].Value.ToString().EndsWith("found on " + dataGridView1.Rows[rownr].Cells[1].Value + " (Source: TX Collector)"))
             {
                 output += AddToLog("Found procedure in database -> MissingTA");
                 MissingTA(rownr, connectionPara, ref output);
-                Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.MonitoringSlayer, "Missing TA");
+                Telemetry.LogCompleteTelemetryData(connectionPara.hostname, Globals.Funkcje.MonitoringSlayer, "Missing TA");
             }
             else if (dataGridView1.Rows[rownr].Cells[2].Value.ToString().StartsWith(dataGridView1.Rows[rownr].Cells[1].Value + ";[Canda OmniPOS] *TPNAPP* MANUALEOD Failure at"))
             {
                 output += AddToLog("Found procedure in database -> EoD_Failed");
                 EoDFailed(rownr, connectionPara, ref output);
-                Telemetry.LogCompleteTelemetryData(connectionPara.TAG, Globals.Funkcje.MonitoringSlayer, "*TPNAPP* MANUALEOD Failure");
+                Telemetry.LogCompleteTelemetryData(connectionPara.hostname, Globals.Funkcje.MonitoringSlayer, "*TPNAPP* MANUALEOD Failure");
             }
             //else if (dataGridView1.Rows[rownr].Cells[2].Value.ToString().StartsWith(dataGridView1.Rows[rownr].Cells[1].Value + ";[Canda OmniPOS] *TPNAPP* MANUALEOD Aborted at"))
             //{
@@ -337,11 +337,11 @@ namespace TP_MasterTool.Forms
         private void HostOffline1h(int rownr, ConnectionPara connectionPara, ref string log)
         {
             gridChange(rownr, "Pinging TAG");
-            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("cmd.exe", "/c ping " + connectionPara.TAG);
+            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("cmd.exe", "/c ping " + connectionPara.fullNetworkName);
             log += AddToLog("Is host back online?:");
             try
             {
-                if (new Ping().Send(connectionPara.TAG, 4000).Status == IPStatus.Success)
+                if (new Ping().Send(connectionPara.fullNetworkName, 4000).Status == IPStatus.Success)
                 {
                     log += AddToLog("-> Yes");
                     log += AddToLog(">>> Ticket can be close if issue is not reoccurring, please check history <<<");
@@ -382,7 +382,7 @@ namespace TP_MasterTool.Forms
             log += AddToLog(">>> Create task for L1 with note below and close L2 task <<<");
             log += AddToLog("");
             log += AddToLog(">> Notes for ticket:");
-            log += AddToLog("@L1" + Environment.NewLine + "Hello, " + connectionPara.TAG + " is offline. Please check why and perform standard troubleshooting for offline devices.");
+            log += AddToLog("@L1" + Environment.NewLine + "Hello, " + connectionPara.hostname + " is offline. Please check why and perform standard troubleshooting for offline devices.");
             gridChange(rownr, "Task ready to be close. See log.", Color.LightGreen);
         }
         private void ArchiveBuildFailure(int rownr, ref string log)
@@ -396,7 +396,7 @@ namespace TP_MasterTool.Forms
         private void TPDotnetProcessManagerDown(int rownr, ConnectionPara connectionPara, ref string log)
         {
             log += AddToLog("Starting TPDotnet Process Manager");
-            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c net start ""TPDotnet Process Manager""");
+            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.fullNetworkName + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c net start ""TPDotnet Process Manager""");
             if(cmdOutput.exitCode != 0)
             {
                 log += AddToLog("-> Failed");
@@ -456,7 +456,7 @@ namespace TP_MasterTool.Forms
             {
                 try
                 {
-                    log += AddToLog(System.IO.File.ReadAllText(@"\\" + connectionPara.TAG + @"\c$\oeminst\ALL_LOGS\Monitoring\minilogger.csv"));
+                    log += AddToLog(System.IO.File.ReadAllText(@"\\" + connectionPara.fullNetworkName + @"\c$\oeminst\ALL_LOGS\Monitoring\minilogger.csv"));
                 }
                 catch
                 {
@@ -478,13 +478,13 @@ namespace TP_MasterTool.Forms
 
             gridChange(rownr, "Clearing drive");
             log += AddToLog(@"Clear C:\Widows\Temp:");
-            CtrlFunctions.RunHiddenCmdWitoutOutput("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c del /q /f C:\Windows\Temp", false);
+            CtrlFunctions.RunHiddenCmdWitoutOutput("psexec.exe", @"\\" + connectionPara.fullNetworkName + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c del /q /f C:\Windows\Temp", false);
             log += AddToLog("-> Executed");
             log += AddToLog(@"Clear C:\Widows\CbsTemp:");
-            CtrlFunctions.RunHiddenCmdWitoutOutput("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c del /q /f C:\Windows\CbsTemp", false);
+            CtrlFunctions.RunHiddenCmdWitoutOutput("psexec.exe", @"\\" + connectionPara.fullNetworkName + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c del /q /f C:\Windows\CbsTemp", false);
             log += AddToLog("-> Executed");
             log += AddToLog(@"Clear C:\Widows\WinSxS:");
-            CtrlFunctions.RunHiddenCmdWitoutOutput("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c del /q /f C:\Windows\WinSxS", false);
+            CtrlFunctions.RunHiddenCmdWitoutOutput("psexec.exe", @"\\" + connectionPara.fullNetworkName + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c del /q /f C:\Windows\WinSxS", false);
             log += AddToLog("-> Executed");
 
             log += AddToLog(Environment.NewLine + ">>> Ticket should autoclose in ~15min, if not create task for ADV with this log and current disk space info <<<");
@@ -499,7 +499,7 @@ namespace TP_MasterTool.Forms
 
             gridChange(rownr, "Checking files");
             log += AddToLog("Checking for zip in output folder:");
-            if(System.IO.File.Exists(@"\\" + connectionPara.TAG + @"\c$\service\dms_output\collect_tp_reports.zip"))
+            if(System.IO.File.Exists(@"\\" + connectionPara.fullNetworkName + @"\c$\service\dms_output\collect_tp_reports.zip"))
             {
                 log += AddToLog("-> Present | Ready to be picked up after next successful run");
                 CollectionFailedAutoClosure(connectionPara, ref log, "Local Reports zip was present in output folder - no action needed");
@@ -511,7 +511,7 @@ namespace TP_MasterTool.Forms
 
             log += AddToLog("-> Missing");
             log += AddToLog("Checking for backup zip in ArchivedReports folder:");
-            string[] searchResult = System.IO.Directory.GetFiles(@"\\" + connectionPara.TAG + @"\d$\ArchivedReports", "collect_tp_reports.zip." + DateTime.Today.ToString("yyyyMMdd") + "*");
+            string[] searchResult = System.IO.Directory.GetFiles(@"\\" + connectionPara.fullNetworkName + @"\d$\ArchivedReports", "collect_tp_reports.zip." + DateTime.Today.ToString("yyyyMMdd") + "*");
             if(searchResult.Length > 1)
             {
                 log += AddToLog("-> Found more than one backup zip");
@@ -524,7 +524,7 @@ namespace TP_MasterTool.Forms
             {
                 log += AddToLog("-> Found: " + System.IO.Path.GetFileName(searchResult[0]));
                 log += AddToLog("Copying backup zip into dms_output folder:");
-                if(!FileController.CopyFile(searchResult[0], @"\\" + connectionPara.TAG + @"\c$\service\dms_output\collect_tp_reports.zip", false, out Exception copyExp))
+                if(!FileController.CopyFile(searchResult[0], @"\\" + connectionPara.fullNetworkName + @"\c$\service\dms_output\collect_tp_reports.zip", false, out Exception copyExp))
                 {
                     log += AddToLog("-> Error: " + copyExp.Message);
                     log += AddToLog(Environment.NewLine + ">>> Unable to copy backup zip | Please copy backup zip from ArchivedReports to dms_output folder as collect_tp_reports.zip and close the ticket <<<");
@@ -593,17 +593,17 @@ namespace TP_MasterTool.Forms
             log += AddToLog("-> " + String.Join(",", txnrs));
             foreach (string txnr in txnrs)
             {
-                gridChange(rownr, "Gathering data for TA " + txnr.Trim() + " from " + connectionPara.TAG);
-                log += AddToLog(">> Gathering data for TA " + txnr.Trim() + " from " + connectionPara.TAG);
-                LookForTA(txnr.Trim(), @"\\" + connectionPara.TAG + @"\d$\TPDotnet\Pos\Transactions", "*_" + txnr + "_*.xml", ref log);
-                LookForTA(txnr.Trim(), @"\\" + connectionPara.TAG + @"\d$\TPDotnet\Pos\Transactions\Parked", "*.xml", ref log);
-                LookForTA(txnr.Trim(), @"\\" + connectionPara.TAG + @"\d$\WNI", "*.xml", ref log);
+                gridChange(rownr, "Gathering data for TA " + txnr.Trim() + " from " + connectionPara.hostname);
+                log += AddToLog(">> Gathering data for TA " + txnr.Trim() + " from " + connectionPara.hostname);
+                LookForTA(txnr.Trim(), @"\\" + connectionPara.fullNetworkName + @"\d$\TPDotnet\Pos\Transactions", "*_" + txnr + "_*.xml", ref log);
+                LookForTA(txnr.Trim(), @"\\" + connectionPara.fullNetworkName + @"\d$\TPDotnet\Pos\Transactions\Parked", "*.xml", ref log);
+                LookForTA(txnr.Trim(), @"\\" + connectionPara.fullNetworkName + @"\d$\WNI", "*.xml", ref log);
 
                 string tillNr = int.Parse(connectionPara.deviceNr).ToString();
                 gridChange(rownr, "Gathering data for TA " + txnr.Trim() + " from " + String.Join(".", connectionPara.IPbytes[0], connectionPara.IPbytes[1], connectionPara.IPbytes[2], "180"));
                 log += AddToLog(Environment.NewLine + ">> Gathering data for TA " + txnr.Trim() + " from " + String.Join(".", connectionPara.IPbytes[0], connectionPara.IPbytes[1], connectionPara.IPbytes[2], "180"));
-                LookForTA(txnr.Trim(), @"\\" + connectionParaTPS.TAG + @"\d$\TPDotnet\Server\Transactions", "*_" + tillNr + "_" + txnr + "_*.xml", ref log);
-                LookForTA(txnr.Trim(), @"\\" + connectionParaTPS.TAG + @"\d$\WNI", "*.xml", ref log);
+                LookForTA(txnr.Trim(), @"\\" + connectionParaTPS.fullNetworkName + @"\d$\TPDotnet\Server\Transactions", "*_" + tillNr + "_" + txnr + "_*.xml", ref log);
+                LookForTA(txnr.Trim(), @"\\" + connectionParaTPS.fullNetworkName + @"\d$\WNI", "*.xml", ref log);
             }
 
             gridChange(rownr, "Data gathered, proceed with investigation", Color.LightGreen);
@@ -684,7 +684,7 @@ namespace TP_MasterTool.Forms
                 {
                     log += AddToLog("-> Failed: " + errorMsg);
                     log += AddToLog("Restarting TPDotnet Process Manager:");
-                    CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c net stop ""TPDotnet Process Manager"" && net start ""TPDotnet Process Manager""");
+                    CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.fullNetworkName + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c net stop ""TPDotnet Process Manager"" && net start ""TPDotnet Process Manager""");
                     if (cmdOutput.exitCode != 0)
                     {
                         log += AddToLog("-> Failed");
@@ -802,8 +802,8 @@ namespace TP_MasterTool.Forms
         }
         private bool ConnectToHost(int rownr, ConnectionPara connectionPara, ref string log)
         {
-            gridChange(rownr, "Connecting to " + connectionPara.TAG);
-            log += AddToLog("Connecting to " + connectionPara.TAG);
+            gridChange(rownr, "Connecting to " + connectionPara.hostname);
+            log += AddToLog("Connecting to " + connectionPara.hostname);
             if (connectionPara.IP == "DNS ERROR")
             {
                 DnsRestore(rownr, connectionPara, ref log);
@@ -931,7 +931,7 @@ namespace TP_MasterTool.Forms
         {
             try
             {
-                System.IO.FileInfo[] files = new System.IO.DirectoryInfo(@"\\" + connectionPara.TAG + @"\d$\TPDotnet\Log").GetFiles("LOG_*_" + connectionPara.TAG + "_????????_??????_MANUALEOD.xml");
+                System.IO.FileInfo[] files = new System.IO.DirectoryInfo(@"\\" + connectionPara.fullNetworkName + @"\d$\TPDotnet\Log").GetFiles("LOG_*_" + connectionPara.hostname + "_????????_??????_MANUALEOD.xml");
                 if (files.Length == 0)
                 {
                     return null;
@@ -948,13 +948,13 @@ namespace TP_MasterTool.Forms
         {
             try
             {
-                System.IO.File.AppendAllText(@"\\" + connectionPara.TAG + @"\c$\service\scripts\MONITORING\Log\COLLECT_TP_REPORTS_" + DateTime.Today.ToString("yyyyMMdd") + ".log", "canda_omnipos_reports_ok|" + DateTime.Now.ToString("yyyyMMddHHmm") + "|" + closeMsg + Environment.NewLine, System.Text.Encoding.ASCII);
+                System.IO.File.AppendAllText(@"\\" + connectionPara.fullNetworkName + @"\c$\service\scripts\MONITORING\Log\COLLECT_TP_REPORTS_" + DateTime.Today.ToString("yyyyMMdd") + ".log", "canda_omnipos_reports_ok|" + DateTime.Now.ToString("yyyyMMddHHmm") + "|" + closeMsg + Environment.NewLine, System.Text.Encoding.ASCII);
             }
             catch (Exception appendExp)
             {
                 log += AddToLog("!! Error during logging process: " + appendExp.Message);
                 log += AddToLog("!! Autoclosure not possible - please close ticket manually");
-                Logger.QuickLog(Globals.Funkcje.MonitoringSlayer, "Collection Failed", connectionPara.TAG, "ErrorLog", "AppendText Error: " + appendExp.ToString());
+                Logger.QuickLog(Globals.Funkcje.MonitoringSlayer, "Collection Failed", connectionPara.hostname, "ErrorLog", "AppendText Error: " + appendExp.ToString());
             }
         }
     }
