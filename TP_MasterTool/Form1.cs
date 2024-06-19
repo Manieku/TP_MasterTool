@@ -52,7 +52,7 @@ namespace TP_MasterTool
             "DHCP Scope Info",
             //Fixes//
             //Tools//
-            //"Service Manager" // not working for now
+            "Service Manager" // not working for now
         };
         readonly List<string> tpsMenuItems = new List<string>
         {
@@ -168,28 +168,28 @@ namespace TP_MasterTool
             //}
             //File.AppendAllLines(@".\errors.txt", errors);
 
-            foreach (string line in File.ReadAllLines(@".\input.txt"))
-            {
-                string[] numbers = line.Split(new char[] { '\t' }, StringSplitOptions.RemoveEmptyEntries);
-                File.AppendAllText(@".\Dates\" + numbers[0] + ".txt", numbers[1] + Environment.NewLine);
-            }
+            //foreach (string line in File.ReadAllLines(@".\input.txt"))
+            //{
+            //    string[] numbers = line.Split(new char[] { '\t' }, StringSplitOptions.RemoveEmptyEntries);
+            //    File.AppendAllText(@".\Dates\" + numbers[0] + ".txt", numbers[1] + Environment.NewLine);
+            //}
 
 
 
-            foreach (string file in Directory.GetFiles(@".\Dates"))
-            {
-                File.AppendAllText(@".\dates_tps.txt", Path.GetFileNameWithoutExtension(file) + Environment.NewLine);
-            }
-
-            //string output = "";
             //foreach (string file in Directory.GetFiles(@".\Dates"))
             //{
-            //    foreach (string line in File.ReadAllLines(file))
-            //    {
-            //        output += Path.GetFileNameWithoutExtension(file) + "," + line + Environment.NewLine;
-            //    }
+            //    File.AppendAllText(@".\dates_tps.txt", Path.GetFileNameWithoutExtension(file) + Environment.NewLine);
             //}
-            //File.WriteAllText(@".\output.csv", output);
+
+            string output = "";
+            foreach (string file in Directory.GetFiles(@".\Dates"))
+            {
+                foreach (string line in File.ReadAllLines(file))
+                {
+                    output += Path.GetFileNameWithoutExtension(file) + "," + line + Environment.NewLine;
+                }
+            }
+            File.WriteAllText(@".\output.csv", output);
 
 
             //CtrlFunctions.EncryptFile(@".\mojepasy.txt", "cycuszki", Globals.configPath + "credentials.crypt");
