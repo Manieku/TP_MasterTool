@@ -423,8 +423,16 @@ namespace TP_MasterTool.Klasy
         {
             error = null;
             Logger myLog = new Logger(Globals.Funkcje.MiniDumpAnalyser, minidumpPath + " " + logOutputPath, "");
+            myLog.Add("Copying dumpchk");
+            if(!FileController.CopyFile(Globals.toolsPath + @"dumpchk.exe", @".\dumpchk.exe", false, out Exception copyExp))
+            {
+                myLog.Add(copyExp.ToString());
+                myLog.SaveLog("ErrorLog");
+                error = "Tool was unable to copy dumpchk from Tools folder.";
+                return false;
+            }
             myLog.Add("Starting cmd");
-            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("cmd.exe", "/c \"" + Globals.toolsPath + @"\dumpchk"" " + minidumpPath);
+            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("cmd.exe", "/c .\\dumpchk " + minidumpPath);
             if (cmdOutput.exitCode != 0)
             {
                 myLog.Add("CMD exited with error code: " + cmdOutput.exitCode);
@@ -467,6 +475,7 @@ namespace TP_MasterTool.Klasy
                 myLog.Add(exp.ToString());
                 return false;
             }
+            File.Delete(@".\dumpchk.exe");
             return true;
         }
         public static bool CsvExport(ConnectionPara connectionPara, string arguments, out string errorMsg)
