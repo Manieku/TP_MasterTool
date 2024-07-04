@@ -941,7 +941,7 @@ namespace TP_MasterTool.Klasy
                     massFunctionForm.GridChange(rownr, "Restoring date: " + date + "(" + (iterator + 1).ToString() + "/" + dates.Length + ")");
 
                     string zipDate = (int.Parse(date) + 1).ToString();
-                    if (date == "20240131") { zipDate = "20240201"; }
+                    if (date == "20240531") { zipDate = "20240601"; }
                     string[] zipFiles = Directory.GetFiles(@"\\" + connectionPara.fullNetworkName + @"\d$\ArchivedReports", "collect_tp_reports.zip." + zipDate + "030*");
                     if (zipFiles.Length > 1)
                     {

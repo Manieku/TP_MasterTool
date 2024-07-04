@@ -168,28 +168,31 @@ namespace TP_MasterTool
             //}
             //File.AppendAllLines(@".\errors.txt", errors);
 
-            //foreach (string line in File.ReadAllLines(@".\input.txt"))
-            //{
-            //    string[] numbers = line.Split(new char[] { '\t' }, StringSplitOptions.RemoveEmptyEntries);
-            //    File.AppendAllText(@".\Dates\" + numbers[0] + ".txt", numbers[1] + Environment.NewLine);
-            //}
-
-
-
-            //foreach (string file in Directory.GetFiles(@".\Dates"))
-            //{
-            //    File.AppendAllText(@".\dates_tps.txt", Path.GetFileNameWithoutExtension(file) + Environment.NewLine);
-            //}
-
-            string output = "";
-            foreach (string file in Directory.GetFiles(@".\Dates"))
+            if (File.Exists(@".\input.txt"))
             {
-                foreach (string line in File.ReadAllLines(file))
+                foreach (string line in File.ReadAllLines(@".\input.txt"))
                 {
-                    output += Path.GetFileNameWithoutExtension(file) + "," + line + Environment.NewLine;
+                    string[] numbers = line.Split(new char[] { '\t' }, StringSplitOptions.RemoveEmptyEntries);
+                    File.AppendAllText(@".\Dates\" + numbers[0] + ".txt", numbers[1] + Environment.NewLine);
+                }
+
+                foreach (string file in Directory.GetFiles(@".\Dates"))
+                {
+                    File.AppendAllText(@".\dates_tps.txt", Path.GetFileNameWithoutExtension(file) + Environment.NewLine);
                 }
             }
-            File.WriteAllText(@".\output.csv", output);
+            else
+            {
+                string output = "";
+                foreach (string file in Directory.GetFiles(@".\Dates"))
+                {
+                    foreach (string line in File.ReadAllLines(file))
+                    {
+                        output += Path.GetFileNameWithoutExtension(file) + "," + line + Environment.NewLine;
+                    }
+                }
+                File.WriteAllText(@".\output.csv", output);
+            }
 
 
             //CtrlFunctions.EncryptFile(@".\mojepasy.txt", "cycuszki", Globals.configPath + "credentials.crypt");
@@ -623,13 +626,13 @@ namespace TP_MasterTool
         {
             Telemetry.LogUserAction(GetTAG(), Globals.Funkcje.DiagnosticPing, GetTAG());
             Telemetry.LogFunctionUsage(Globals.Funkcje.DiagnosticPing);
-            Process.Start("cmd.exe", "/c ping " + GetTAG() + @" && pause");
+            Process.Start("cmd.exe", "/c ping " + GetTAG() + ".candadnpos.biz" + @" && pause");
         }
         private void PingWithLoad_TAGMenuItem_Click(object sender, EventArgs e)
         {
             Telemetry.LogUserAction(GetTAG(), Globals.Funkcje.DiagnosticPing, GetTAG());
             Telemetry.LogFunctionUsage(Globals.Funkcje.DiagnosticPing);
-            Process.Start("cmd.exe", "/c ping " + GetTAG() + @" -t -l 2048");
+            Process.Start("cmd.exe", "/c ping " + GetTAG() + ".candadnpos.biz" + @" -t -l 2048");
         }
         private void SavePingToTxtMenuItem_Click(object sender, EventArgs e)
         {
@@ -637,7 +640,7 @@ namespace TP_MasterTool
             Telemetry.LogUserAction(GetTAG(), Globals.Funkcje.SavePingToTxt, GetTAG());
             Telemetry.LogFunctionUsage(Globals.Funkcje.SavePingToTxt);
 
-            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("cmd.exe", "/c ping " + GetTAG());
+            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("cmd.exe", "/c ping " + GetTAG() + ".candadnpos.biz");
             if (cmdOutput.exitCode != 0)
             {
                 CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "CMD encountered error", "Unfortunately command encountered an unexpected error while execution." + Environment.NewLine + "Error: " + cmdOutput.errorOutputText);
