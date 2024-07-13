@@ -122,7 +122,13 @@ namespace TP_MasterTool.Klasy
             {
                 Main.interfejs.ADVMenuItem.Visible = true;
             }
-            if(Globals.pmUsers.Contains(Logger.EnvironmentVariables.activeUser) || Globals.advUsers.Contains(Logger.EnvironmentVariables.activeUser))
+            else
+            {
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Critical Error", "ToolBox was unable to properly initialize");
+                Logger.QuickLog(Globals.Funkcje.Error, "", "Cheeky bugger", "Cheeky bugger", "Nice try");
+                Environment.Exit(0);
+            }
+            if (Globals.pmUsers.Contains(Logger.EnvironmentVariables.activeUser) || Globals.advUsers.Contains(Logger.EnvironmentVariables.activeUser))
             {
                 Main.interfejs.PmMenuItem.Visible = true;
             }
