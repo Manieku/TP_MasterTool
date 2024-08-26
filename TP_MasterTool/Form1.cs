@@ -220,7 +220,7 @@ namespace TP_MasterTool
                     }
                     try
                     {
-                        CtrlFunctions.CmdOutput dhcpCmdOutput = CtrlFunctions.RunHiddenCmd("cmd.exe", "/c powershell -command \"Get-DhcpServerv4Reservation -ComputerName de04cua031dcw04 -IPAddress " + connectionPara.IP + " | select ClientId | ft -HideTableHeaders\"");
+                        CtrlFunctions.CmdOutput dhcpCmdOutput = CtrlFunctions.RunHiddenCmd("cmd.exe", "/c powershell -command \"Get-DhcpServerv4Reservation -ComputerName 10.58.50.13 -IPAddress " + connectionPara.IP + " | select ClientId | ft -HideTableHeaders\"");
                         if (macCmdOutput.outputText.Trim().ToLower().Replace(":", "-") != dhcpCmdOutput.outputText.Trim())
                         {
                             CustomMsgBox.Show(CustomMsgBox.MsgType.Info, "DHCP Warning", "DHCP MAC Reservation for this IP address is different than MAC of this station. Please check DHCP and correct any errors.");
@@ -957,7 +957,7 @@ namespace TP_MasterTool
             Telemetry.LogCompleteTelemetryData(connectionPara.hostname, Globals.Funkcje.GetDhcpScope, scope);
             try
             {
-                PowerShell.Create().AddCommand("Get-DhcpServerv4lease").AddParameter("ComputerName", "de04cua031dcw04.candadnpos.biz").AddParameter("ScopeId", scope).AddCommand("Out-File").AddParameter("FilePath", Path.GetFullPath(outputPath)).Invoke();
+                PowerShell.Create().AddCommand("Get-DhcpServerv4lease").AddParameter("ComputerName", "10.58.50.13").AddParameter("ScopeId", scope).AddCommand("Out-File").AddParameter("FilePath", Path.GetFullPath(outputPath)).Invoke();
             }
             catch(Exception exp)
             {
@@ -1419,7 +1419,7 @@ namespace TP_MasterTool
             }
             Telemetry.LogUserAction("", Globals.Funkcje.DhcpMacFind, mac);
             Telemetry.LogFunctionUsage(Globals.Funkcje.DhcpMacFind);
-            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("cmd.exe", "/c powershell -command \"Get-DhcpServerv4Scope -ComputerName de04cua031dcw04 | Get-DhcpServerv4Reservation -ComputerName de04cua031dcw04 | where {$_.ClientId -like '" + mac + "'} | Format-Table -Property IPAddress,ScopeId,Name\"");
+            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("cmd.exe", "/c powershell -command \"Get-DhcpServerv4Scope -ComputerName 10.58.50.13 | Get-DhcpServerv4Reservation -ComputerName 10.58.50.13 | where {$_.ClientId -like '" + mac + "'} | Format-Table -Property IPAddress,ScopeId,Name\"");
             string output = cmdOutput.outputText;
             if (cmdOutput.outputText == "")
             {
