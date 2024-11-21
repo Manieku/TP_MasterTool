@@ -31,6 +31,7 @@ namespace TP_MasterTool
             ConstantPing,
             DiscSpaceInfo,
             WinDirStatInstall,
+            GetFoldersSize,
             EndpointScan,
             GetSystemBootTime,
             BackupCheck,

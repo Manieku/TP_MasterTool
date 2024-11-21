@@ -184,6 +184,7 @@
             this.FiveMinTimer = new System.Windows.Forms.Timer(this.components);
             this.HourTimer = new System.Windows.Forms.Timer(this.components);
             this.helpProvider = new System.Windows.Forms.HelpProvider();
+            this.getFoldersSizeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.Basic_Info.SuspendLayout();
             this.StatusBar.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -771,6 +772,7 @@
             this.toolStripSeparator10,
             this.drivesSpaceInfoMenuItem,
             this.installWinDirStatMenuItem,
+            this.getFoldersSizeToolStripMenuItem,
             this.toolStripSeparator11,
             this.scanEndpointsMenuItem,
             this.toolStripSeparator18,
@@ -1156,7 +1158,7 @@
             // reportsMenuItem
             // 
             this.reportsMenuItem.Name = "reportsMenuItem";
-            this.reportsMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.reportsMenuItem.Size = new System.Drawing.Size(143, 26);
             this.reportsMenuItem.Text = "Reports";
             this.reportsMenuItem.Click += new System.EventHandler(this.raportsMenuItem_Click);
             // 
@@ -1530,6 +1532,13 @@
             // 
             this.helpProvider.HelpNamespace = "help.htm";
             // 
+            // getFoldersSizeToolStripMenuItem
+            // 
+            this.getFoldersSizeToolStripMenuItem.Name = "getFoldersSizeToolStripMenuItem";
+            this.getFoldersSizeToolStripMenuItem.Size = new System.Drawing.Size(232, 26);
+            this.getFoldersSizeToolStripMenuItem.Text = "Get Folders Size";
+            this.getFoldersSizeToolStripMenuItem.Click += new System.EventHandler(this.GetFoldersSize);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -1722,6 +1731,7 @@
         private System.Windows.Forms.ToolStripMenuItem miniLoggerDataCollectMenuItem;
         public System.Windows.Forms.ToolStripMenuItem PmMenuItem;
         private System.Windows.Forms.ToolStripMenuItem reportsMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem getFoldersSizeToolStripMenuItem;
     }
 }
 
