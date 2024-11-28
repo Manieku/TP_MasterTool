@@ -569,7 +569,7 @@ namespace TP_MasterTool.Klasy
                     massFunctionForm.GridChange(rownr, "Deleting files");
                     foreach (string file in files)
                     {
-                        if (File.GetCreationTime(file).Day < DateTime.Today.AddDays(-1).Day)
+                        if (File.GetCreationTime(file).Day < DateTime.Today.AddDays(-4).Day)
                         {
                             string msg = file + " > " + File.GetCreationTime(file);
                             File.Delete(file);
@@ -903,7 +903,8 @@ namespace TP_MasterTool.Klasy
         }
         public static void AdhocFunction(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
-            massFunctionForm.GridChange(rownr, "Reading IP");
+            massFunctionForm.GridChange(rownr, "Checking FIles");
+            if()
             massFunctionForm.AddToLog(rownr, "[SUCCESS] - " + connectionPara.IPbytes[3]);
             massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
         }

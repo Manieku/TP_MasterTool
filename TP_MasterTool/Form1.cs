@@ -19,7 +19,7 @@ namespace TP_MasterTool
     public partial class Main : Form
     {
         /**//**//**//**//**//**//**//* USTANDARYZOWANE GLOBALNE *//**//**//**//**//**//**//**//**//**//**//**//**//**/
-        public static Main interfejs;
+        public static Main interfejs; 
         public ConnectionPara connectionPara;
         public UserSettings userSettings = new UserSettings();
         public Logger myLog = new Logger(Globals.Funkcje.MainFrom, "None", "MainForm");
