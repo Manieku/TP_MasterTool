@@ -903,9 +903,7 @@ namespace TP_MasterTool.Klasy
         }
         public static void AdhocFunction(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
-            massFunctionForm.GridChange(rownr, "Reading IP");
-            massFunctionForm.AddToLog(rownr, "[SUCCESS] - " + connectionPara.IPbytes[3]);
-            massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
+            GetMeMoreWork(massFunctionForm, rownr, connectionPara, addInfo);
         }
 
         //------------------------Moje wymysly------------------------------//
@@ -1278,6 +1276,43 @@ namespace TP_MasterTool.Klasy
             }
             massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
             massFunctionForm.AddToLog(rownr, "[SUCCESS] - " + output);
+        }
+
+        //------------------------NeedMoreWork------------------------------//
+        public static void GetMeMoreWork(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
+        {
+            // creating dictionary for services in the script
+            Dictionary<int, string> servicesMap = new Dictionary<int, string>()
+            {
+                {0, "uvnc_service" },
+                {1, "WNXVNCRepeater" },
+                {2, "WNBID" },
+                {3, "wuauserv" },
+                {4, "ESFClient" },
+                {5, "ESFClientUpdateAgent" },
+                {6, "W32Time" },
+                {7, "TPDotnet Diagnostic Support" },
+                {8, "TPDotnet Installation Manager" },
+                {9, "TPDotnet Process Manager" },
+                {10, "SQLWriter" },
+                {11, "MSSQLSERVER" },
+                {12, "Veritas System Recovery" },
+                {13, "APCPBEAgent" },
+                {14, "TPDotnet Communication Manager" },
+                {15, "TPDotnet Communication Service Watcher" }
+            };
+            bool symantecError = false, skipServiceCheck = false;
+
+            massFunctionForm.GridChange(rownr, "Checking services");
+
+            if(!FileController.CopyFile(Globals.toolsPath + "services.ps1", @"\\" + connectionPara.fullNetworkName + @"\c$\temp\services.ps1", false, out Exception copyExp))
+            {
+                massFunctionForm.ErrorLog(rownr, "Unable to check services");
+            }
+            else
+            {
+                CtrlFunctions.RunHiddenCmdWitoutOutput("psexec.exe", @"\\" + connectionPara.fullNetworkName + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c ""cd C:\temp"" && powershell -ExecutionPolicy RemoteSigned -file .\services.ps1 > runningservices.txt", true);
+            }
         }
     }
 }
