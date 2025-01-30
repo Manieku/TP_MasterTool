@@ -165,6 +165,20 @@ namespace TP_MasterTool.Klasy
             }
             return new List<string> { date, outputFileName };
         }
+        public static List<string> GetInfo_GetMeMoreWork()
+        {
+            string outputFileName = "GetMeMoreWork " + Logger.Datownik() + ".csv";
+            try
+            {
+                File.AppendAllText(Globals.userTempLogsPath + outputFileName, "TAG,Issue" + Environment.NewLine);
+            }
+            catch (Exception exp)
+            {
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Creating output file Error", "Unable to create output file in logs folder: " + exp.Message);
+                return null;
+            }
+
+        }
 
 
         //-------Mass Functions-------------
@@ -1302,7 +1316,8 @@ namespace TP_MasterTool.Klasy
                 {15, "TPDotnet Communication Service Watcher" }
             };
             bool symantecError = false, skipServiceCheck = false;
-
+            
+            //----------- Services check ---------------------//
             massFunctionForm.GridChange(rownr, "Checking services");
 
             if(!FileController.CopyFile(Globals.toolsPath + "services.ps1", @"\\" + connectionPara.fullNetworkName + @"\c$\temp\services.ps1", false, out Exception copyExp))
@@ -1312,7 +1327,107 @@ namespace TP_MasterTool.Klasy
             else
             {
                 CtrlFunctions.RunHiddenCmdWitoutOutput("psexec.exe", @"\\" + connectionPara.fullNetworkName + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c ""cd C:\temp"" && powershell -ExecutionPolicy RemoteSigned -file .\services.ps1 > runningservices.txt", true);
+                System.Threading.Thread.Sleep(3000);
+                string[] servicesOutput;
+                try
+                {
+                    servicesOutput = File.ReadAllLines(@"\\" + connectionPara.fullNetworkName + @"\c$\temp\runningservices.txt");
+                }
+                catch
+                {
+                    skipServiceCheck = true;
+                    massFunctionForm.ErrorLog(rownr, "Unable to read services output");
+                }
+
+                if(!skipServiceCheck)
+                {
+                    int iStop = 12;
+                    if(connectionPara.deviceType == "TPS") { iStop = 16; }
+                    for(i = 0; i < iStop; i++)
+                    {
+                        if (servicesOutput[i] == "Stopped")
+                        {
+                            lock(massFunctionForm.logLock)
+                            {
+                                File.AppendAllText(Globals.userTempLogsPath + addInfo[0], connectionPara.hostname + "," + servicesMap[i] + " is not running" + Environment.NewLine);
+                            }
+                            if(i == 12) { symantecError = true; }
+                        }
+                        else if (servicesOutput[i] == "Error")
+                        {
+                            lock (massFunctionForm.logLock)
+                            {
+                                File.AppendAllText(Globals.userTempLogsPath + addInfo[0], connectionPara.hostname + "," + servicesMap[i] + " Error" + Environment.NewLine);
+                            }
+                            if (i == 12) { symantecError = true; }
+                        }
+                    }
+                }
             }
+
+            //----------- Drives check ---------------------//
+            massFunctionForm.GridChange(rownr, "Checking Drives");
+            string[] drives = { "c", "d" };
+            if(connectionPara.deviceType == "TPS")
+            {
+                drives = { "c", "d", "f" };
+            }
+            foreach(string drive in drives)
+            {
+                if (!Directory.Exists(@"\\" + connectionPara.fullNetworkName + @"\" + drive + @"$"))
+                {
+                    File.AppendAllText(Globals.userTempLogsPath + addInfo[0], connectionPara.hostname + "," + drive + " Partition not detected" + Environment.NewLine);
+                    if (i == 12) { symantecError = true; }
+                }
+                else
+                {
+                    CtrlFunctions.GetDiskSpaceInfo(drive, connectionPara, out ulong TotalNumberOfFreeBytes, out ulong TotalNumberOfBytes)
+                    double procent = (((TotalNumberOfBytes - TotalNumberOfFreeBytes) * 1.0 / TotalNumberOfBytes) * 100);
+                    if(procent > 75)
+                    {
+                        File.AppendAllText(Globals.userTempLogsPath + addInfo[0], connectionPara.hostname + "," + drive + " Partition usage over 75%" + Environment.NewLine);
+                    }
+                }
+
+            }
+            massFunctionForm.GridChange(rownr, "Checking SMARTs");
+            if (!CtrlFunctions.Smarty(connectionPara, out string errorMsg))
+            {
+                massFunctionForm.ErrorLog(rownr, errorMsg);
+            }
+            else
+            {
+                string[] smartLog = File.ReadAllLines(@"\\" + connectionPara.fullNetworkName + @"\c$\SMART\DiskInfo.txt");
+                foreach (string line in smartLog)
+                {
+                    if (line.Contains("Health Status"))
+                    {
+                        if(line.Split(':')[1];
+                    }
+                }
+                output += Environment.NewLine;
+                File.AppendAllText(@".\Logs\SmartCheck.txt", output);
+            }
+            massFunctionForm.GridChange(rownr, "Deleting Lock");
+            if (!CtrlFunctions.DeleteLock(@"\\" + connectionPara.fullNetworkName + @"\c$\SMART\smart.lock"))
+            {
+                massFunctionForm.GridChange(rownr, "Lock delete error");
+                return;
+            }
+
+
+
+
+
+            if (!symantecError)
+            {
+                massFunctionForm.GridChange(rownr, "Checking Veritas system");
+
+
+
+            }
+
+
         }
     }
 }
