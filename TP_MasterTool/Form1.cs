@@ -124,7 +124,7 @@ namespace TP_MasterTool
         {
             try
             {
-                File.Delete(@"\\" + connectionPara.fullNetworkName + @"\c$\temp\wiztree64.exe");
+                MessageBox.Show(connectionPara.IPbytes[3].ToString() + " - " + (210 + int.Parse(connectionPara.deviceNr)));
             }
             catch (Exception exp)
             {
@@ -1543,6 +1543,8 @@ namespace TP_MasterTool
                 "CDriveClean",
                 "BackstoreCsvExport",
                 "DiscSpaceInfo",
+                "GetMeMoreWork",
+                "MoveInvalidUpdatePackages",
                 "AdhocFunction"
             };
             new MassFunctionForm(functionList).Show();

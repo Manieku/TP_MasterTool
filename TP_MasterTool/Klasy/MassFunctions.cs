@@ -6,6 +6,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Windows.Forms;
 using System.Xml.Linq;
+//using IWshRuntimeLibrary;
 using TP_MasterTool.Forms;
 using TP_MasterTool.Forms.CustomMessageBox;
 
@@ -13,7 +14,8 @@ namespace TP_MasterTool.Klasy
 {
     static class MassFunctions
     {
-        //-------GetInfo-------------------
+        //-------GetInfo-------------------//
+
         //public static List<string> GetInfo_TpReportsRegenAndZip()
         //{
         //    string dayBefore = Microsoft.VisualBasic.Interaction.InputBox("Provide <date-before-eod-run> according to USU 53669" + Environment.NewLine + "Dates must be given in yyyyMMdd format: 4-digits year, 2-digits month(01-12), 2-digits day (01-31)", "Input data", DateTime.Today.AddDays(-1).ToString("yyyyMMdd"));
@@ -177,8 +179,8 @@ namespace TP_MasterTool.Klasy
                 CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Creating output file Error", "Unable to create output file in logs folder: " + exp.Message);
                 return null;
             }
-
-        }
+            return new List<string> { outputFileName };
+        } 
 
 
         //-------Mass Functions-------------
@@ -917,7 +919,14 @@ namespace TP_MasterTool.Klasy
         }
         public static void AdhocFunction(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
-            GetMeMoreWork(massFunctionForm, rownr, connectionPara, addInfo);
+            if (connectionPara.IPbytes[3] == (210 + int.Parse(connectionPara.deviceNr)))
+            {
+                massFunctionForm.AddToLog(rownr, "[SUCCESS] - Correct IP");
+            }
+            else
+            {
+                massFunctionForm.ErrorLog(rownr, "Wrong IP");
+            }
         }
 
         //------------------------Moje wymysly------------------------------//
@@ -1328,7 +1337,7 @@ namespace TP_MasterTool.Klasy
             {
                 CtrlFunctions.RunHiddenCmdWitoutOutput("psexec.exe", @"\\" + connectionPara.fullNetworkName + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c ""cd C:\temp"" && powershell -ExecutionPolicy RemoteSigned -file .\services.ps1 > runningservices.txt", true);
                 System.Threading.Thread.Sleep(3000);
-                string[] servicesOutput;
+                string[] servicesOutput = null;
                 try
                 {
                     servicesOutput = File.ReadAllLines(@"\\" + connectionPara.fullNetworkName + @"\c$\temp\runningservices.txt");
@@ -1343,7 +1352,7 @@ namespace TP_MasterTool.Klasy
                 {
                     int iStop = 12;
                     if(connectionPara.deviceType == "TPS") { iStop = 16; }
-                    for(i = 0; i < iStop; i++)
+                    for(int i = 0; i < iStop; i++)
                     {
                         if (servicesOutput[i] == "Stopped")
                         {
@@ -1370,64 +1379,147 @@ namespace TP_MasterTool.Klasy
             string[] drives = { "c", "d" };
             if(connectionPara.deviceType == "TPS")
             {
-                drives = { "c", "d", "f" };
+                drives = new string[]{ "c", "d", "f" };
             }
             foreach(string drive in drives)
             {
                 if (!Directory.Exists(@"\\" + connectionPara.fullNetworkName + @"\" + drive + @"$"))
                 {
-                    File.AppendAllText(Globals.userTempLogsPath + addInfo[0], connectionPara.hostname + "," + drive + " Partition not detected" + Environment.NewLine);
-                    if (i == 12) { symantecError = true; }
+                    lock(massFunctionForm.logLock)
+                    {
+                        File.AppendAllText(Globals.userTempLogsPath + addInfo[0], connectionPara.hostname + "," + drive + " Partition not detected" + Environment.NewLine);
+                    }
+                    if (drive == "f") { symantecError = true; }
                 }
                 else
                 {
-                    CtrlFunctions.GetDiskSpaceInfo(drive, connectionPara, out ulong TotalNumberOfFreeBytes, out ulong TotalNumberOfBytes)
+                    CtrlFunctions.GetDiskSpaceInfo(drive, connectionPara, out ulong TotalNumberOfFreeBytes, out ulong TotalNumberOfBytes);
                     double procent = (((TotalNumberOfBytes - TotalNumberOfFreeBytes) * 1.0 / TotalNumberOfBytes) * 100);
                     if(procent > 75)
                     {
-                        File.AppendAllText(Globals.userTempLogsPath + addInfo[0], connectionPara.hostname + "," + drive + " Partition usage over 75%" + Environment.NewLine);
+                        lock (massFunctionForm.logLock)
+                        {
+                            File.AppendAllText(Globals.userTempLogsPath + addInfo[0], connectionPara.hostname + "," + drive + " Partition usage over 75%" + Environment.NewLine);
+                        }
                     }
                 }
 
             }
-            massFunctionForm.GridChange(rownr, "Checking SMARTs");
-            if (!CtrlFunctions.Smarty(connectionPara, out string errorMsg))
-            {
-                massFunctionForm.ErrorLog(rownr, errorMsg);
-            }
-            else
-            {
-                string[] smartLog = File.ReadAllLines(@"\\" + connectionPara.fullNetworkName + @"\c$\SMART\DiskInfo.txt");
-                foreach (string line in smartLog)
-                {
-                    if (line.Contains("Health Status"))
-                    {
-                        if(line.Split(':')[1];
-                    }
-                }
-                output += Environment.NewLine;
-                File.AppendAllText(@".\Logs\SmartCheck.txt", output);
-            }
-            massFunctionForm.GridChange(rownr, "Deleting Lock");
-            if (!CtrlFunctions.DeleteLock(@"\\" + connectionPara.fullNetworkName + @"\c$\SMART\smart.lock"))
-            {
-                massFunctionForm.GridChange(rownr, "Lock delete error");
-                return;
-            }
+            //massFunctionForm.GridChange(rownr, "Checking SMARTs");
+            //if (!CtrlFunctions.Smarty(connectionPara, out string errorMsg))
+            //{
+            //    massFunctionForm.ErrorLog(rownr, errorMsg);
+            //}
+            //else
+            //{
+            //    string[] smartLog = File.ReadAllLines(@"\\" + connectionPara.fullNetworkName + @"\c$\SMART\DiskInfo.txt");
+            //    foreach (string line in smartLog)
+            //    {
+            //        if (line.Contains("Health Status"))
+            //        {
+            //            if(!line.Split(':')[1].Contains("Good"))
+            //            {
+            //                lock (massFunctionForm.logLock)
+            //                {
+            //                    File.AppendAllText(Globals.userTempLogsPath + addInfo[0], connectionPara.hostname + ",SMART Health Warrning" + Environment.NewLine);
+            //                }
 
+            //            }
+            //        }
+            //    }
+            //}
+            //if (!CtrlFunctions.DeleteLock(@"\\" + connectionPara.fullNetworkName + @"\c$\SMART\smart.lock"))
+            //{
+            //    massFunctionForm.GridChange(rownr, "Lock delete error");
+            //    return;
+            //}
 
-
-
-
-            if (!symantecError)
+            //----------- Vetitas check ---------------------//
+            if (!symantecError && connectionPara.deviceType == "TPS")
             {
                 massFunctionForm.GridChange(rownr, "Checking Veritas system");
-
-
-
+                foreach(string drive in new string[] { "C", "D"})
+                {
+                    bool todayBackup = false; 
+                    foreach(string file in Directory.GetFiles(@"\\" + connectionPara.fullNetworkName + @"\f$\Backup\TPBackup", "*_" + drive + "*.v2i"))
+                    {
+                        if(File.GetCreationTime(file).Date == DateTime.Now.Date)
+                        {
+                            todayBackup = true;
+                        }
+                    }
+                    if (!todayBackup)
+                    {
+                        lock (massFunctionForm.logLock)
+                        {
+                            File.AppendAllText(Globals.userTempLogsPath + addInfo[0], connectionPara.hostname + ",Last " + drive + " Backup Missing" + Environment.NewLine);
+                        }
+                    }
+                }
             }
 
+            //----------- Minidump check ---------------------//
+            massFunctionForm.GridChange(rownr, "Crash Check");
+            if(Directory.Exists(@"\\" + connectionPara.fullNetworkName + @"\c$\Windows\Minidump"))
+            {
+                int count = 0;
+                foreach (string file in Directory.GetFiles(@"\\" + connectionPara.fullNetworkName + @"\c$\Windows\Minidump"))
+                {
+                    if(File.GetCreationTime(file) > DateTime.Now.AddDays(-14))
+                    {
+                        count++;
+                    }
+                }
+                if(count > 5)
+                {
+                    lock (massFunctionForm.logLock)
+                    {
+                        File.AppendAllText(Globals.userTempLogsPath + addInfo[0], connectionPara.hostname + ",Many crashes detected in last 14 days" + Environment.NewLine);
+                    }
+                }
+            }
 
+            //----------- Minidump check ---------------------//
+            bool invalidCheck = false;
+            foreach (string file in Directory.GetFiles(@"\\" + connectionPara.fullNetworkName + @"\d$\TPDotnet\Server\UpdatePackages\InValid"))
+            {
+                if (File.GetCreationTime(file) < DateTime.Now.AddDays(-30))
+                {
+                    invalidCheck = true;
+                }
+            }
+            if (invalidCheck)
+            {
+                lock (massFunctionForm.logLock)
+                {
+                    File.AppendAllText(Globals.userTempLogsPath + addInfo[0], connectionPara.hostname + ",Old invalid UpdatePackages detected" + Environment.NewLine);
+                }
+            }
+
+            massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
+        }
+        public static void MoveInvalidUpdatePackages(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
+        {
+            try
+            {
+                foreach(string file in Directory.GetFiles(@"\\" + connectionPara.fullNetworkName + @"\d$\TPDotnet\Server\UpdatePackages\InValid"))
+                {
+                    if (File.GetCreationTime(file) < DateTime.Now.AddDays(-30))
+                    {
+                        if(!FileController.MoveFile(file, @"\\" + connectionPara.fullNetworkName + @"\d$\TPDotnet\Server\UpdatePackages\Processed\" + Path.GetFileName(file), false, out _))
+                        {
+                            massFunctionForm.ErrorLog(rownr, "Moving file error");
+                            return;
+                        }
+
+                    }
+
+                }
+            }
+            catch
+            {
+                massFunctionForm.ErrorLog(rownr, "Moving file error");
+            }
         }
     }
 }
