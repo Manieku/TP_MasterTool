@@ -1543,9 +1543,16 @@ namespace TP_MasterTool
                 "CDriveClean",
                 "BackstoreCsvExport",
                 "DiscSpaceInfo",
+                "AdhocFunction"
+            };
+            new MassFunctionForm(functionList).Show();
+        }
+        private void getMeMoreWorkToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string[] functionList = new string[]
+            {
                 "GetMeMoreWork",
                 "MoveInvalidUpdatePackages",
-                "AdhocFunction"
             };
             new MassFunctionForm(functionList).Show();
         }
@@ -1765,6 +1772,7 @@ namespace TP_MasterTool
                 "Mass Functions",
                 "Find MAC in DHCP",
                 "Random Collection of Randomness",
+                "Get Me More Work",
                 "Reports"
             };
             foreach (ToolStripMenuItem menu in menuStrip1.Items)

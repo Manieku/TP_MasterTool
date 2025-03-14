@@ -457,9 +457,9 @@ namespace TP_MasterTool.Klasy
             string logFileName = "JPOSRFIDScannerLogs*";
             if (addInfo[1] == "ProBase Store (New)")
             {
-                remotePath = @"\c$\ProgramData\javapos\wn\log";
-                localPath = @"C:\ProgramData\javapos\wn\log";
-                logFileName = "jniwrapper-diagnostics.log";
+                remotePath = @"\c$\programdata\javapos\dn\log";
+                localPath = @"c:\programdata\javapos\dn\log";
+                logFileName = "javapos-diagnostics.log*";
             }
             massFunctionForm.GridChange(rownr, "Looking for files");
             string[] files = Directory.GetFiles(@"\\" + connectionPara.fullNetworkName + remotePath, logFileName);
@@ -1310,19 +1310,18 @@ namespace TP_MasterTool.Klasy
                 {0, "uvnc_service" },
                 {1, "WNXVNCRepeater" },
                 {2, "WNBID" },
-                {3, "wuauserv" },
-                {4, "ESFClient" },
-                {5, "ESFClientUpdateAgent" },
-                {6, "W32Time" },
-                {7, "TPDotnet Diagnostic Support" },
-                {8, "TPDotnet Installation Manager" },
-                {9, "TPDotnet Process Manager" },
-                {10, "SQLWriter" },
-                {11, "MSSQLSERVER" },
-                {12, "Veritas System Recovery" },
-                {13, "APCPBEAgent" },
-                {14, "TPDotnet Communication Manager" },
-                {15, "TPDotnet Communication Service Watcher" }
+                {3, "ESFClient" },
+                {4, "ESFClientUpdateAgent" },
+                {5, "W32Time" },
+                {6, "TPDotnet Diagnostic Support" },
+                {7, "TPDotnet Installation Manager" },
+                {8, "TPDotnet Process Manager" },
+                {9, "SQLWriter" },
+                {10, "MSSQLSERVER" },
+                {11, "Veritas System Recovery" },
+                {12, "APCPBEAgent" },
+                {13, "TPDotnet Communication Manager" },
+                {14, "TPDotnet Communication Service Watcher" }
             };
             bool symantecError = false, skipServiceCheck = false;
             
@@ -1350,8 +1349,8 @@ namespace TP_MasterTool.Klasy
 
                 if(!skipServiceCheck)
                 {
-                    int iStop = 12;
-                    if(connectionPara.deviceType == "TPS") { iStop = 16; }
+                    int iStop = 11;
+                    if(connectionPara.deviceType == "TPS") { iStop = 15; }
                     for(int i = 0; i < iStop; i++)
                     {
                         if (servicesOutput[i] == "Stopped")
@@ -1360,7 +1359,7 @@ namespace TP_MasterTool.Klasy
                             {
                                 File.AppendAllText(Globals.userTempLogsPath + addInfo[0], connectionPara.hostname + "," + servicesMap[i] + " is not running" + Environment.NewLine);
                             }
-                            if(i == 12) { symantecError = true; }
+                            if(i == 11) { symantecError = true; }
                         }
                         else if (servicesOutput[i] == "Error")
                         {
@@ -1368,7 +1367,7 @@ namespace TP_MasterTool.Klasy
                             {
                                 File.AppendAllText(Globals.userTempLogsPath + addInfo[0], connectionPara.hostname + "," + servicesMap[i] + " Error" + Environment.NewLine);
                             }
-                            if (i == 12) { symantecError = true; }
+                            if (i == 11) { symantecError = true; }
                         }
                     }
                 }
@@ -1502,6 +1501,7 @@ namespace TP_MasterTool.Klasy
         {
             try
             {
+                bool fileCheck = false;
                 foreach(string file in Directory.GetFiles(@"\\" + connectionPara.fullNetworkName + @"\d$\TPDotnet\Server\UpdatePackages\InValid"))
                 {
                     if (File.GetCreationTime(file) < DateTime.Now.AddDays(-30))
@@ -1511,9 +1511,17 @@ namespace TP_MasterTool.Klasy
                             massFunctionForm.ErrorLog(rownr, "Moving file error");
                             return;
                         }
-
+                        fileCheck = true;
                     }
-
+                }
+                if(!fileCheck)
+                {
+                    massFunctionForm.ErrorLog(rownr, "No files moved");
+                }
+                else
+                {
+                    massFunctionForm.AddToLog(rownr, "[SUCCESS] - Files Moved");
+                    massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
                 }
             }
             catch
