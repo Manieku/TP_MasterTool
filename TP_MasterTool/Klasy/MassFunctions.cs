@@ -270,7 +270,7 @@ namespace TP_MasterTool.Klasy
             if (searchResult.Length == 1)
             {
                 massFunctionForm.GridChange(rownr, "Copying backup zip");
-                if (!FileController.CopyFile(searchResult[0], @"\\" + connectionPara.fullNetworkName + @"\c$\service\dms_output\collect_tp_reports.zip", false, out Exception copyExp))
+                if (!FileController.CopyFile(searchResult[0], @"\\" + connectionPara.fullNetworkName + @"\c$\service\dms_output\collect_tp_reports.zip", false, out _))
                 {
                     massFunctionForm.ErrorLog(rownr, connectionPara.hostname, "Error while copying backup zip need maunal check");
                     return;
@@ -734,7 +734,7 @@ namespace TP_MasterTool.Klasy
             for (int i = 0; i < inputDates.Length; i++)
             {
                 massFunctionForm.GridChange(rownr, "Exporting CSV for " + (i + 1) + " out of " + inputDates.Length + " dates");
-                string output = "";
+                string output;
                 if (inputDates[i].Trim().Length != 10)
                 {
                     if (inputDates[i].Contains("[ERROR]"))
@@ -1271,7 +1271,7 @@ namespace TP_MasterTool.Klasy
                 {
                     Directory.Delete(@"\\" + connectionPara.fullNetworkName + @"\c$\service\dms_output\temp", true);
                 }
-                catch (Exception exp)
+                catch 
                 {
                     massFunctionForm.ErrorLog(rownr, "Temp delete error");
                     dates[iterator] += ",[ERROR],Can't delete some files in temp folder";
@@ -1361,7 +1361,7 @@ namespace TP_MasterTool.Klasy
             //----------- Services check ---------------------//
             massFunctionForm.GridChange(rownr, "Checking services");
 
-            if(!FileController.CopyFile(Globals.toolsPath + "services.ps1", @"\\" + connectionPara.fullNetworkName + @"\c$\temp\services.ps1", false, out Exception copyExp))
+            if(!FileController.CopyFile(Globals.toolsPath + "services.ps1", @"\\" + connectionPara.fullNetworkName + @"\c$\temp\services.ps1", false, out _))
             {
                 massFunctionForm.ErrorLog(rownr, "Unable to check services");
             }
