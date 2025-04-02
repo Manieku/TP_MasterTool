@@ -919,14 +919,22 @@ namespace TP_MasterTool.Klasy
         }
         public static void AdhocFunction(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
-            if (connectionPara.IPbytes[3] == (210 + int.Parse(connectionPara.deviceNr)))
+            massFunctionForm.GridChange(rownr, "Checking log");
+            string[] log = Directory.GetFiles(@"\\" + connectionPara.fullNetworkName + @"\d$\TPDotnet\Log", connectionPara.hostname + "-TPDotnet.WebServices.TPChannelServices.TPChannelServicesHostApp.log", SearchOption.TopDirectoryOnly);
+            foreach(string line in File.ReadLines(log[0]).Reverse())
             {
-                massFunctionForm.AddToLog(rownr, "[SUCCESS] - Correct IP");
+                if(line.Contains("CheckPowerSupplyStatus") && line.Contains("Error"))
+                {
+                    int errorStart = line.IndexOf("Error");
+                    int errorEnd = line.IndexOf("|", errorStart);
+                    string date = line.Substring(line.IndexOf("|"), 10);
+                    string result = line.Substring(line.IndexOf("Error"), errorEnd - errorStart);
+                    massFunctionForm.ErrorLog(rownr, date + result);
+                    return;
+                }
             }
-            else
-            {
-                massFunctionForm.ErrorLog(rownr, "Wrong IP");
-            }
+            massFunctionForm.AddToLog(rownr, "[SUCCESS] - No errors found");
+            massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
         }
 
         //------------------------Moje wymysly------------------------------//
@@ -1299,6 +1307,31 @@ namespace TP_MasterTool.Klasy
             }
             massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
             massFunctionForm.AddToLog(rownr, "[SUCCESS] - " + output);
+        }
+        public static void ScoApcErrorChceck(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
+        {
+            /*
+             * Reads TPDotnet.WebServices.TPChannelServices.TPChannelServicesHostApp.log in D:\TPDotnet\
+             * Looks for Errors within CheckPowerSupplyStatus entries
+             * and outputs most recent error with timestamp
+             * For ADV Petre 
+             */
+            massFunctionForm.GridChange(rownr, "Checking log");
+            string[] log = Directory.GetFiles(@"\\" + connectionPara.fullNetworkName + @"\d$\TPDotnet\Log", connectionPara.hostname + "-TPDotnet.WebServices.TPChannelServices.TPChannelServicesHostApp.log", SearchOption.TopDirectoryOnly);
+            foreach (string line in File.ReadLines(log[0]).Reverse())
+            {
+                if (line.Contains("CheckPowerSupplyStatus") && line.Contains("Error"))
+                {
+                    int errorStart = line.IndexOf("Error");
+                    int errorEnd = line.IndexOf("|", errorStart);
+                    string date = line.Substring(line.IndexOf("|"), 10);
+                    string result = line.Substring(line.IndexOf("Error"), errorEnd - errorStart);
+                    massFunctionForm.ErrorLog(rownr, date + result);
+                    return;
+                }
+            }
+            massFunctionForm.AddToLog(rownr, "[SUCCESS] - No errors found");
+            massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
         }
 
         //------------------------NeedMoreWork------------------------------//
