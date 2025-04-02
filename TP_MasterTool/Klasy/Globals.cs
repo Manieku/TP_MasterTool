@@ -89,6 +89,8 @@ namespace TP_MasterTool
             AdhocFunction,
             CDriveClean,
             CucDataCollect,
+            GetMeMoreWork,
+            MoveInvalidUpdatePackages,
             Error,
         }
 

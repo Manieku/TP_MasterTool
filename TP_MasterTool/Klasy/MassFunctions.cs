@@ -6,6 +6,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Windows.Forms;
 using System.Xml.Linq;
+//using IWshRuntimeLibrary;
 using TP_MasterTool.Forms;
 using TP_MasterTool.Forms.CustomMessageBox;
 
@@ -13,7 +14,8 @@ namespace TP_MasterTool.Klasy
 {
     static class MassFunctions
     {
-        //-------GetInfo-------------------
+        //-------GetInfo-------------------//
+
         //public static List<string> GetInfo_TpReportsRegenAndZip()
         //{
         //    string dayBefore = Microsoft.VisualBasic.Interaction.InputBox("Provide <date-before-eod-run> according to USU 53669" + Environment.NewLine + "Dates must be given in yyyyMMdd format: 4-digits year, 2-digits month(01-12), 2-digits day (01-31)", "Input data", DateTime.Today.AddDays(-1).ToString("yyyyMMdd"));
@@ -165,6 +167,20 @@ namespace TP_MasterTool.Klasy
             }
             return new List<string> { date, outputFileName };
         }
+        public static List<string> GetInfo_GetMeMoreWork()
+        {
+            string outputFileName = "GetMeMoreWork " + Logger.Datownik() + ".csv";
+            try
+            {
+                File.AppendAllText(Globals.userTempLogsPath + outputFileName, "TAG,Issue" + Environment.NewLine);
+            }
+            catch (Exception exp)
+            {
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Creating output file Error", "Unable to create output file in logs folder: " + exp.Message);
+                return null;
+            }
+            return new List<string> { outputFileName };
+        } 
 
 
         //-------Mass Functions-------------
@@ -441,9 +457,9 @@ namespace TP_MasterTool.Klasy
             string logFileName = "JPOSRFIDScannerLogs*";
             if (addInfo[1] == "ProBase Store (New)")
             {
-                remotePath = @"\c$\ProgramData\javapos\wn\log";
-                localPath = @"C:\ProgramData\javapos\wn\log";
-                logFileName = "jniwrapper-diagnostics.log";
+                remotePath = @"\c$\programdata\javapos\dn\log";
+                localPath = @"c:\programdata\javapos\dn\log";
+                logFileName = "javapos-diagnostics.log*";
             }
             massFunctionForm.GridChange(rownr, "Looking for files");
             string[] files = Directory.GetFiles(@"\\" + connectionPara.fullNetworkName + remotePath, logFileName);
@@ -903,9 +919,21 @@ namespace TP_MasterTool.Klasy
         }
         public static void AdhocFunction(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
-            massFunctionForm.GridChange(rownr, "Checking FIles");
-            if()
-            massFunctionForm.AddToLog(rownr, "[SUCCESS] - " + connectionPara.IPbytes[3]);
+            massFunctionForm.GridChange(rownr, "Checking log");
+            string[] log = Directory.GetFiles(@"\\" + connectionPara.fullNetworkName + @"\d$\TPDotnet\Log", connectionPara.hostname + "-TPDotnet.WebServices.TPChannelServices.TPChannelServicesHostApp.log", SearchOption.TopDirectoryOnly);
+            foreach(string line in File.ReadLines(log[0]).Reverse())
+            {
+                if(line.Contains("CheckPowerSupplyStatus") && line.Contains("Error"))
+                {
+                    int errorStart = line.IndexOf("Error");
+                    int errorEnd = line.IndexOf("|", errorStart);
+                    string date = line.Substring(line.IndexOf("|"), 10);
+                    string result = line.Substring(line.IndexOf("Error"), errorEnd - errorStart);
+                    massFunctionForm.ErrorLog(rownr, date + result);
+                    return;
+                }
+            }
+            massFunctionForm.AddToLog(rownr, "[SUCCESS] - No errors found");
             massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
         }
 
@@ -1279,6 +1307,260 @@ namespace TP_MasterTool.Klasy
             }
             massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
             massFunctionForm.AddToLog(rownr, "[SUCCESS] - " + output);
+        }
+        public static void ScoApcErrorChceck(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
+        {
+            /*
+             * Reads TPDotnet.WebServices.TPChannelServices.TPChannelServicesHostApp.log in D:\TPDotnet\
+             * Looks for Errors within CheckPowerSupplyStatus entries
+             * and outputs most recent error with timestamp
+             * For ADV Petre 
+             */
+            massFunctionForm.GridChange(rownr, "Checking log");
+            string[] log = Directory.GetFiles(@"\\" + connectionPara.fullNetworkName + @"\d$\TPDotnet\Log", connectionPara.hostname + "-TPDotnet.WebServices.TPChannelServices.TPChannelServicesHostApp.log", SearchOption.TopDirectoryOnly);
+            foreach (string line in File.ReadLines(log[0]).Reverse())
+            {
+                if (line.Contains("CheckPowerSupplyStatus") && line.Contains("Error"))
+                {
+                    int errorStart = line.IndexOf("Error");
+                    int errorEnd = line.IndexOf("|", errorStart);
+                    string date = line.Substring(line.IndexOf("|"), 10);
+                    string result = line.Substring(line.IndexOf("Error"), errorEnd - errorStart);
+                    massFunctionForm.ErrorLog(rownr, date + result);
+                    return;
+                }
+            }
+            massFunctionForm.AddToLog(rownr, "[SUCCESS] - No errors found");
+            massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
+        }
+
+        //------------------------NeedMoreWork------------------------------//
+        public static void GetMeMoreWork(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
+        {
+            // creating dictionary for services in the script
+            Dictionary<int, string> servicesMap = new Dictionary<int, string>()
+            {
+                {0, "uvnc_service" },
+                {1, "WNXVNCRepeater" },
+                {2, "WNBID" },
+                {3, "ESFClient" },
+                {4, "ESFClientUpdateAgent" },
+                {5, "W32Time" },
+                {6, "TPDotnet Diagnostic Support" },
+                {7, "TPDotnet Installation Manager" },
+                {8, "TPDotnet Process Manager" },
+                {9, "SQLWriter" },
+                {10, "MSSQLSERVER" },
+                {11, "Veritas System Recovery" },
+                {12, "APCPBEAgent" },
+                {13, "TPDotnet Communication Manager" },
+                {14, "TPDotnet Communication Service Watcher" }
+            };
+            bool symantecError = false, skipServiceCheck = false;
+            
+            //----------- Services check ---------------------//
+            massFunctionForm.GridChange(rownr, "Checking services");
+
+            if(!FileController.CopyFile(Globals.toolsPath + "services.ps1", @"\\" + connectionPara.fullNetworkName + @"\c$\temp\services.ps1", false, out Exception copyExp))
+            {
+                massFunctionForm.ErrorLog(rownr, "Unable to check services");
+            }
+            else
+            {
+                CtrlFunctions.RunHiddenCmdWitoutOutput("psexec.exe", @"\\" + connectionPara.fullNetworkName + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c ""cd C:\temp"" && powershell -ExecutionPolicy RemoteSigned -file .\services.ps1 > runningservices.txt", true);
+                System.Threading.Thread.Sleep(3000);
+                string[] servicesOutput = null;
+                try
+                {
+                    servicesOutput = File.ReadAllLines(@"\\" + connectionPara.fullNetworkName + @"\c$\temp\runningservices.txt");
+                }
+                catch
+                {
+                    skipServiceCheck = true;
+                    massFunctionForm.ErrorLog(rownr, "Unable to read services output");
+                }
+
+                if(!skipServiceCheck)
+                {
+                    int iStop = 11;
+                    if(connectionPara.deviceType == "TPS") { iStop = 15; }
+                    for(int i = 0; i < iStop; i++)
+                    {
+                        if (servicesOutput[i] == "Stopped")
+                        {
+                            lock(massFunctionForm.logLock)
+                            {
+                                File.AppendAllText(Globals.userTempLogsPath + addInfo[0], connectionPara.hostname + "," + servicesMap[i] + " is not running" + Environment.NewLine);
+                            }
+                            if(i == 11) { symantecError = true; }
+                        }
+                        else if (servicesOutput[i] == "Error")
+                        {
+                            lock (massFunctionForm.logLock)
+                            {
+                                File.AppendAllText(Globals.userTempLogsPath + addInfo[0], connectionPara.hostname + "," + servicesMap[i] + " Error" + Environment.NewLine);
+                            }
+                            if (i == 11) { symantecError = true; }
+                        }
+                    }
+                }
+            }
+
+            //----------- Drives check ---------------------//
+            massFunctionForm.GridChange(rownr, "Checking Drives");
+            string[] drives = { "c", "d" };
+            if(connectionPara.deviceType == "TPS")
+            {
+                drives = new string[]{ "c", "d", "f" };
+            }
+            foreach(string drive in drives)
+            {
+                if (!Directory.Exists(@"\\" + connectionPara.fullNetworkName + @"\" + drive + @"$"))
+                {
+                    lock(massFunctionForm.logLock)
+                    {
+                        File.AppendAllText(Globals.userTempLogsPath + addInfo[0], connectionPara.hostname + "," + drive + " Partition not detected" + Environment.NewLine);
+                    }
+                    if (drive == "f") { symantecError = true; }
+                }
+                else
+                {
+                    CtrlFunctions.GetDiskSpaceInfo(drive, connectionPara, out ulong TotalNumberOfFreeBytes, out ulong TotalNumberOfBytes);
+                    double procent = (((TotalNumberOfBytes - TotalNumberOfFreeBytes) * 1.0 / TotalNumberOfBytes) * 100);
+                    if(procent > 75)
+                    {
+                        lock (massFunctionForm.logLock)
+                        {
+                            File.AppendAllText(Globals.userTempLogsPath + addInfo[0], connectionPara.hostname + "," + drive + " Partition usage over 75%" + Environment.NewLine);
+                        }
+                    }
+                }
+
+            }
+            //massFunctionForm.GridChange(rownr, "Checking SMARTs");
+            //if (!CtrlFunctions.Smarty(connectionPara, out string errorMsg))
+            //{
+            //    massFunctionForm.ErrorLog(rownr, errorMsg);
+            //}
+            //else
+            //{
+            //    string[] smartLog = File.ReadAllLines(@"\\" + connectionPara.fullNetworkName + @"\c$\SMART\DiskInfo.txt");
+            //    foreach (string line in smartLog)
+            //    {
+            //        if (line.Contains("Health Status"))
+            //        {
+            //            if(!line.Split(':')[1].Contains("Good"))
+            //            {
+            //                lock (massFunctionForm.logLock)
+            //                {
+            //                    File.AppendAllText(Globals.userTempLogsPath + addInfo[0], connectionPara.hostname + ",SMART Health Warrning" + Environment.NewLine);
+            //                }
+
+            //            }
+            //        }
+            //    }
+            //}
+            //if (!CtrlFunctions.DeleteLock(@"\\" + connectionPara.fullNetworkName + @"\c$\SMART\smart.lock"))
+            //{
+            //    massFunctionForm.GridChange(rownr, "Lock delete error");
+            //    return;
+            //}
+
+            //----------- Vetitas check ---------------------//
+            if (!symantecError && connectionPara.deviceType == "TPS")
+            {
+                massFunctionForm.GridChange(rownr, "Checking Veritas system");
+                foreach(string drive in new string[] { "C", "D"})
+                {
+                    bool todayBackup = false; 
+                    foreach(string file in Directory.GetFiles(@"\\" + connectionPara.fullNetworkName + @"\f$\Backup\TPBackup", "*_" + drive + "*.v2i"))
+                    {
+                        if(File.GetCreationTime(file).Date == DateTime.Now.Date)
+                        {
+                            todayBackup = true;
+                        }
+                    }
+                    if (!todayBackup)
+                    {
+                        lock (massFunctionForm.logLock)
+                        {
+                            File.AppendAllText(Globals.userTempLogsPath + addInfo[0], connectionPara.hostname + ",Last " + drive + " Backup Missing" + Environment.NewLine);
+                        }
+                    }
+                }
+            }
+
+            //----------- Minidump check ---------------------//
+            massFunctionForm.GridChange(rownr, "Crash Check");
+            if(Directory.Exists(@"\\" + connectionPara.fullNetworkName + @"\c$\Windows\Minidump"))
+            {
+                int count = 0;
+                foreach (string file in Directory.GetFiles(@"\\" + connectionPara.fullNetworkName + @"\c$\Windows\Minidump"))
+                {
+                    if(File.GetCreationTime(file) > DateTime.Now.AddDays(-14))
+                    {
+                        count++;
+                    }
+                }
+                if(count > 5)
+                {
+                    lock (massFunctionForm.logLock)
+                    {
+                        File.AppendAllText(Globals.userTempLogsPath + addInfo[0], connectionPara.hostname + ",Many crashes detected in last 14 days" + Environment.NewLine);
+                    }
+                }
+            }
+
+            //----------- Minidump check ---------------------//
+            bool invalidCheck = false;
+            foreach (string file in Directory.GetFiles(@"\\" + connectionPara.fullNetworkName + @"\d$\TPDotnet\Server\UpdatePackages\InValid"))
+            {
+                if (File.GetCreationTime(file) < DateTime.Now.AddDays(-30))
+                {
+                    invalidCheck = true;
+                }
+            }
+            if (invalidCheck)
+            {
+                lock (massFunctionForm.logLock)
+                {
+                    File.AppendAllText(Globals.userTempLogsPath + addInfo[0], connectionPara.hostname + ",Old invalid UpdatePackages detected" + Environment.NewLine);
+                }
+            }
+
+            massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
+        }
+        public static void MoveInvalidUpdatePackages(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
+        {
+            try
+            {
+                bool fileCheck = false;
+                foreach(string file in Directory.GetFiles(@"\\" + connectionPara.fullNetworkName + @"\d$\TPDotnet\Server\UpdatePackages\InValid"))
+                {
+                    if (File.GetCreationTime(file) < DateTime.Now.AddDays(-30))
+                    {
+                        if(!FileController.MoveFile(file, @"\\" + connectionPara.fullNetworkName + @"\d$\TPDotnet\Server\UpdatePackages\Processed\" + Path.GetFileName(file), false, out _))
+                        {
+                            massFunctionForm.ErrorLog(rownr, "Moving file error");
+                            return;
+                        }
+                        fileCheck = true;
+                    }
+                }
+                if(!fileCheck)
+                {
+                    massFunctionForm.ErrorLog(rownr, "No files moved");
+                }
+                else
+                {
+                    massFunctionForm.AddToLog(rownr, "[SUCCESS] - Files Moved");
+                    massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
+                }
+            }
+            catch
+            {
+                massFunctionForm.ErrorLog(rownr, "Moving file error");
+            }
         }
     }
 }

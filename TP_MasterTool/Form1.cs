@@ -124,7 +124,7 @@ namespace TP_MasterTool
         {
             try
             {
-                File.Delete(@"\\" + connectionPara.fullNetworkName + @"\c$\temp\wiztree64.exe");
+                MessageBox.Show(connectionPara.IPbytes[3].ToString() + " - " + (210 + int.Parse(connectionPara.deviceNr)));
             }
             catch (Exception exp)
             {
@@ -1547,6 +1547,15 @@ namespace TP_MasterTool
             };
             new MassFunctionForm(functionList).Show();
         }
+        private void getMeMoreWorkToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string[] functionList = new string[]
+            {
+                "GetMeMoreWork",
+                "MoveInvalidUpdatePackages",
+            };
+            new MassFunctionForm(functionList).Show();
+        }
 
         /**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**/
 
@@ -1763,6 +1772,7 @@ namespace TP_MasterTool
                 "Mass Functions",
                 "Find MAC in DHCP",
                 "Random Collection of Randomness",
+                "Get Me More Work",
                 "Reports"
             };
             foreach (ToolStripMenuItem menu in menuStrip1.Items)
