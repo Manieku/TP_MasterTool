@@ -148,12 +148,6 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\EndpointsScan.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\EndpointsScan.Designer.cs">
-      <DependentUpon>EndpointsScan.cs</DependentUpon>
-    </Compile>
     <Compile Include="Forms\Report.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -187,9 +181,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\DropDownSelect.resx">
       <DependentUpon>DropDownSelect.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\EndpointsScan.resx">
-      <DependentUpon>EndpointsScan.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
