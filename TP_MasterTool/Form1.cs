@@ -7,6 +7,8 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Management.Automation;
+using System.Net.NetworkInformation;
+using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using System.Xml.Linq;
@@ -122,15 +124,13 @@ namespace TP_MasterTool
         }
         private void Test_Button_Click(object sender, EventArgs e)
         {
-            try
+            CtrlFunctions.SqlGetInfo(connectionPara.fullNetworkName, "TPCentralDB", "select szComputerName from Workstation where szWorkstationID like '" + connectionPara.country + connectionPara.storeNr + "%' and lInstanceNmbr=0", out string output);
+            CustomMsgBox.Show(CustomMsgBox.MsgType.Info, "lol", output);
+            string[] lol = output.Split(new string[] { Environment.NewLine } , StringSplitOptions.RemoveEmptyEntries);
+            foreach(string line in lol)
             {
-                MessageBox.Show(connectionPara.IPbytes[3].ToString() + " - " + (210 + int.Parse(connectionPara.deviceNr)));
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Info, "test", line.Split(':')[1].Trim().Substring(0, 12));
             }
-            catch (Exception exp)
-            {
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "error", exp.Message);
-            }
-
             //CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c sc query apcpbeagent | find /i \"state\"");
             //if (cmdOutput.exitCode != 0)
             //{
@@ -178,31 +178,31 @@ namespace TP_MasterTool
             //}
             //File.AppendAllLines(@".\errors.txt", errors);
 
-            if (File.Exists(@".\input.txt"))
-            {
-                foreach (string line in File.ReadAllLines(@".\input.txt"))
-                {
-                    string[] numbers = line.Split(new char[] { '\t' }, StringSplitOptions.RemoveEmptyEntries);
-                    File.AppendAllText(@".\Dates\" + numbers[0] + ".txt", numbers[1] + Environment.NewLine);
-                }
+            //if (File.Exists(@".\input.txt"))
+            //{
+            //    foreach (string line in File.ReadAllLines(@".\input.txt"))
+            //    {
+            //        string[] numbers = line.Split(new char[] { '\t' }, StringSplitOptions.RemoveEmptyEntries);
+            //        File.AppendAllText(@".\Dates\" + numbers[0] + ".txt", numbers[1] + Environment.NewLine);
+            //    }
 
-                foreach (string file in Directory.GetFiles(@".\Dates"))
-                {
-                    File.AppendAllText(@".\dates_tps.txt", Path.GetFileNameWithoutExtension(file) + Environment.NewLine);
-                }
-            }
-            else
-            {
-                string output = "";
-                foreach (string file in Directory.GetFiles(@".\Dates"))
-                {
-                    foreach (string line in File.ReadAllLines(file))
-                    {
-                        output += Path.GetFileNameWithoutExtension(file) + "," + line + Environment.NewLine;
-                    }
-                }
-                File.WriteAllText(@".\output.csv", output);
-            }
+            //    foreach (string file in Directory.GetFiles(@".\Dates"))
+            //    {
+            //        File.AppendAllText(@".\dates_tps.txt", Path.GetFileNameWithoutExtension(file) + Environment.NewLine);
+            //    }
+            //}
+            //else
+            //{
+            //    string output = "";
+            //    foreach (string file in Directory.GetFiles(@".\Dates"))
+            //    {
+            //        foreach (string line in File.ReadAllLines(file))
+            //        {
+            //            output += Path.GetFileNameWithoutExtension(file) + "," + line + Environment.NewLine;
+            //        }
+            //    }
+            //    File.WriteAllText(@".\output.csv", output);
+            //}
 
 
             //CtrlFunctions.EncryptFile(@".\mojepasy.txt", "cycuszki", Globals.configPath + "credentials.crypt");
@@ -825,8 +825,50 @@ namespace TP_MasterTool
         //------------------Endpoint Scan--------------------
         private void ScanEndpointsMenuItem_Click(object sender, EventArgs e)
         {
-            new EndpointsScan().Show(this);
-        } //dont support IP MODE
+            ChangeStatusBar("Scanning...");
+            string output = "Endpoint Status:" + Environment.NewLine;
+            string db = "TPCentralDB";
+            if(connectionPara.deviceType != "TPS")
+            {
+                db = "TPPosDB";
+            }
+            if (CtrlFunctions.SqlGetInfo(connectionPara.fullNetworkName, db, "select szComputerName from Workstation where szWorkstationID like '" + connectionPara.country + connectionPara.storeNr + "%' and lInstanceNmbr=0", out string dbOutput))
+            {
+                string[] endpointList = dbOutput.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (string line in endpointList)
+                {
+                    string tag = line.Split(':')[1].Trim().Substring(0, 12);
+                    try
+                    {
+                        if (new Ping().Send(tag + ".candadnpos.biz", 4000, Encoding.ASCII.GetBytes("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")).Status == IPStatus.Success)
+                        {
+                            output += tag + " - Online" + Environment.NewLine;
+                        }
+                        else
+                        {
+                            if (new Ping().Send(CtrlFunctions.DnsGetIP(tag), 4000, Encoding.ASCII.GetBytes("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")).Status == IPStatus.Success)
+                            {
+                                output += tag + " DNS Issue - IP Online" + Environment.NewLine;
+                            }
+                            else
+                            {
+                                output += tag + " - Offline" + Environment.NewLine;
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        output += tag + " - Offline" + Environment.NewLine;
+                    }
+                }
+            }
+            else
+            {
+                output = dbOutput;
+            }
+            ChangeStatusBar("Ready");
+            CustomMsgBox.Show(CustomMsgBox.MsgType.Info, "Endpoint Scan", output);
+        }
 
         //------------------BootTime--------------------
         private void SystemBootTimeMenuItem_Click(object sender, EventArgs e)
