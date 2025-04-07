@@ -1573,19 +1573,6 @@ namespace TP_MasterTool
         /**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**/
 
         //--------------------Preferences-----------------------------
-        private void LayoutChangeMenuItem_Click(object sender, EventArgs e)
-        {
-            ToolStripMenuItem optionButton = sender as ToolStripMenuItem;
-            if (!optionButton.Checked)
-            {
-                Telemetry.LogFunctionUsage(Globals.Funkcje.ChangeLayout);
-                Telemetry.LogUserAction("MainForm", Globals.Funkcje.ChangeLayout, optionButton.Tag.ToString());
-                userSettings.skin = optionButton.Tag.ToString();
-                userSettings.hideNotePad = false;
-                ApplyLayout(optionButton.Tag.ToString());
-                userSettings.windowSize = Size;
-            }
-        }
         private void ShowNotepadMenuItem_Click(object sender, EventArgs e)
         {
             Telemetry.LogFunctionUsage(Globals.Funkcje.ToggleNotePad);
@@ -1594,7 +1581,7 @@ namespace TP_MasterTool
             if (showNotepadMenuItem.Checked)
             {
                 userSettings.hideNotePad = false;
-                ApplyLayout(userSettings.skin);
+                ApplyLayout("modern");
             }
             else
             {
@@ -1699,8 +1686,6 @@ namespace TP_MasterTool
         {
             if (skin == "modern")
             {
-                modernLayoutMenuItem.Checked = true;
-                oldLayoutMenuItem.Checked = false;
                 showNotepadMenuItem.Checked = true;
                 this.MinimumSize = new Size(722, 307);
                 this.Size = new Size(722, 307);
@@ -1715,30 +1700,6 @@ namespace TP_MasterTool
                 saveNote.Location = new Point(616, 212);
                 saveNote.Anchor = (AnchorStyles.Bottom | AnchorStyles.Right);
                 saveNote.Visible = true;
-                //localTempButton.Location = new Point(508, 261);
-                //localTempButton.Anchor = (AnchorStyles.Bottom | AnchorStyles.Right);
-
-            }
-            else if (skin == "old")
-            {
-                modernLayoutMenuItem.Checked = false;
-                oldLayoutMenuItem.Checked = true;
-                showNotepadMenuItem.Checked = true;
-                this.Size = new Size(765, 350);
-                this.MinimumSize = new Size(765, 350);
-                this.FormBorderStyle = FormBorderStyle.Sizable;
-                networkPanel.Location = new Point(378, 25);
-                notepadGroup.Location = new Point(12, 130);
-                notepadGroup.Size = new Size(650, 150);
-                notepadGroup.Visible = true;
-                importNote.Location = new Point(667, 165);
-                importNote.Anchor = (AnchorStyles.Top | AnchorStyles.Right);
-                importNote.Visible = true;
-                saveNote.Location = new Point(667, 140);
-                saveNote.Anchor = (AnchorStyles.Top | AnchorStyles.Right);
-                saveNote.Visible = true;
-                //localTempButton.Location = new Point(667, 180);
-                //localTempButton.Anchor = (AnchorStyles.Top | AnchorStyles.Right);
             }
         }
         public void HideNotePad()
@@ -1746,19 +1707,9 @@ namespace TP_MasterTool
             saveNote.Visible = false;
             importNote.Visible = false;
             notepadGroup.Visible = false;
-            if (userSettings.skin == "modern")
-            {
-                this.MinimumSize = new Size(400, 302);
-                this.Size = this.MinimumSize;
-                this.FormBorderStyle = FormBorderStyle.FixedSingle;
-            }
-
-            if (userSettings.skin == "old")
-            {
-                this.MinimumSize = new Size(765, 195);
-                this.Size = this.MinimumSize;
-                this.FormBorderStyle = FormBorderStyle.FixedSingle;
-            }
+            this.MinimumSize = new Size(400, 302);
+            this.Size = this.MinimumSize;
+            this.FormBorderStyle = FormBorderStyle.FixedSingle;
         }
         public void DisableUI()
         {

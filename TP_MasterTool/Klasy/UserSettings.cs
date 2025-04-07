@@ -12,7 +12,6 @@ namespace TP_MasterTool.Klasy
     public class UserSettings
     {
         public Size windowSize;
-        public string skin;
         public bool hideNotePad;
         public string notePadLines;
         public bool stayOnTop;
@@ -21,7 +20,6 @@ namespace TP_MasterTool.Klasy
         public UserSettings() //default constructor
         {
             windowSize = new Size(959, 377);
-            skin = "modern";
             hideNotePad = false;
             stayOnTop = false;
             notePadLines = "";
@@ -61,7 +59,6 @@ namespace TP_MasterTool.Klasy
         }
         public void ApplySettings()
         {
-            Main.interfejs.ApplyLayout(skin);
             if (hideNotePad)
             {
                 Main.interfejs.showNotepadMenuItem.Checked = false;

@@ -147,13 +147,10 @@
             this.miniLoggerDataCollectMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ADVMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.randomCollectionOfRandomnessToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.getMeMoreWorkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.PmMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.reportsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.preferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.layoutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.modernLayoutMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.oldLayoutMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
             this.showNotepadMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.stayOnTopMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator26 = new System.Windows.Forms.ToolStripSeparator();
@@ -185,7 +182,6 @@
             this.FiveMinTimer = new System.Windows.Forms.Timer(this.components);
             this.HourTimer = new System.Windows.Forms.Timer(this.components);
             this.helpProvider = new System.Windows.Forms.HelpProvider();
-            this.getMeMoreWorkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.Basic_Info.SuspendLayout();
             this.StatusBar.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -1155,6 +1151,13 @@
             this.randomCollectionOfRandomnessToolStripMenuItem.Text = "Random Collection of Randomness";
             this.randomCollectionOfRandomnessToolStripMenuItem.Click += new System.EventHandler(this.randomCollectionOfRandomnessToolStripMenuItem_Click);
             // 
+            // getMeMoreWorkToolStripMenuItem
+            // 
+            this.getMeMoreWorkToolStripMenuItem.Name = "getMeMoreWorkToolStripMenuItem";
+            this.getMeMoreWorkToolStripMenuItem.Size = new System.Drawing.Size(325, 26);
+            this.getMeMoreWorkToolStripMenuItem.Text = "Get Me More Work";
+            this.getMeMoreWorkToolStripMenuItem.Click += new System.EventHandler(this.getMeMoreWorkToolStripMenuItem_Click);
+            // 
             // PmMenuItem
             // 
             this.PmMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -1174,8 +1177,6 @@
             // preferencesToolStripMenuItem
             // 
             this.preferencesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.layoutToolStripMenuItem,
-            this.toolStripSeparator9,
             this.showNotepadMenuItem,
             this.stayOnTopMenuItem,
             this.toolStripSeparator26,
@@ -1184,38 +1185,6 @@
             this.preferencesToolStripMenuItem.Overflow = System.Windows.Forms.ToolStripItemOverflow.AsNeeded;
             this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(99, 24);
             this.preferencesToolStripMenuItem.Text = "Preferences";
-            // 
-            // layoutToolStripMenuItem
-            // 
-            this.layoutToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.modernLayoutMenuItem,
-            this.oldLayoutMenuItem});
-            this.layoutToolStripMenuItem.Name = "layoutToolStripMenuItem";
-            this.layoutToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
-            this.layoutToolStripMenuItem.Text = "Layout";
-            // 
-            // modernLayoutMenuItem
-            // 
-            this.modernLayoutMenuItem.Checked = true;
-            this.modernLayoutMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.modernLayoutMenuItem.Name = "modernLayoutMenuItem";
-            this.modernLayoutMenuItem.Size = new System.Drawing.Size(144, 26);
-            this.modernLayoutMenuItem.Tag = "modern";
-            this.modernLayoutMenuItem.Text = "Modern";
-            this.modernLayoutMenuItem.Click += new System.EventHandler(this.LayoutChangeMenuItem_Click);
-            // 
-            // oldLayoutMenuItem
-            // 
-            this.oldLayoutMenuItem.Name = "oldLayoutMenuItem";
-            this.oldLayoutMenuItem.Size = new System.Drawing.Size(144, 26);
-            this.oldLayoutMenuItem.Tag = "old";
-            this.oldLayoutMenuItem.Text = "Old";
-            this.oldLayoutMenuItem.Click += new System.EventHandler(this.LayoutChangeMenuItem_Click);
-            // 
-            // toolStripSeparator9
-            // 
-            this.toolStripSeparator9.Name = "toolStripSeparator9";
-            this.toolStripSeparator9.Size = new System.Drawing.Size(221, 6);
             // 
             // showNotepadMenuItem
             // 
@@ -1541,13 +1510,6 @@
             // 
             this.helpProvider.HelpNamespace = "help.htm";
             // 
-            // getMeMoreWorkToolStripMenuItem
-            // 
-            this.getMeMoreWorkToolStripMenuItem.Name = "getMeMoreWorkToolStripMenuItem";
-            this.getMeMoreWorkToolStripMenuItem.Size = new System.Drawing.Size(325, 26);
-            this.getMeMoreWorkToolStripMenuItem.Text = "Get Me More Work";
-            this.getMeMoreWorkToolStripMenuItem.Click += new System.EventHandler(this.getMeMoreWorkToolStripMenuItem_Click);
-            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -1647,10 +1609,6 @@
         private System.Windows.Forms.ToolStripMenuItem TPlocalReportsMenuItem;
         private System.Windows.Forms.ToolStripMenuItem TPNetLogsMenuItem;
         private System.Windows.Forms.ToolStripMenuItem preferencesToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem layoutToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem modernLayoutMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem oldLayoutMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator9;
         private System.Windows.Forms.Panel networkPanel;
         private System.Windows.Forms.Button importNote;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator10;
