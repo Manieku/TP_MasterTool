@@ -97,7 +97,7 @@ namespace TP_MasterTool
             //Tools//
             "MobilePos App Kill"
         };
-        readonly List<string> ipNotSupported = new List<string>
+        List<string> ipNotSupported = new List<string>
         {
             "Local Storage (Till)",
             "Scan Store Endpoints",
@@ -124,13 +124,6 @@ namespace TP_MasterTool
         }
         private void Test_Button_Click(object sender, EventArgs e)
         {
-            CtrlFunctions.SqlGetInfo(connectionPara.fullNetworkName, "TPCentralDB", "select szComputerName from Workstation where szWorkstationID like '" + connectionPara.country + connectionPara.storeNr + "%' and lInstanceNmbr=0", out string output);
-            CustomMsgBox.Show(CustomMsgBox.MsgType.Info, "lol", output);
-            string[] lol = output.Split(new string[] { Environment.NewLine } , StringSplitOptions.RemoveEmptyEntries);
-            foreach(string line in lol)
-            {
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Info, "test", line.Split(':')[1].Trim().Substring(0, 12));
-            }
             //CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c sc query apcpbeagent | find /i \"state\"");
             //if (cmdOutput.exitCode != 0)
             //{
@@ -1869,6 +1862,27 @@ namespace TP_MasterTool
             if (connectionPara.IPMode)
             {
                 Main.SetIP("IP MODE", Globals.errorColor);
+                CtrlFunctions.CmdOutput cmdHostname = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.fullNetworkName + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c hostname");
+                if (cmdHostname.exitCode == 0)
+                {
+                    connectionPara.hostname = cmdHostname.outputText.Trim();
+                    connectionPara.country = connectionPara.hostname.Substring(0, 2);
+                    connectionPara.storeNr = connectionPara.hostname.Substring(2, 4);
+                    connectionPara.deviceType = connectionPara.hostname.Substring(6, 3);
+                    connectionPara.deviceNr = connectionPara.hostname.Substring(9, 2);
+                    connectionPara.storeType = connectionPara.hostname.Substring(11);
+
+                    ipNotSupported = new List<string>
+                    {
+                        //"Local Storage (Till)",
+                        //"Scan Store Endpoints",
+                        //"Backup Checker",
+                        //"EoD Checker",
+                        //"POS Colon : Fix",
+                        //"Till Local Cache Clear"
+                    };
+
+                }
             }
             else
             {
