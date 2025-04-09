@@ -123,11 +123,6 @@
   <metadata name="menuStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>120, 17</value>
   </metadata>
-  <data name="ColonFixMenuItem.ToolTipText" xml:space="preserve">
-    <value>Kills MobilePOS application, then copy posDB to your ToolBox folder with config file 
-and waits for your confirmation after which it will copy posDB back to till.
-NOTE: POS application needs to be started manually.</value>
-  </data>
   <metadata name="FiveMinTimer.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>255, 17</value>
   </metadata>

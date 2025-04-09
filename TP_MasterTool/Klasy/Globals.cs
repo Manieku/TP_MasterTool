@@ -36,7 +36,6 @@ namespace TP_MasterTool
             GetSystemBootTime,
             BackupCheck,
             EodCheck, 
-            ColonFix,
             TSEWebserviceRestart,
             UpdatePackageInvalidCheck,
             GetSMART,

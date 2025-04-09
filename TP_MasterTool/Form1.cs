@@ -1085,75 +1085,6 @@ namespace TP_MasterTool
         /**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**/
 
         //--------------------Fixes-----------------------------
-        private void ColonFixMenuItem_Click(object sender, EventArgs e)
-        {
-            ConnectionPara connectionPara = Main.interfejs.connectionPara;
-            Logger colonFixLog = new Logger(Globals.Funkcje.ColonFix, "None", connectionPara.hostname);
-            Telemetry.LogCompleteTelemetryData(connectionPara.hostname, Globals.Funkcje.ColonFix, "");
-
-            ChangeStatusBar("Killing MobilePOS");
-            colonFixLog.Add("Killing MobilePOS");
-            if (!CtrlFunctions.KillMobilePos(connectionPara, out string errorMsg))
-            {
-                Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.Error, "MobilePOS Kill Failed");
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "MobilePOS Kill Failed", errorMsg);
-                colonFixLog.Add(errorMsg);
-                colonFixLog.SaveLog("ErrorLog");
-                return;
-            }
-
-            ChangeStatusBar("Copying posDB...");
-
-            colonFixLog.Add("Copying localstorage from till");
-            if (!FileController.CopyFile(@"\\" + connectionPara.fullNetworkName + @"\c$\Users\" + connectionPara.country + connectionPara.storeNr + connectionPara.storeType + @".AL\AppData\Local\Diebold_Nixdorf\mobile_cache\Local Storage\http_localhost_8088.localstorage", @".\http_localhost_8088.localstorage", false, out Exception copyExp))
-            {
-                colonFixLog.wasError = true;
-                colonFixLog.Add(copyExp.ToString());
-                Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.Error, "localstorage file copy error");
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Localstorage copy error", "ToolBox encountered error while copying localstorage file:" + Environment.NewLine + copyExp.Message);
-            }
-            colonFixLog.Add("Copying ActOperatorID");
-            if (!FileController.CopyFile(Globals.toolsPath + "ActOperatorID.txt", @".\ActOperatorID.txt", false, out copyExp))
-            {
-                colonFixLog.wasError = true;
-                colonFixLog.Add(copyExp.ToString());
-                Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.Error, "ActOperatorID file copy error");
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "ActOperatorID copy error", "ToolBox encountered error while copying ActOperatorID file:" + Environment.NewLine + copyExp.Message);
-            }
-            if(colonFixLog.wasError)
-            {
-                colonFixLog.SaveLog("ErrorLog");
-                ChangeStatusBar("Ready");
-                return;
-            }
-            ChangeStatusBar("Waiting for confirmation");
-            if (CustomMsgBox.Show(CustomMsgBox.MsgType.Info, "Waiting for file repair and confirmation", "Please repair database file and press OK to copy file back to the till.") != DialogResult.OK)
-            {
-                Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.Error, "Canceled by user");
-                ChangeStatusBar("Ready");
-                return;
-            }
-            ChangeStatusBar("Copying DB back to till...");
-            colonFixLog.Add("Copying DB back to till");
-            if (!FileController.MoveFile(@".\http_localhost_8088.localstorage", @"\\" + connectionPara.fullNetworkName + @"\c$\Users\" + connectionPara.country + connectionPara.storeNr + connectionPara.storeType + @".AL\AppData\Local\Diebold_Nixdorf\mobile_cache\Local Storage\http_localhost_8088.localstorage", false, out Exception moveExp))
-            {
-                colonFixLog.Add(moveExp.ToString());
-                colonFixLog.SaveLog("ErrorLog");
-                Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.Error, @"Copying localstorage file back error");
-                ChangeStatusBar("Ready");
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Copying localstorage file back error", "ToolBox encountered error trying to copy localstorage file back to till:" + Environment.NewLine + moveExp.Message);
-                return;
-            }
-
-            ChangeStatusBar("Cleaning up...");
-            try
-            {
-                System.IO.File.Delete(@".\ActOperatorID.txt");
-            }
-            catch { }
-
-            ChangeStatusBar("Ready");
-        } //dont support IP MODE
         private void tillLocalCacheClearMenuItem_Click(object sender, EventArgs e)
         {
             using (BackgroundWorker slave = new BackgroundWorker())
@@ -1878,7 +1809,6 @@ namespace TP_MasterTool
                         //"Scan Store Endpoints",
                         //"Backup Checker",
                         //"EoD Checker",
-                        //"POS Colon : Fix",
                         //"Till Local Cache Clear"
                     };
 

@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
             this.Test_Button = new System.Windows.Forms.Button();
             this.Basic_Info = new System.Windows.Forms.GroupBox();
             this.getMAC_button = new System.Windows.Forms.Button();
@@ -124,7 +123,6 @@
             this.toolStripSeparator14 = new System.Windows.Forms.ToolStripSeparator();
             this.DhcpPScopeInfoMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fixesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.ColonFixMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tillLocalCasheClearMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.parkedTXMoveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator12 = new System.Windows.Forms.ToolStripSeparator();
@@ -969,7 +967,6 @@
             // fixesToolStripMenuItem
             // 
             this.fixesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ColonFixMenuItem,
             this.tillLocalCasheClearMenuItem,
             this.parkedTXMoveMenuItem,
             this.toolStripSeparator12,
@@ -985,15 +982,6 @@
             this.fixesToolStripMenuItem.Overflow = System.Windows.Forms.ToolStripItemOverflow.AsNeeded;
             this.fixesToolStripMenuItem.Size = new System.Drawing.Size(55, 24);
             this.fixesToolStripMenuItem.Text = "Fixes";
-            // 
-            // ColonFixMenuItem
-            // 
-            this.ColonFixMenuItem.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.ColonFixMenuItem.Name = "ColonFixMenuItem";
-            this.ColonFixMenuItem.Size = new System.Drawing.Size(255, 26);
-            this.ColonFixMenuItem.Text = "POS Colon : Fix";
-            this.ColonFixMenuItem.ToolTipText = resources.GetString("ColonFixMenuItem.ToolTipText");
-            this.ColonFixMenuItem.Click += new System.EventHandler(this.ColonFixMenuItem_Click);
             // 
             // tillLocalCasheClearMenuItem
             // 
@@ -1191,7 +1179,7 @@
             this.showNotepadMenuItem.Checked = true;
             this.showNotepadMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.showNotepadMenuItem.Name = "showNotepadMenuItem";
-            this.showNotepadMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.showNotepadMenuItem.Size = new System.Drawing.Size(185, 26);
             this.showNotepadMenuItem.Text = "Notepad";
             this.showNotepadMenuItem.Click += new System.EventHandler(this.ShowNotepadMenuItem_Click);
             // 
@@ -1199,19 +1187,19 @@
             // 
             this.stayOnTopMenuItem.CheckOnClick = true;
             this.stayOnTopMenuItem.Name = "stayOnTopMenuItem";
-            this.stayOnTopMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.stayOnTopMenuItem.Size = new System.Drawing.Size(185, 26);
             this.stayOnTopMenuItem.Text = "Stay On Top";
             this.stayOnTopMenuItem.Click += new System.EventHandler(this.stayOnTopMenuItem_Click);
             // 
             // toolStripSeparator26
             // 
             this.toolStripSeparator26.Name = "toolStripSeparator26";
-            this.toolStripSeparator26.Size = new System.Drawing.Size(221, 6);
+            this.toolStripSeparator26.Size = new System.Drawing.Size(182, 6);
             // 
             // resetSettingsMenuItem
             // 
             this.resetSettingsMenuItem.Name = "resetSettingsMenuItem";
-            this.resetSettingsMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.resetSettingsMenuItem.Size = new System.Drawing.Size(185, 26);
             this.resetSettingsMenuItem.Text = "Reset Settings";
             this.resetSettingsMenuItem.Click += new System.EventHandler(this.resetSettingsMenuItem_Click);
             // 
@@ -1597,7 +1585,6 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
         private System.Windows.Forms.ToolStripMenuItem miniLoggerMenuItem;
         private System.Windows.Forms.ToolStripMenuItem fixesToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem ColonFixMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator8;
         private System.Windows.Forms.ToolStripMenuItem transactionsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem transactionPOSMenuItem;
