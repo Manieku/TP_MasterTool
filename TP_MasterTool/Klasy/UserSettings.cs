@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
@@ -82,23 +84,13 @@ namespace TP_MasterTool.Klasy
         }
         public void AddNewRecent(string nowy)
         {
-            int check = 4;
-            for (int i = 0; i < 5; i++)
+            List<string> tempList = recentPCs.ToList();
+            if (!tempList.Remove(nowy))
             {
-                if (nowy == recentPCs[i])
-                {
-                    check = i;
-                }
+                tempList.RemoveAt(4);
             }
-            if (check == 0)
-            {
-                return;
-            }
-            for (int j = check; j > 0; j--)
-            {
-                recentPCs[j] = recentPCs[j - 1];
-            }
-            recentPCs[0] = nowy;
+            tempList.Insert(0, nowy);
+            recentPCs = tempList.ToArray();
             ApplyRecentPCs();
         }
 
