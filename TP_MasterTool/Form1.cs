@@ -1525,6 +1525,7 @@ namespace TP_MasterTool
                 "CDriveClean",
                 "BackstoreCsvExport",
                 "DiscSpaceInfo",
+                "GetSqlInfo",
                 "AdhocFunction"
             };
             new MassFunctionForm(functionList).Show();

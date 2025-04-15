@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.IO.Compression;
@@ -9,6 +10,7 @@ using System.Xml.Linq;
 //using IWshRuntimeLibrary;
 using TP_MasterTool.Forms;
 using TP_MasterTool.Forms.CustomMessageBox;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace TP_MasterTool.Klasy
 {
@@ -166,6 +168,21 @@ namespace TP_MasterTool.Klasy
                 return null;
             }
             return new List<string> { date, outputFileName };
+        }
+        public static List<string> GetInfo_GetSqlInfo()
+        {
+            string dbName = Microsoft.VisualBasic.Interaction.InputBox("DataBase Name:", "Input data");
+            if (dbName == "")
+            {
+                return null;
+            }
+            string dbQuery = Microsoft.VisualBasic.Interaction.InputBox("DataBase Query after 'select':", "Input data");
+            if (dbQuery == "")
+            {
+                return null;
+            }
+            string outputFileName = Globals.userTempLogsPath + "SqlQuery " + Logger.Datownik() + ".txt";
+            return new List<string> { dbName, dbQuery, outputFileName };
         }
         public static List<string> GetInfo_GetMeMoreWork()
         {
@@ -916,6 +933,60 @@ namespace TP_MasterTool.Klasy
             catch { }
             massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
             massFunctionForm.AddToLog(rownr, "[SUCCESS] - Event Log Checked");
+        }
+        public static void GetSqlInfo(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
+        {
+            massFunctionForm.GridChange(rownr, "Reading db");
+            string connetionString = @"Data Source=" + connectionPara.fullNetworkName + @";Initial Catalog=" + addInfo[0] + @";User ID=" + Globals.SQLuserName + ";Password=" + Globals.SQLpassword;
+
+            try
+            {
+                using (SqlConnection sqlConnection = new SqlConnection(connetionString))
+                {
+                    sqlConnection.Open();
+
+                    using (SqlDataReader reader = new SqlCommand("select " + addInfo[1], sqlConnection).ExecuteReader())
+                    {
+                        string output = "";
+                        while (reader.Read())
+                        {
+                            lock (massFunctionForm.logLock)
+                            {
+                                if (!File.Exists(addInfo[2]))
+                                {
+                                    File.AppendAllText(addInfo[2], "TAG");
+                                    for (int i = 0; i < reader.FieldCount; i++)
+                                    {
+                                        File.AppendAllText(addInfo[2], "\t" + reader.GetName(i));
+                                    }
+                                    File.AppendAllText(addInfo[2], Environment.NewLine);
+                                }
+                            }
+                            output += connectionPara.hostname; 
+                            for (int i = 0; i < reader.FieldCount; i++)
+                            {
+                                output += "\t" + reader[i];
+                            }
+                            output += Environment.NewLine;
+                        }
+                        lock (massFunctionForm.logLock)
+                        {
+                            File.AppendAllText(addInfo[2], output);
+                        }
+                    }
+                }
+            }
+            catch (Exception exp)
+            {
+                lock (massFunctionForm.logLock)
+                {
+                    File.AppendAllText(addInfo[2], connectionPara.hostname + "\tSQL Read Error" + Environment.NewLine);
+                }
+                massFunctionForm.ErrorLog(rownr, "SQL Read Error");
+                return;
+            }
+            massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
+            massFunctionForm.AddToLog(rownr, "[SUCCESS] - SQL Read Done");
         }
         public static void AdhocFunction(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
