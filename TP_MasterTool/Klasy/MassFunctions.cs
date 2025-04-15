@@ -919,22 +919,14 @@ namespace TP_MasterTool.Klasy
         }
         public static void AdhocFunction(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
-            massFunctionForm.GridChange(rownr, "Checking log");
-            string[] log = Directory.GetFiles(@"\\" + connectionPara.fullNetworkName + @"\d$\TPDotnet\Log", connectionPara.hostname + "-TPDotnet.WebServices.TPChannelServices.TPChannelServicesHostApp.log", SearchOption.TopDirectoryOnly);
-            foreach(string line in File.ReadLines(log[0]).Reverse())
+            massFunctionForm.GridChange(rownr, "Checking db");
+            if(CtrlFunctions.SqlGetInfo(connectionPara.fullNetworkName, "TPCentralDB", "select szVersion from eusoftwareversion", out string output))
             {
-                if(line.Contains("CheckPowerSupplyStatus") && line.Contains("Error"))
-                {
-                    int errorStart = line.IndexOf("Error");
-                    int errorEnd = line.IndexOf("|", errorStart);
-                    string date = line.Substring(line.IndexOf("|"), 10);
-                    string result = line.Substring(line.IndexOf("Error"), errorEnd - errorStart);
-                    massFunctionForm.ErrorLog(rownr, date + result);
-                    return;
-                }
+                massFunctionForm.AddToLog(rownr, "[SUCCESS] - " + output.Split('|')[0]);
+                massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
+                return;
             }
-            massFunctionForm.AddToLog(rownr, "[SUCCESS] - No errors found");
-            massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
+            massFunctionForm.ErrorLog(rownr, "DB reading error");
         }
 
         //------------------------Moje wymysly------------------------------//

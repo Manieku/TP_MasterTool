@@ -124,6 +124,11 @@ namespace TP_MasterTool
         }
         private void Test_Button_Click(object sender, EventArgs e)
         {
+            
+            
+            
+            
+            
             //CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c sc query apcpbeagent | find /i \"state\"");
             //if (cmdOutput.exitCode != 0)
             //{
@@ -748,9 +753,20 @@ namespace TP_MasterTool
         private void GetFoldersSize(object sender, EventArgs e)
         {
             ChangeStatusBar("Working");
+            string drive = null;
+            using (DropDownSelect dropDownSelect = new DropDownSelect("Select minidump to analyse", new string[] {"C", "D", "F"}))
+            {
+                var result = dropDownSelect.ShowDialog();
+                if (result != DialogResult.OK)
+                {
+                    return;
+                }
+                drive = dropDownSelect.ReturnValue1;            //values preserved after close
+            }
+
             Telemetry.LogCompleteTelemetryData(connectionPara.hostname, Globals.Funkcje.GetFoldersSize, "");
             string[] outputFiles = { @"result.csv", @"result.png" };
-            string[] toCopy = { Globals.toolsPath + "wiztree64.exe", Globals.toolsPath + "wiztreestart.cmd" };
+            string[] toCopy = { Globals.toolsPath + "wiztree64.exe", Globals.toolsPath + "wiztreestart_" + drive + ".cmd" };
             try
             {
                 foreach(string file in outputFiles)
@@ -775,7 +791,7 @@ namespace TP_MasterTool
                     return;
                 }
             }
-            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.fullNetworkName + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c cd c:\temp && .\wiztreestart.cmd");
+            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.fullNetworkName + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c cd c:\temp && .\" + Path.GetFileName(toCopy[1]));
             if(cmdOutput.exitCode !=0)
             {
                 Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.Error, "WizTree execution error: " + cmdOutput.exitCode);
@@ -787,7 +803,7 @@ namespace TP_MasterTool
             try
             {
                 File.Delete(@"\\" + connectionPara.fullNetworkName + @"\c$\temp\wiztree64.exe");
-                File.Delete(@"\\" + connectionPara.fullNetworkName + @"\c$\temp\wiztreestart.cmd");
+                File.Delete(@"\\" + connectionPara.fullNetworkName + @"\c$\temp\" + Path.GetFileName(toCopy[1]));
             }
             catch (Exception exp)
             {
