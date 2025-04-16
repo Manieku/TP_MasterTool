@@ -123,11 +123,11 @@ namespace TP_MasterTool
         }
         private void Test_Button_Click(object sender, EventArgs e)
         {
-            
-            
-            
-            
-            
+
+
+
+
+
             //CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.TAG + " -u " + connectionPara.userName + " -P " + connectionPara.password + " cmd /c sc query apcpbeagent | find /i \"state\"");
             //if (cmdOutput.exitCode != 0)
             //{
@@ -202,9 +202,13 @@ namespace TP_MasterTool
             //}
 
 
-            //CtrlFunctions.EncryptFile(@".\mojepasy.txt", "cycuszki", Globals.configPath + "credentials.crypt");
-            //MessageBox.Show("krypto krypto superman lezy");
+            CtrlFunctions.EncryptFile(@".\credtest.txt", File.ReadAllLines(Globals.configPath + "access.txt")[7], @".\credentials.crypt");
+            MessageBox.Show("krypto krypto superman lezy");
+            //if (!CtrlFunctions.DecryptToString(Globals.configPath + "credentials.crypt", "cycuszki", out string tempCredentials))
+            //{
 
+            //}
+            //File.AppendAllText(@".\credtest.txt", tempCredentials);
 
             //Logger.GeneratePortalReport(@".\EoD_Abort_Test_Report.txt", @".\EoD_Abort_Test_AddInfo.txt", @".\logo.txt", @".\output.txt");
         }

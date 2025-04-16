@@ -175,7 +175,7 @@ namespace TP_MasterTool.Klasy
         private static void ToolBoxSetup(ref Logger myLog)
         {
             myLog.Add("Credentials initialization");
-            if (!CtrlFunctions.DecryptToString(Globals.configPath + "credentials.crypt", "cycuszki", out string tempCredentials))
+            if (!CtrlFunctions.DecryptToString(Globals.configPath + "credentials.crypt", System.IO.File.ReadAllLines(Globals.configPath + "access.txt")[7], out string tempCredentials))
             {
                 myLog.Add("Unable to decrypt credentials from encrypted file" + Environment.NewLine + tempCredentials);
                 myLog.SaveLog("CriticalError");
