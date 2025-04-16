@@ -184,6 +184,20 @@ namespace TP_MasterTool.Klasy
             string outputFileName = Globals.userTempLogsPath + "SqlQuery " + Logger.Datownik() + ".txt";
             return new List<string> { dbName, dbQuery, outputFileName };
         }
+        public static List<string> GetInfo_GetMiniloggerStatus()
+        {
+            string outputFileName = Globals.userTempLogsPath + "MiniloggerStatus " + Logger.Datownik() + ".csv";
+            try
+            {
+                File.AppendAllText(outputFileName, "TAG,ip,hostname,wasonline,isonline");
+            }
+            catch (Exception exp)
+            {
+                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Creating output file Error", "Unable to create output file in logs folder: " + exp.Message);
+                return null;
+            }
+            return new List<string> { outputFileName };
+        }
         public static List<string> GetInfo_GetMeMoreWork()
         {
             string outputFileName = "GetMeMoreWork " + Logger.Datownik() + ".csv";
@@ -987,6 +1001,32 @@ namespace TP_MasterTool.Klasy
             }
             massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
             massFunctionForm.AddToLog(rownr, "[SUCCESS] - SQL Read Done");
+        }
+        public static void GetMiniloggerStatus(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
+        {
+            massFunctionForm.GridChange(rownr, "Checking file");
+            string csvFile = @"\\" + connectionPara.fullNetworkName + @"\c$\oeminst\ALL_LOGS\Monitoring\minilogger.csv";
+            if (!File.Exists(csvFile))
+            {
+                massFunctionForm.ErrorLog(rownr, "No minilogger.csv found");
+                lock(massFunctionForm.logLock)
+                {
+                    File.AppendAllText(addInfo[0], Environment.NewLine + connectionPara.hostname);
+                }
+                return;
+            }
+            string[] log = File.ReadAllLines(csvFile);
+            string output = "";
+            for(int i=1; i<5; i++)
+            {
+                output += Environment.NewLine + connectionPara.country + connectionPara.storeNr + "CUC0" + i + "," + log[1];
+            }
+            lock(massFunctionForm.logLock)
+            {
+                File.AppendAllText(addInfo[0], output);
+            }
+            massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
+            massFunctionForm.AddToLog(rownr, "[SUCCESS] - Done");
         }
         public static void AdhocFunction(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {

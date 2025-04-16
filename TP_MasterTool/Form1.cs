@@ -1526,6 +1526,7 @@ namespace TP_MasterTool
                 "BackstoreCsvExport",
                 "DiscSpaceInfo",
                 "GetSqlInfo",
+                "GetMiniloggerStatus",
                 "AdhocFunction"
             };
             new MassFunctionForm(functionList).Show();

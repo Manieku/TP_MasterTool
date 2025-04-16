@@ -88,6 +88,7 @@ namespace TP_MasterTool
             AdhocFunction,
             CDriveClean,
             CucDataCollect,
+            GetMiniloggerStatus,
             GetMeMoreWork,
             MoveInvalidUpdatePackages,
             Error,
