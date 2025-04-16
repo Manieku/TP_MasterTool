@@ -734,22 +734,6 @@ namespace TP_MasterTool
                 slave.RunWorkerAsync();
             }
         }
-        private void InstallWinDirStatMenuItem_Click(object sender, EventArgs e)
-        {
-            if (File.Exists(@"\\" + connectionPara.fullNetworkName + @"\c$\temp\windirstat.exe"))
-            {
-                return;
-            }
-            ChangeStatusBar("Copying...");
-            Telemetry.LogCompleteTelemetryData(connectionPara.hostname, Globals.Funkcje.WinDirStatInstall, "");
-            if (!FileController.CopyFile(Globals.toolsPath + "windirstat.exe", @"\\" + connectionPara.fullNetworkName + @"\c$\temp\windirstat.exe", false, out Exception copyExp))
-            {
-                Logger.QuickLog(Globals.Funkcje.WinDirStatInstall, "Copying exe to host", connectionPara.hostname, "ErrorLog", copyExp.ToString());
-                Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.Error, "Copying windirstat failed");
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Copying Error", "ToolBox encountered error while trying to copy winDirStat:" + Environment.NewLine + copyExp.Message);
-            }
-            ChangeStatusBar("Ready");
-        }
         private void GetFoldersSize(object sender, EventArgs e)
         {
             ChangeStatusBar("Working");

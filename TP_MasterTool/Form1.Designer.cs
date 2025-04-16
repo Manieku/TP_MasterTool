@@ -103,7 +103,6 @@
             this.sMARTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
             this.drivesSpaceInfoMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.installWinDirStatMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.getFoldersSizeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
             this.scanEndpointsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -766,7 +765,6 @@
             this.sMARTToolStripMenuItem,
             this.toolStripSeparator10,
             this.drivesSpaceInfoMenuItem,
-            this.installWinDirStatMenuItem,
             this.getFoldersSizeToolStripMenuItem,
             this.toolStripSeparator11,
             this.scanEndpointsMenuItem,
@@ -841,13 +839,6 @@
             this.drivesSpaceInfoMenuItem.Size = new System.Drawing.Size(232, 26);
             this.drivesSpaceInfoMenuItem.Text = "Drives Space Info";
             this.drivesSpaceInfoMenuItem.Click += new System.EventHandler(this.DrivesSpaceInfoMenuItem_Click);
-            // 
-            // installWinDirStatMenuItem
-            // 
-            this.installWinDirStatMenuItem.Name = "installWinDirStatMenuItem";
-            this.installWinDirStatMenuItem.Size = new System.Drawing.Size(232, 26);
-            this.installWinDirStatMenuItem.Text = "Install WinDirStat";
-            this.installWinDirStatMenuItem.Click += new System.EventHandler(this.InstallWinDirStatMenuItem_Click);
             // 
             // getFoldersSizeToolStripMenuItem
             // 
@@ -1600,7 +1591,6 @@
         private System.Windows.Forms.Button importNote;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator10;
         private System.Windows.Forms.ToolStripMenuItem drivesSpaceInfoMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem installWinDirStatMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator11;
         private System.Windows.Forms.ToolStripMenuItem scanEndpointsMenuItem;
         private System.Windows.Forms.TextBox textBox_IP;
