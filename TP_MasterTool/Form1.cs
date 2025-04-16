@@ -67,6 +67,7 @@ namespace TP_MasterTool
             "Symantec Backup Logs",
             "TFTPD Logs",
             "Installation Logs",
+            "Check_Minilogger Log",
             "Get APC Logs",
             "PDCU Data Error Secure",
             //Diagnostics//
@@ -1919,6 +1920,5 @@ namespace TP_MasterTool
         {
             userSettings.notePadLines = notepad.Text;
         } // Save notepad content after change
-
     }
 }

@@ -179,6 +179,7 @@
             this.FiveMinTimer = new System.Windows.Forms.Timer(this.components);
             this.HourTimer = new System.Windows.Forms.Timer(this.components);
             this.helpProvider = new System.Windows.Forms.HelpProvider();
+            this.checkMiniloggerLogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.Basic_Info.SuspendLayout();
             this.StatusBar.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -339,7 +340,7 @@
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(5, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(941, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(941, 30);
             this.menuStrip1.TabIndex = 4;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -611,6 +612,7 @@
             this.InstallationLogsMenuItem,
             this.oEMInstalLogsMenuItem,
             this.TPNetLogsMenuItem,
+            this.checkMiniloggerLogToolStripMenuItem,
             this.toolStripSeparator22,
             this.getAPCLogsToolStripMenuItem,
             this.toolStripSeparator19,
@@ -619,7 +621,7 @@
             this.pDCUDataErrorSecureMenuItem});
             this.LogsMenuItem.Name = "LogsMenuItem";
             this.LogsMenuItem.Overflow = System.Windows.Forms.ToolStripItemOverflow.AsNeeded;
-            this.LogsMenuItem.Size = new System.Drawing.Size(54, 24);
+            this.LogsMenuItem.Size = new System.Drawing.Size(54, 26);
             this.LogsMenuItem.Text = "Logs";
             // 
             // WindowsLogsMenuItem
@@ -1489,6 +1491,14 @@
             // 
             this.helpProvider.HelpNamespace = "help.htm";
             // 
+            // checkMiniloggerLogToolStripMenuItem
+            // 
+            this.checkMiniloggerLogToolStripMenuItem.Name = "checkMiniloggerLogToolStripMenuItem";
+            this.checkMiniloggerLogToolStripMenuItem.Size = new System.Drawing.Size(250, 26);
+            this.checkMiniloggerLogToolStripMenuItem.Tag = "c$\\service\\log\\check_minilogger.log";
+            this.checkMiniloggerLogToolStripMenuItem.Text = "Check_Minilogger Log";
+            this.checkMiniloggerLogToolStripMenuItem.Click += new System.EventHandler(this.DriveMenuItem_Click);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -1677,6 +1687,7 @@
         private System.Windows.Forms.ToolStripMenuItem reportsMenuItem;
         private System.Windows.Forms.ToolStripMenuItem getFoldersSizeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem getMeMoreWorkToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem checkMiniloggerLogToolStripMenuItem;
     }
 }
 

@@ -87,14 +87,14 @@ namespace TP_MasterTool.Klasy
         {
             Main.ChangeStatusBar("Working...");
             Telemetry.LogCompleteTelemetryData(host, Globals.Funkcje.OpenFolder, path);
-            if (!Directory.Exists(@"\\" + host + @"\" + path))
+            if (Directory.Exists(@"\\" + host + @"\" + path) || File.Exists(@"\\" + host + @"\" + path))
             {
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Folder Not Found", @"Folder couldn't be found. Please check if target machine is online or initialize it anew and try again.");
-                Telemetry.LogMachineAction(host, Globals.Funkcje.OpenFolder, "Error");
+                Process.Start("explorer.exe", @"\\" + host + @"\" + path);
                 Main.ChangeStatusBar("Ready");
                 return;
             }
-            Process.Start("explorer.exe", @"\\" + host + @"\" + path);
+            CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Folder Not Found", @"Folder couldn't be found. Please check if target machine is online or initialize it anew and try again.");
+            Telemetry.LogMachineAction(host, Globals.Funkcje.OpenFolder, "Error");
             Main.ChangeStatusBar("Ready");
         }
         public static Color PingIP(string ip)
