@@ -46,7 +46,6 @@ namespace TP_MasterTool
             //Diagnostics//
             "Get S.M.A.R.T",
             "Drives Space Info",
-            "Install WinDirStat",
             "Get Folders Size",
             "Scan Store Endpoints",
             "System Boot Time",
