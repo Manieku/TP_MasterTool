@@ -78,7 +78,6 @@ namespace TP_MasterTool
             WinCrashReasonCheck,
             CheckForKB,
             GetApcLogs,
-            Stocktaking,
             DeleteLock,
             GetSqlInfo,
             GetDhcpScope,

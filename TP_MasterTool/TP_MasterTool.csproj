@@ -120,12 +120,6 @@
     <Compile Include="Forms\MonitoringAnalizer.Designer.cs">
       <DependentUpon>MonitoringAnalizer.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\Stocktaking.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\Stocktaking.Designer.cs">
-      <DependentUpon>Stocktaking.cs</DependentUpon>
-    </Compile>
     <Compile Include="Klasy\ConnectionPara.cs" />
     <Compile Include="Klasy\CtrlFunctions.cs" />
     <Compile Include="Klasy\FileController.cs" />
@@ -196,9 +190,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\serviceMgr.resx">
       <DependentUpon>serviceMgr.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Stocktaking.resx">
-      <DependentUpon>Stocktaking.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

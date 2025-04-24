@@ -1443,10 +1443,6 @@ namespace TP_MasterTool
         {
             new MonitoringAnalizer().Show();
         }
-        private void StocktakingMenuItem_Click(object sender, EventArgs e)
-        {
-            new Stocktaking().Show();
-        }
         private void massFunctionsMenuItem_Click(object sender, EventArgs e)
         {
             string[] functionList = new string[]
@@ -1488,7 +1484,6 @@ namespace TP_MasterTool
             }
             Process.Start("explorer.exe", @"\\" + connectionPara.fullNetworkName + @"\d$\StoreApps\pfm\programs");
         }
-
 
         /**//**//**//**//**//**//**//**//**//**//**//**//**//**//**//**/
 

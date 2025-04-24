@@ -88,6 +88,7 @@
             this.TPNetLogsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.TPLogOpenFolderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.secureLogsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.checkMiniloggerLogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator22 = new System.Windows.Forms.ToolStripSeparator();
             this.getAPCLogsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator19 = new System.Windows.Forms.ToolStripSeparator();
@@ -138,7 +139,6 @@
             this.TransactionsXMLToCSVMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MobilePosAppKillMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.monitoringSlayerMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.stocktakingMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.massFunctionsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.FindMacInDhcpMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.miniLoggerDataCollectMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -179,7 +179,6 @@
             this.FiveMinTimer = new System.Windows.Forms.Timer(this.components);
             this.HourTimer = new System.Windows.Forms.Timer(this.components);
             this.helpProvider = new System.Windows.Forms.HelpProvider();
-            this.checkMiniloggerLogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.Basic_Info.SuspendLayout();
             this.StatusBar.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -340,7 +339,7 @@
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(5, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(941, 30);
+            this.menuStrip1.Size = new System.Drawing.Size(941, 28);
             this.menuStrip1.TabIndex = 4;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -621,7 +620,7 @@
             this.pDCUDataErrorSecureMenuItem});
             this.LogsMenuItem.Name = "LogsMenuItem";
             this.LogsMenuItem.Overflow = System.Windows.Forms.ToolStripItemOverflow.AsNeeded;
-            this.LogsMenuItem.Size = new System.Drawing.Size(54, 26);
+            this.LogsMenuItem.Size = new System.Drawing.Size(54, 24);
             this.LogsMenuItem.Text = "Logs";
             // 
             // WindowsLogsMenuItem
@@ -720,6 +719,14 @@
             this.secureLogsMenuItem.Size = new System.Drawing.Size(172, 26);
             this.secureLogsMenuItem.Text = "Secure Logs";
             this.secureLogsMenuItem.Click += new System.EventHandler(this.SecureLogsMenuItem_Click);
+            // 
+            // checkMiniloggerLogToolStripMenuItem
+            // 
+            this.checkMiniloggerLogToolStripMenuItem.Name = "checkMiniloggerLogToolStripMenuItem";
+            this.checkMiniloggerLogToolStripMenuItem.Size = new System.Drawing.Size(250, 26);
+            this.checkMiniloggerLogToolStripMenuItem.Tag = "c$\\service\\log\\check_minilogger.log";
+            this.checkMiniloggerLogToolStripMenuItem.Text = "Check_Minilogger Log";
+            this.checkMiniloggerLogToolStripMenuItem.Click += new System.EventHandler(this.DriveMenuItem_Click);
             // 
             // toolStripSeparator22
             // 
@@ -1050,7 +1057,6 @@
             this.TransactionsXMLToCSVMenuItem,
             this.MobilePosAppKillMenuItem,
             this.monitoringSlayerMenuItem,
-            this.stocktakingMenuItem,
             this.massFunctionsMenuItem,
             this.FindMacInDhcpMenuItem,
             this.miniLoggerDataCollectMenuItem});
@@ -1086,13 +1092,6 @@
             this.monitoringSlayerMenuItem.Size = new System.Drawing.Size(254, 26);
             this.monitoringSlayerMenuItem.Text = "MonitoringSlayer";
             this.monitoringSlayerMenuItem.Click += new System.EventHandler(this.MonitoringSlayerMenuItem_Click);
-            // 
-            // stocktakingMenuItem
-            // 
-            this.stocktakingMenuItem.Name = "stocktakingMenuItem";
-            this.stocktakingMenuItem.Size = new System.Drawing.Size(254, 26);
-            this.stocktakingMenuItem.Text = "Stocktaking";
-            this.stocktakingMenuItem.Click += new System.EventHandler(this.StocktakingMenuItem_Click);
             // 
             // massFunctionsMenuItem
             // 
@@ -1491,14 +1490,6 @@
             // 
             this.helpProvider.HelpNamespace = "help.htm";
             // 
-            // checkMiniloggerLogToolStripMenuItem
-            // 
-            this.checkMiniloggerLogToolStripMenuItem.Name = "checkMiniloggerLogToolStripMenuItem";
-            this.checkMiniloggerLogToolStripMenuItem.Size = new System.Drawing.Size(250, 26);
-            this.checkMiniloggerLogToolStripMenuItem.Tag = "c$\\service\\log\\check_minilogger.log";
-            this.checkMiniloggerLogToolStripMenuItem.Text = "Check_Minilogger Log";
-            this.checkMiniloggerLogToolStripMenuItem.Click += new System.EventHandler(this.DriveMenuItem_Click);
-            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -1659,7 +1650,6 @@
         private System.Windows.Forms.ToolStripMenuItem veritasBackupJobResetMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator23;
         private System.Windows.Forms.ToolStripMenuItem dumpFileAnaliseMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem stocktakingMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator24;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator25;
         private System.Windows.Forms.ToolStripMenuItem sQlQueriesToolStripMenuItem;

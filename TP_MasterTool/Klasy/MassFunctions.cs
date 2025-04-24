@@ -990,7 +990,7 @@ namespace TP_MasterTool.Klasy
                     }
                 }
             }
-            catch (Exception exp)
+            catch
             {
                 lock (massFunctionForm.logLock)
                 {
