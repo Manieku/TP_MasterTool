@@ -124,8 +124,29 @@ namespace TP_MasterTool
         }
         private void Test_Button_Click(object sender, EventArgs e)
         {
+            Dictionary<string, int> sumDir = new Dictionary<string, int>();
+            foreach(string file in Directory.GetFiles(@".\Stats", "FunctionStats*.xml", SearchOption.AllDirectories))
+            {
+                XDocument document1 = XDocument.Load(file);
+                foreach(var node in document1.Root.Elements())
+                {
+                    string function = node.Name.ToString();
+                    int usage = int.Parse(node.Value);
+                    if(sumDir.ContainsKey(node.Name.ToString()))
+                    {
+                        sumDir[function] += usage;
+                    }
+                    else
+                    {
+                        sumDir.Add(function, usage);
+                    }
+                }
+            }
 
-
+            foreach(var entry in sumDir)
+            {
+                File.AppendAllText(@".\outputtest.txt", entry.Key + "\t" + entry.Value + Environment.NewLine);
+            }
 
 
 
@@ -203,8 +224,8 @@ namespace TP_MasterTool
             //}
 
 
-            CtrlFunctions.EncryptFile(@".\credtest.txt", File.ReadAllLines(Globals.configPath + "access.txt")[7], @".\credentials.crypt");
-            MessageBox.Show("krypto krypto superman lezy");
+            //CtrlFunctions.EncryptFile(@".\credtest.txt", File.ReadAllLines(Globals.configPath + "access.txt")[7], @".\credentials.crypt");
+            //MessageBox.Show("krypto krypto superman lezy");
             //if (!CtrlFunctions.DecryptToString(Globals.configPath + "credentials.crypt", "cycuszki", out string tempCredentials))
             //{
 
@@ -895,7 +916,50 @@ namespace TP_MasterTool
         //------------------Backup Checker--------------------
         private void BackupCheckerMenuItem_Click(object sender, EventArgs e)
         {
-            new BackupCheck().Show();
+            Telemetry.LogCompleteTelemetryData(connectionPara.hostname, Globals.Funkcje.BackupCheck, "");
+            using (BackgroundWorker slave = new BackgroundWorker())
+            {
+                slave.DoWork += (s, args) =>
+                {
+                    ChangeStatusBar("Working");
+                    string output = "F Drive:" + CtrlFunctions.GetDiskSpaceInfo("F", connectionPara, out ulong totalFreeBytes, out ulong totalBytes) + Environment.NewLine;
+                    if(output.Contains("Error"))
+                    {
+                        CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Disk read error", "Unable to read F drive. Please check if backup HDD is available");
+                    }
+                    else
+                    {
+                        output += totalFreeBytes switch
+                        {
+                            < 50400L * 1024 * 1024 => "Status: [ERROR] Low disc space - please check if there aren't duplicated backup or other files.",
+                            < 321536L * 1024 * 1024 => "Status: [CAUTION] Disc usage is beyond typical norm - please check if there aren't any unnesesary files or old backups.",
+                            _ => "Status: OK"
+                        };
+
+
+
+
+
+                        //if ((totalFreeBytes / (1024 * 1024)) < 102400)
+                        //{
+                        //    output += "Status: [ERROR] Low disc space - please check if there aren't duplicated backup files.";
+                        //}
+                        //else if ((totalFreeBytes / (1024 * 1024)) < 321536)
+                        //{
+                        //    output += "Status: [CAUTION] Disc usage is beyond typical norm - please check if there aren't any unnesesary files or old backups.";
+                        //}
+                        //else
+                        //{
+                        //    output += "Status: OK";
+                        //}
+                        CustomMsgBox.Show(CustomMsgBox.MsgType.Info, "LOL", output);
+                    }
+                    ChangeStatusBar("Ready");
+                };
+                slave.RunWorkerAsync();
+            }
+
+            //new BackupCheck().Show();
         } //dont support IP MODE
 
         //------------------EoD Checker--------------------
@@ -1520,6 +1584,7 @@ namespace TP_MasterTool
             {
                 "GetMeMoreWork",
                 "MoveInvalidUpdatePackages",
+                "StartWNBID",
             };
             new MassFunctionForm(functionList).Show();
         }

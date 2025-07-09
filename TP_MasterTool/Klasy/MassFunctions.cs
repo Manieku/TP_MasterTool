@@ -968,6 +968,7 @@ namespace TP_MasterTool.Klasy
                             {
                                 if (!File.Exists(addInfo[2]))
                                 {
+                                    File.AppendAllText(addInfo[2], "Query: " + addInfo[1] + Environment.NewLine);
                                     File.AppendAllText(addInfo[2], "TAG");
                                     for (int i = 0; i < reader.FieldCount; i++)
                                     {
@@ -1030,14 +1031,8 @@ namespace TP_MasterTool.Klasy
         }
         public static void AdhocFunction(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
-            massFunctionForm.GridChange(rownr, "Checking db");
-            if(CtrlFunctions.SqlGetInfo(connectionPara.fullNetworkName, "TPCentralDB", "select szVersion from eusoftwareversion", out string output))
-            {
-                massFunctionForm.AddToLog(rownr, "[SUCCESS] - " + output.Split('|')[0]);
-                massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
-                return;
-            }
-            massFunctionForm.ErrorLog(rownr, "DB reading error");
+            massFunctionForm.AddToLog(rownr, "[SUCCESS] - Online");
+            massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
         }
 
         //------------------------Moje wymysly------------------------------//
@@ -1664,6 +1659,18 @@ namespace TP_MasterTool.Klasy
             {
                 massFunctionForm.ErrorLog(rownr, "Moving file error");
             }
+        }
+        public static void StartWNBID(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
+        {
+            massFunctionForm.GridChange(rownr, "Starting Service");
+            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.fullNetworkName + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c net start WNBID");
+            if(cmdOutput.exitCode != 0)
+            {
+                massFunctionForm.ErrorLog(rownr, "Error starting service");
+                return;
+            }
+            massFunctionForm.AddToLog(rownr, "[SUCCESS] - Service Started");
+            massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
         }
     }
 }
