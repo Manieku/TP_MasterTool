@@ -91,6 +91,7 @@ namespace TP_MasterTool
             GetMeMoreWork,
             MoveInvalidUpdatePackages,
             StartWNBID,
+            ReplaceBackupScript,
             Error,
         }
 

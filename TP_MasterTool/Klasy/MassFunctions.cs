@@ -616,7 +616,7 @@ namespace TP_MasterTool.Klasy
                     massFunctionForm.GridChange(rownr, "Deleting files");
                     foreach (string file in files)
                     {
-                        if (File.GetCreationTime(file).Day < DateTime.Today.AddDays(-4).Day)
+                        if (File.GetCreationTime(file).Day < DateTime.Today.AddDays(-3).Day)
                         {
                             string msg = file + " > " + File.GetCreationTime(file);
                             File.Delete(file);
@@ -1671,6 +1671,18 @@ namespace TP_MasterTool.Klasy
             }
             massFunctionForm.AddToLog(rownr, "[SUCCESS] - Service Started");
             massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
+        }
+        public static void ReplaceBackupScript(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
+        {
+            massFunctionForm.GridChange(rownr, "Replacing");
+            if(!FileController.CopyFile(Globals.toolsPath + "AddImageJob.ps1", @"\\" + connectionPara.fullNetworkName + @"\c$\service\tools\backup\AddImageJob.ps1", false, out Exception copyExp))
+            {
+                massFunctionForm.ErrorLog(rownr, copyExp.Message);
+                return;
+            }
+            massFunctionForm.AddToLog(rownr, "[SUCCESS] - Script Replaced");
+            massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
+
         }
     }
 }

@@ -1585,6 +1585,9 @@ namespace TP_MasterTool
                 "GetMeMoreWork",
                 "MoveInvalidUpdatePackages",
                 "StartWNBID",
+                "DeleteOldBackupFiles",
+                "ReplaceBackupScript",
+                "BackupJobsReset"
             };
             new MassFunctionForm(functionList).Show();
         }
