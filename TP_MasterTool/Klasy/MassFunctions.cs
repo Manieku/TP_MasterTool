@@ -952,7 +952,7 @@ namespace TP_MasterTool.Klasy
         {
             massFunctionForm.GridChange(rownr, "Reading db");
             string connetionString = @"Data Source=" + connectionPara.fullNetworkName + @";Initial Catalog=" + addInfo[0] + @";User ID=" + Globals.SQLuserName + ";Password=" + Globals.SQLpassword;
-
+            File.AppendAllText(addInfo[2], "Query: " + addInfo[1] + Environment.NewLine);
             try
             {
                 using (SqlConnection sqlConnection = new SqlConnection(connetionString))
@@ -968,7 +968,6 @@ namespace TP_MasterTool.Klasy
                             {
                                 if (!File.Exists(addInfo[2]))
                                 {
-                                    File.AppendAllText(addInfo[2], "Query: " + addInfo[1] + Environment.NewLine);
                                     File.AppendAllText(addInfo[2], "TAG");
                                     for (int i = 0; i < reader.FieldCount; i++)
                                     {
@@ -1031,8 +1030,24 @@ namespace TP_MasterTool.Klasy
         }
         public static void AdhocFunction(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
-            massFunctionForm.AddToLog(rownr, "[SUCCESS] - Online");
-            massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
+            massFunctionForm.GridChange(rownr, "Reading Log");
+            string filePath = @"\\" + connectionPara.fullNetworkName + @"\c$\ProgramData\Veritas\VERITAS SYSTEM RECOVERY\LOGS\Veritas System Recovery.log.txt";
+            string[] log = File.ReadAllLines(filePath);
+            foreach(string line in log)
+            {
+                if(!DateTime.TryParse(line.Split(' ')[0], out DateTime date))
+                {
+                    continue;
+                }
+                if (date == DateTime.Today && line.Contains("backup job is completed"))
+                {
+                    massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
+                    return;
+                }
+            }
+            massFunctionForm.GridChange(rownr, "Downloading log");
+            FileController.CopyFile(filePath, @".\Veritas\" + connectionPara.hostname + ".txt", false, out Exception copyExp);
+            massFunctionForm.ErrorLog(rownr, "Error - Znaleziono zly log");
         }
 
         //------------------------Moje wymysly------------------------------//
