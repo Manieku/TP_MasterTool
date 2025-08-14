@@ -41,6 +41,7 @@ namespace TP_MasterTool.Forms
                 slave.DoWork += Slave_DoWork;
                 slave.RunWorkerCompleted += Slave_RunWorkerCompleted;
             }
+            textBox.Text = Main.GetTAG();
         }
 
         //-------BACK END--------------------------
