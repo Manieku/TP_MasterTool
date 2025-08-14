@@ -234,6 +234,7 @@ namespace TP_MasterTool
 
             //Logger.GeneratePortalReport(@".\EoD_Abort_Test_Report.txt", @".\EoD_Abort_Test_AddInfo.txt", @".\logo.txt", @".\output.txt");
         }
+        
         //--------------------/UI Controls/---------------------------
         private void GetMAC_button_Click(object sender, EventArgs e)
         {

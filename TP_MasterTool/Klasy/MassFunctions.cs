@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.IO.Compression;
@@ -171,16 +172,42 @@ namespace TP_MasterTool.Klasy
         }
         public static List<string> GetInfo_GetSqlInfo()
         {
-            string dbName = Microsoft.VisualBasic.Interaction.InputBox("DataBase Name:", "Input data");
-            if (dbName == "")
+            string dbName;
+            List<string> tempFiles = new(File.ReadAllLines(@".\Config\sqlDBs.txt"));
+            tempFiles.Add("Add New DataBase");
+            using (DropDownSelect dropDownSelect = new DropDownSelect("Select Database", tempFiles.ToArray()))
             {
+                var result = dropDownSelect.ShowDialog();
+                if (result != DialogResult.OK)
+                {
+                    return null;
+                }
+                dbName = dropDownSelect.ReturnValue1;            //values preserved after close
+            }
+            if(dbName == "Add New DataBase")
+            {
+                Process.Start(@".\Config\sqlDBs.txt");
                 return null;
             }
-            string dbQuery = Microsoft.VisualBasic.Interaction.InputBox("DataBase Query after 'select':", "Input data");
-            if (dbQuery == "")
+
+            string dbQuery;
+            tempFiles = new(File.ReadAllLines(@".\Config\sqlQueries.txt"));
+            tempFiles.Add("Add New Query");
+            using (DropDownSelect dropDownSelect = new DropDownSelect("Select Query (after 'select')", tempFiles.ToArray()))
             {
+                var result = dropDownSelect.ShowDialog();
+                if (result != DialogResult.OK)
+                {
+                    return null;
+                }
+                dbQuery = dropDownSelect.ReturnValue1;            //values preserved after close
+            }
+            if (dbQuery == "Add New Query")
+            {
+                Process.Start(@".\Config\sqlQueries.txt");
                 return null;
             }
+
             string outputFileName = Globals.userTempLogsPath + "SqlQuery " + Logger.Datownik() + ".txt";
             return new List<string> { dbName, dbQuery, outputFileName };
         }

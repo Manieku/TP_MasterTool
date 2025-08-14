@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using TP_MasterTool.Forms.CustomMessageBox;
 
 namespace TP_MasterTool.Klasy
@@ -137,6 +138,17 @@ namespace TP_MasterTool.Klasy
         }
         private static void UserSettingsInit(ref Logger myLog)
         {
+            string dbPath = @".\Config\sqlDBs.txt";
+            string queriesPath = @".\Config\sqlQueries.txt";
+            if (!File.Exists(dbPath))
+            {
+                File.Create(dbPath).Close();
+                File.WriteAllText(dbPath, "TPCentralDB" + Environment.NewLine + "TPPosDB");
+            }
+            if (!File.Exists(queriesPath))
+            {
+                File.Create(queriesPath).Close();
+            }
             myLog.Add("UserSettingsInit");
             if (!System.IO.File.Exists(Globals.userSettingsXmlPath))
             {

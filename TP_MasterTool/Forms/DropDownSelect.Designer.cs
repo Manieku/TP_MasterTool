@@ -35,16 +35,19 @@ namespace TP_MasterTool.Forms
             // 
             // dropDownBox
             // 
+            this.dropDownBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.dropDownBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.dropDownBox.FormattingEnabled = true;
             this.dropDownBox.Location = new System.Drawing.Point(12, 30);
             this.dropDownBox.Name = "dropDownBox";
-            this.dropDownBox.Size = new System.Drawing.Size(612, 24);
+            this.dropDownBox.Size = new System.Drawing.Size(540, 24);
             this.dropDownBox.TabIndex = 0;
             // 
             // selectButton
             // 
-            this.selectButton.Location = new System.Drawing.Point(641, 30);
+            this.selectButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.selectButton.Location = new System.Drawing.Point(569, 30);
             this.selectButton.Name = "selectButton";
             this.selectButton.Size = new System.Drawing.Size(100, 24);
             this.selectButton.TabIndex = 1;
@@ -56,10 +59,11 @@ namespace TP_MasterTool.Forms
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(755, 83);
+            this.ClientSize = new System.Drawing.Size(683, 83);
             this.Controls.Add(this.selectButton);
             this.Controls.Add(this.dropDownBox);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MaximumSize = new System.Drawing.Size(3000, 130);
+            this.MinimumSize = new System.Drawing.Size(0, 130);
             this.Name = "DropDownSelect";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.Text = "DropDownSelect";
