@@ -776,69 +776,77 @@ namespace TP_MasterTool
             Telemetry.LogCompleteTelemetryData(connectionPara.hostname, Globals.Funkcje.GetFoldersSize, "");
             string[] outputFiles = { @"result.csv", @"result.png" };
             string[] toCopy = { Globals.toolsPath + "wiztree64.exe", Globals.toolsPath + "wiztreestart_" + drive + ".cmd" };
-            try
+            using (BackgroundWorker slave = new BackgroundWorker())
             {
-                foreach(string file in outputFiles)
+                slave.DoWork += (s, args) =>
                 {
-                    File.Delete(@"\\" + connectionPara.fullNetworkName + @"\c$\temp\" + file);
-                }
-            }
-            catch
-            {
-                Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.Error, "Unable to delete old results from temp");
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Old results error", "Toolbox wasn't able to delete old results. Please delete result.csv and result.png from temp folder and try again.");
-                return;
-            }
-            foreach (string file in toCopy)
-            {
-                if (!FileController.CopyFile(file, @"\\" + connectionPara.fullNetworkName + @"\c$\temp\" + Path.GetFileName(file), false, out Exception copyExp))
-                {
-                    Logger.QuickLog(Globals.Funkcje.GetFoldersSize, "Copying exe to host", connectionPara.hostname, "ErrorLog", copyExp.ToString());
-                    Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.Error, "Copying WizTree failed");
-                    CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Copying Error", "ToolBox encountered error while trying to copy " + Path.GetFileName(file) + Environment.NewLine + copyExp.Message);
+
+                    try
+                    {
+                        foreach (string file in outputFiles)
+                        {
+                            File.Delete(@"\\" + connectionPara.fullNetworkName + @"\c$\temp\" + file);
+                        }
+                    }
+                    catch
+                    {
+                        Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.Error, "Unable to delete old results from temp");
+                        CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Old results error", "Toolbox wasn't able to delete old results. Please delete result.csv and result.png from temp folder and try again.");
+                        return;
+                    }
+                    foreach (string file in toCopy)
+                    {
+                        if (!FileController.CopyFile(file, @"\\" + connectionPara.fullNetworkName + @"\c$\temp\" + Path.GetFileName(file), false, out Exception copyExp))
+                        {
+                            Logger.QuickLog(Globals.Funkcje.GetFoldersSize, "Copying exe to host", connectionPara.hostname, "ErrorLog", copyExp.ToString());
+                            Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.Error, "Copying WizTree failed");
+                            CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Copying Error", "ToolBox encountered error while trying to copy " + Path.GetFileName(file) + Environment.NewLine + copyExp.Message);
+                            ChangeStatusBar("Ready");
+                            return;
+                        }
+                    }
+                    CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.fullNetworkName + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c cd c:\temp && .\" + Path.GetFileName(toCopy[1]));
+                    if (cmdOutput.exitCode != 0)
+                    {
+                        Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.Error, "WizTree execution error: " + cmdOutput.exitCode);
+                        CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "WizTree execution error", "RCMD failed to execute WizTree." + Environment.NewLine + cmdOutput.errorOutputText);
+                        ChangeStatusBar("Ready");
+                        return;
+                    }
+                    Thread.Sleep(2000);
+                    try
+                    {
+                        File.Delete(@"\\" + connectionPara.fullNetworkName + @"\c$\temp\wiztree64.exe");
+                        File.Delete(@"\\" + connectionPara.fullNetworkName + @"\c$\temp\" + Path.GetFileName(toCopy[1]));
+                    }
+                    catch (Exception exp)
+                    {
+                        CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "error", exp.Message);
+                    }
+                    bool error = false;
+                    List<string> localFiles = new List<string>();
+                    string date = Logger.Datownik();
+                    foreach (string file in outputFiles)
+                    {
+                        localFiles.Add(Globals.userTempLogsPath + connectionPara.hostname + "_" + date + "_" + Path.GetFileName(file));
+                        if (!FileController.MoveFile(@"\\" + connectionPara.fullNetworkName + @"\c$\temp\" + file, Globals.userTempLogsPath + connectionPara.hostname + "_" + date + "_" + Path.GetFileName(file), false, out Exception moveExp))
+                        {
+                            Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.Error, "Unable to move output file: " + moveExp.Message);
+                            CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Unable to retrieve output files", "Toolbox wasn't able to retrieve outputfiles from the host. Please check temp folder." + Environment.NewLine + moveExp.Message);
+                            error = true;
+                        }
+                    }
                     ChangeStatusBar("Ready");
-                    return;
-                }
+                    if (!error)
+                    {
+                        foreach (string file in localFiles)
+                        {
+                            Process.Start(file);
+                        }
+                    }
+                };
+                slave.RunWorkerAsync();
             }
-            CtrlFunctions.CmdOutput cmdOutput = CtrlFunctions.RunHiddenCmd("psexec.exe", @"\\" + connectionPara.fullNetworkName + " -u " + connectionPara.userName + " -P " + connectionPara.password + @" cmd /c cd c:\temp && .\" + Path.GetFileName(toCopy[1]));
-            if(cmdOutput.exitCode !=0)
-            {
-                Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.Error, "WizTree execution error: " + cmdOutput.exitCode);
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "WizTree execution error", "RCMD failed to execute WizTree." + Environment.NewLine + cmdOutput.errorOutputText);
-                ChangeStatusBar("Ready");
-                return;
-            }
-            Thread.Sleep(2000);
-            try
-            {
-                File.Delete(@"\\" + connectionPara.fullNetworkName + @"\c$\temp\wiztree64.exe");
-                File.Delete(@"\\" + connectionPara.fullNetworkName + @"\c$\temp\" + Path.GetFileName(toCopy[1]));
-            }
-            catch (Exception exp)
-            {
-                CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "error", exp.Message);
-            }
-            bool error = false;
-            List<string> localFiles = new List<string>();
-            string date = Logger.Datownik();
-            foreach(string file in outputFiles)
-            {
-                localFiles.Add(Globals.userTempLogsPath + connectionPara.hostname + "_" + date + "_" + Path.GetFileName(file));
-                if(!FileController.MoveFile(@"\\" + connectionPara.fullNetworkName + @"\c$\temp\" + file, Globals.userTempLogsPath + connectionPara.hostname + "_" + date + "_" + Path.GetFileName(file), false, out Exception moveExp))
-                {
-                    Telemetry.LogMachineAction(connectionPara.hostname, Globals.Funkcje.Error, "Unable to move output file: " + moveExp.Message);
-                    CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Unable to retrieve output files", "Toolbox wasn't able to retrieve outputfiles from the host. Please check temp folder." + Environment.NewLine + moveExp.Message);
-                    error = true;
-                }
-            }
-            if(!error)
-            {
-                foreach(string file in localFiles)
-                {
-                    Process.Start(file);
-                }
-            }
-            ChangeStatusBar("Ready");
         }
         //------------------Endpoint Scan--------------------
         private void ScanEndpointsMenuItem_Click(object sender, EventArgs e)
