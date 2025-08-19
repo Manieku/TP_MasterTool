@@ -98,8 +98,8 @@ namespace TP_MasterTool.Klasy
         public static List<string> GetInfo_DeployAndExecute()
         {
             string file;
-            string[] tempFiles = new DirectoryInfo(Globals.toolsPath).EnumerateFiles().Where(f => f.Extension.Contains("cmd")).Select(f => f.Name).ToArray();
-            using (DropDownSelect dropDownSelect = new DropDownSelect(@"Select file you want to deploy and execute from D:\C&A BLF\Rzemyk Mariusz\ToolBox Files\Tools", tempFiles))
+            string[] tempFiles = new DirectoryInfo(Globals.toolsPath + @"DeployExecute\").EnumerateFiles().Where(f => f.Extension.Contains("cmd")).Select(f => f.Name).ToArray();
+            using (DropDownSelect dropDownSelect = new DropDownSelect(@"Select file you want to deploy and execute from D:\C&A BLF\Rzemyk Mariusz\ToolBox Files\Tools\DeployExecute", tempFiles))
             {
                 var result = dropDownSelect.ShowDialog();
                 if (result != DialogResult.OK)
