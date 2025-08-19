@@ -209,6 +209,7 @@ namespace TP_MasterTool.Klasy
             }
 
             string outputFileName = Globals.userTempLogsPath + "SqlQuery " + Logger.Datownik() + ".txt";
+            File.AppendAllText(outputFileName, "Query: " + dbQuery + Environment.NewLine);
             return new List<string> { dbName, dbQuery, outputFileName };
         }
         public static List<string> GetInfo_GetMiniloggerStatus()
@@ -979,13 +980,11 @@ namespace TP_MasterTool.Klasy
         {
             massFunctionForm.GridChange(rownr, "Reading db");
             string connetionString = @"Data Source=" + connectionPara.fullNetworkName + @";Initial Catalog=" + addInfo[0] + @";User ID=" + Globals.SQLuserName + ";Password=" + Globals.SQLpassword;
-            File.AppendAllText(addInfo[2], "Query: " + addInfo[1] + Environment.NewLine);
             try
             {
                 using (SqlConnection sqlConnection = new SqlConnection(connetionString))
                 {
                     sqlConnection.Open();
-
                     using (SqlDataReader reader = new SqlCommand("select " + addInfo[1], sqlConnection).ExecuteReader())
                     {
                         string output = "";
@@ -993,7 +992,7 @@ namespace TP_MasterTool.Klasy
                         {
                             lock (massFunctionForm.logLock)
                             {
-                                if (!File.Exists(addInfo[2]))
+                                if (File.ReadAllLines(addInfo[2]).Length == 1)
                                 {
                                     File.AppendAllText(addInfo[2], "TAG");
                                     for (int i = 0; i < reader.FieldCount; i++)
