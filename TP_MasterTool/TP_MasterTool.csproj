@@ -9,7 +9,7 @@
     <RootNamespace>TP_MasterTool</RootNamespace>
     <AssemblyName>TP_MasterTool</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-	<LangVersion>9.0</LangVersion>
+    <LangVersion>9.0</LangVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
@@ -312,6 +312,36 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\MainIcon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\decision__3_.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\done__7_.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\done__8_.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\done__9_.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\done__10_.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\error__8_.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\error__9_.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\info__7_.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\info__8_.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\info__9_.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

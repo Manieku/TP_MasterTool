@@ -17,26 +17,26 @@ namespace TP_MasterTool.Forms.CustomMessageBox
             {
                 case CustomMsgBox.MsgType.Decision:
                     {
-                        pictureBox1.Image = (Image)Properties.Resources.ResourceManager.GetObject("decision__" + new Random().Next(1, 3) + "_");
+                        pictureBox1.Image = (Image)Properties.Resources.ResourceManager.GetObject("decision__" + new Random().Next(1, 4) + "_");
                         break;
                     }
                 case CustomMsgBox.MsgType.Done:
                     {
                         Cancel_Button.Visible = false;
-                        pictureBox1.Image = (Image)Properties.Resources.ResourceManager.GetObject("done__" + new Random().Next(1, 7) + "_");
+                        pictureBox1.Image = (Image)Properties.Resources.ResourceManager.GetObject("done__" + new Random().Next(1, 11) + "_");
                         break;
                     }
                 case CustomMsgBox.MsgType.Error:
                     {
                         Cancel_Button.Visible = false;
-                        pictureBox1.Image = (Image)Properties.Resources.ResourceManager.GetObject("error__" + new Random().Next(1, 8) + "_");
+                        pictureBox1.Image = (Image)Properties.Resources.ResourceManager.GetObject("error__" + new Random().Next(1, 10) + "_");
                         SystemSounds.Exclamation.Play();
                         break;
                     }
                 case CustomMsgBox.MsgType.Info:
                     {
                         Cancel_Button.Visible = false;
-                        pictureBox1.Image = (Image)Properties.Resources.ResourceManager.GetObject("info__" + new Random().Next(1, 7) + "_");
+                        pictureBox1.Image = (Image)Properties.Resources.ResourceManager.GetObject("info__" + new Random().Next(1, 10) + "_");
                         break;
                     }
             }
