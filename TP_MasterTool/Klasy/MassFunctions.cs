@@ -724,7 +724,7 @@ namespace TP_MasterTool.Klasy
         public static void DeployAndExecute(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
             massFunctionForm.GridChange(rownr, "Copying file");
-            if (!FileController.CopyFile(Globals.toolsPath + addInfo[0], @"\\" + connectionPara.fullNetworkName + @"\c$\temp\" + addInfo[0], false, out Exception copyExp))
+            if (!FileController.CopyFile(Globals.toolsPath + @"DeployExecute\" + addInfo[0], @"\\" + connectionPara.fullNetworkName + @"\c$\temp\" + addInfo[0], false, out Exception copyExp))
             {
                 massFunctionForm.ErrorLog(rownr, connectionPara.hostname, "Unable to copy " + addInfo[0] + " : " + copyExp.Message);
                 return;
@@ -1056,24 +1056,38 @@ namespace TP_MasterTool.Klasy
         }
         public static void AdhocFunction(MassFunctionForm massFunctionForm, int rownr, ConnectionPara connectionPara, List<string> addInfo)
         {
-            massFunctionForm.GridChange(rownr, "Reading Log");
-            string filePath = @"\\" + connectionPara.fullNetworkName + @"\c$\ProgramData\Veritas\VERITAS SYSTEM RECOVERY\LOGS\Veritas System Recovery.log.txt";
-            string[] log = File.ReadAllLines(filePath);
-            foreach(string line in log)
+            int i = 1;
+            float size = 0;
+            massFunctionForm.GridChange(rownr, "Reading files");
+            FileInfo[] files = new DirectoryInfo(@"\\" + connectionPara.fullNetworkName + @"\c$\Windows\Installer").GetFiles("*", SearchOption.AllDirectories);
+            //string[] files = DirectoryInfo.GetFiles(@"\\" + connectionPara.fullNetworkName + @"\c$\Windows\Installer", "*", SearchOption.AllDirectories);
+            foreach (FileInfo file in files)
             {
-                if(!DateTime.TryParse(line.Split(' ')[0], out DateTime date))
-                {
-                    continue;
-                }
-                if (date == DateTime.Today && line.Contains("backup job is completed"))
-                {
-                    massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
-                    return;
-                }
+                massFunctionForm.GridChange(rownr, "File " + i + " out of " + files.Length);
+                size += file.Length;
+                i++;
             }
-            massFunctionForm.GridChange(rownr, "Downloading log");
-            FileController.CopyFile(filePath, @".\Veritas\" + connectionPara.hostname + ".txt", false, out Exception copyExp);
-            massFunctionForm.ErrorLog(rownr, "Error - Znaleziono zly log");
+            size = size / 1024 / 1024 / 1024;
+            massFunctionForm.AddToLog(rownr, "[SUCCESS] - " + size);
+            massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
+            //massFunctionForm.GridChange(rownr, "Reading Log");
+            //string filePath = @"\\" + connectionPara.fullNetworkName + @"\c$\ProgramData\Veritas\VERITAS SYSTEM RECOVERY\LOGS\Veritas System Recovery.log.txt";
+            //string[] log = File.ReadAllLines(filePath);
+            //foreach(string line in log)
+            //{
+            //    if(!DateTime.TryParse(line.Split(' ')[0], out DateTime date))
+            //    {
+            //        continue;
+            //    }
+            //    if (date == DateTime.Today && line.Contains("backup job is completed"))
+            //    {
+            //        massFunctionForm.GridChange(rownr, "Done", Globals.successColor);
+            //        return;
+            //    }
+            //}
+            //massFunctionForm.GridChange(rownr, "Downloading log");
+            //FileController.CopyFile(filePath, @".\Veritas\" + connectionPara.hostname + ".txt", false, out Exception copyExp);
+            //massFunctionForm.ErrorLog(rownr, "Error - Znaleziono zly log");
         }
 
         //------------------------Moje wymysly------------------------------//
