@@ -931,37 +931,36 @@ namespace TP_MasterTool
                 slave.DoWork += (s, args) =>
                 {
                     ChangeStatusBar("Working");
-                    string output = "F Drive:" + CtrlFunctions.GetDiskSpaceInfo("F", connectionPara, out ulong totalFreeBytes, out ulong totalBytes) + Environment.NewLine;
-                    if(output.Contains("Error"))
+                    string output = "F Drive" + CtrlFunctions.GetDiskSpaceInfo("F", connectionPara, out ulong totalFreeBytes, out ulong totalBytes) + Environment.NewLine;
+
+                    FileInfo[] cFiles = new DirectoryInfo(@"\\" + connectionPara.fullNetworkName + @"\f$\Backup\TPBackup\").GetFiles("*_C*.v2i").OrderByDescending(p => p.CreationTime).ToArray();
+                    FileInfo[] dFiles = new DirectoryInfo(@"\\" + connectionPara.fullNetworkName + @"\f$\Backup\TPBackup\").GetFiles("*_D*.v2i").OrderByDescending(p => p.CreationTime).ToArray();
+                    if (cFiles.Length == 0 || dFiles.Length == 0)
                     {
-                        CustomMsgBox.Show(CustomMsgBox.MsgType.Error, "Disk read error", "Unable to read F drive. Please check if backup HDD is available");
+                        output += Environment.NewLine + "No backup files found, please check if device is initialized and backup HDD is available";
                     }
                     else
                     {
-                        output += totalFreeBytes switch
+                        if((long)totalFreeBytes < cFiles[0].Length + dFiles[0].Length)
                         {
-                            < 50400L * 1024 * 1024 => "Status: [ERROR] Low disc space - please check if there aren't duplicated backup or other files.",
-                            < 321536L * 1024 * 1024 => "Status: [CAUTION] Disc usage is beyond typical norm - please check if there aren't any unnesesary files or old backups.",
-                            _ => "Status: OK"
-                        };
+                            output += Environment.NewLine + "WARNING - There is less space than size of next backups" + Environment.NewLine;
+                        }
 
+                        output += Environment.NewLine + "Latest backup files:" + Environment.NewLine
+                        + "- " + cFiles[0].Name + " - " + cFiles[0].CreationTime + Environment.NewLine
+                        + "- " + dFiles[0].Name + " - " + dFiles[0].CreationTime + Environment.NewLine;
 
+                        if(cFiles[0].CreationTime.Date != DateTime.Today.Date || dFiles[0].CreationTime.Date != DateTime.Today.Date)
+                        {
+                            output += Environment.NewLine + "ERROR - Last backup is missing" + Environment.NewLine;
+                        }
 
+                        output += Environment.NewLine + "Do you want to open Veritas Log?";
 
-
-                        //if ((totalFreeBytes / (1024 * 1024)) < 102400)
-                        //{
-                        //    output += "Status: [ERROR] Low disc space - please check if there aren't duplicated backup files.";
-                        //}
-                        //else if ((totalFreeBytes / (1024 * 1024)) < 321536)
-                        //{
-                        //    output += "Status: [CAUTION] Disc usage is beyond typical norm - please check if there aren't any unnesesary files or old backups.";
-                        //}
-                        //else
-                        //{
-                        //    output += "Status: OK";
-                        //}
-                        CustomMsgBox.Show(CustomMsgBox.MsgType.Info, "LOL", output);
+                    }
+                    if(CustomMsgBox.Show(CustomMsgBox.MsgType.Decision, "Backup Check", output) == DialogResult.OK)
+                    {
+                        Process.Start(@"\\" + connectionPara.fullNetworkName + @"\c$\ProgramData\Veritas\VERITAS SYSTEM RECOVERY\LOGS\Veritas System Recovery.log.txt");
                     }
                     ChangeStatusBar("Ready");
                 };
