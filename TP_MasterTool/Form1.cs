@@ -101,7 +101,6 @@ namespace TP_MasterTool
         {
             "Local Storage (Till)",
             "Scan Store Endpoints",
-            "Backup Checker",
             "EoD Checker",
             "POS Colon : Fix",
             "Till Local Cache Clear"
@@ -933,8 +932,8 @@ namespace TP_MasterTool
                     ChangeStatusBar("Working");
                     string output = "F Drive" + CtrlFunctions.GetDiskSpaceInfo("F", connectionPara, out ulong totalFreeBytes, out ulong totalBytes) + Environment.NewLine;
 
-                    FileInfo[] cFiles = new DirectoryInfo(@"\\" + connectionPara.fullNetworkName + @"\f$\Backup\TPBackup\").GetFiles("*_C*.v2i").OrderByDescending(p => p.CreationTime).ToArray();
-                    FileInfo[] dFiles = new DirectoryInfo(@"\\" + connectionPara.fullNetworkName + @"\f$\Backup\TPBackup\").GetFiles("*_D*.v2i").OrderByDescending(p => p.CreationTime).ToArray();
+                    FileInfo[] cFiles = new DirectoryInfo(@"\\" + connectionPara.fullNetworkName + @"\f$\Backup\TPBackup\").GetFiles("????????????_C*.v2i").OrderByDescending(p => p.CreationTime).ToArray();
+                    FileInfo[] dFiles = new DirectoryInfo(@"\\" + connectionPara.fullNetworkName + @"\f$\Backup\TPBackup\").GetFiles("????????????_D*.v2i").OrderByDescending(p => p.CreationTime).ToArray();
                     if (cFiles.Length == 0 || dFiles.Length == 0)
                     {
                         output += Environment.NewLine + "No backup files found, please check if device is initialized and backup HDD is available";
@@ -966,9 +965,7 @@ namespace TP_MasterTool
                 };
                 slave.RunWorkerAsync();
             }
-
-            //new BackupCheck().Show();
-        } //dont support IP MODE
+        } 
 
         //------------------EoD Checker--------------------
         private void EoDCheckerMenuItem_Click(object sender, EventArgs e)
@@ -1884,7 +1881,6 @@ namespace TP_MasterTool
                     {
                         //"Local Storage (Till)",
                         //"Scan Store Endpoints",
-                        //"Backup Checker",
                         //"EoD Checker",
                         //"Till Local Cache Clear"
                     };
